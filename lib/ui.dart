@@ -1,5 +1,7 @@
-import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:dart_openai/dart_openai.dart';
+import 'package:icons_flutter/icons_flutter.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:tray_manager/tray_manager.dart';
@@ -527,8 +529,11 @@ class _QuestionPageState extends State<QuestionPage>
       appBar: AppBar(
         title: Text(S.current.chat),
         actions: [
+          IconButton(onPressed: () async {
+            await launchUrl(Uri.parse("https://github.com/funnycups/petto"));
+          }, icon: const Icon(Feather.github)),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const Icon(Feather.settings),
             onPressed: _showSettingsDialog,
           ),
         ],
