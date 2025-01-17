@@ -169,6 +169,6 @@ TTS Key: ecWdn$TJ&ktP#89
 ## TODO
 
 - [ ] 支持更多语言
-- [ ] MacOS支持
+- [ ] MacOS和Linux支持
 - [ ] 添加语音认证
 - [ ] 优化UI界面

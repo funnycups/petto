@@ -167,6 +167,6 @@ To start the local streaming speech recognition service, go to the `data\flutter
 ## TODO
 
 - [ ] Support more languages
-- [ ] MacOS support
+- [ ] MacOS and Linux support
 - [ ] Add voice authentication
 - [ ] Optimize UI
