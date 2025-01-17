@@ -47,15 +47,15 @@ However, due to restrictions from Duckduckgo, the model may temporarily be unres
 
 #### Character Settings
 
-> You can set the character's name, settings, title, and other information.
+> You can set the character's name, background, calling, and other information.
 
 Write character settings that match your expectations based on the desktop pet character you are using!
 
-#### Message Examples
+#### Example Messages
 
-> The LLM's responses will be influenced by the message examples.
+> The LLM responses will be influenced by the example messages.
 
-This setting is used to provide references to the model. If you find the LLM's responses do not meet your expectations, you can try writing a simple message example to pass to the LLM.
+This setting is used to provide references to the model. If you find the LLM responses do not meet your expectations, you can try writing a simple example message and pass it to the LLM.
 
 #### ExAPI Address
 
@@ -69,13 +69,13 @@ Required field, used to specify the Live2D model number Petto uses. The value is
 
 ![Live2D Model Number](modelNoExample.png)
 
-#### Pre-execution Model Command
+#### Pre-executed Command
 
-This command can be used to start the language model and speech recognition model locally.
+These commands can be used to start the language model and speech recognition model locally.
 
 Petto provides reference scripts `startmodel.ps1` and `startserver.ps1` to start the RWKV model and MASR-based speech recognition model locally. More detailed information will be provided later.
 
-Petto allows these two scripts to output a PID for managing the process. When Petto exits, it will automatically kill the process to avoid resource occupation.
+Petto allows these two scripts to output a PID for managing process. When Petto exits, it will automatically kill the process to avoid resource occupation.
 
 #### Streaming Speech Recognition
 
@@ -89,7 +89,7 @@ The project is pre-configured with a public streaming recognition: `wss://api.cu
 
 The server performance is average, so please use it gently :) If used too heavily, my server might crash.
 
-It is best to refer to the tutorial later in the document to deploy the MASR service yourself or use the Whisper mode.
+It is better to refer to the tutorial later in the document to deploy the MASR service yourself or use the Whisper mode.
 
 After enabling background streaming recognition, Petto will always run the streaming recognition function in the background. When any speech containing the background wake-up keyword is detected, the desktop pet will send you a message and prompt you to talk to it:
 > User: Help me
@@ -152,8 +152,8 @@ To start the RWKV model, you need to:
 
 * Download [RWKV Runner](https://github.com/josStorer/RWKV-Runner) and configure the environment as instructed.
 * Then, [download the RWKV model](https://huggingface.co/BlinkDL/rwkv-7-world) and place it in the `models/` directory under the RWKV Runner directory.
-* Adjust the contents of `startmodel.ps1`: follow the `cd` command with the path to the RWKV Runner directory, and change `RWKV-x060-World-3B-v2.1-20240417-ctx4096.pth` to the actual downloaded file name.
-* In Petto settings, remove the `#` at the beginning of the "Pre-execution Language Model Command" and then restart Petto.
+* Adjust the contents of `startmodel.ps1`: follow the `cd` command with the path to the RWKV Runner directory, and change `RWKV-x060-World-3B-v2.1-20240417-ctx4096.pth` to the actual downloaded model name.
+* In Petto settings, remove the `#` at the beginning of the "Pre-execution LLM Command" and then restart Petto.
 
 #### Starting the MASR Speech Recognition Service
 > The model provided below is trained only on Chinese corpus. You can manually train models that support more languages and have higher accuracy, or use pre-trained models or Whisper interfaces for speech recognition.
@@ -162,7 +162,7 @@ To start the local streaming speech recognition service, go to the `data\flutter
 
 * Create a directory named `conformer_streaming_fbank` and download [inference.pt](https://www.cups.moe/static/asr/inference.pt) into it.
 * Go to the `pun_models` directory and download [model.pdiparams](https://www.cups.moe/static/asr/model.pdiparams) into it.
-* In Petto settings, remove the `#` at the beginning of the "Pre-execution Speech Model Command" and then restart Petto.
+* In Petto settings, remove the `#` at the beginning of the "Pre-execution ASR Command" and then restart Petto.
 
 ## TODO
 
