@@ -77,6 +77,20 @@ Petto provides reference scripts `startmodel.ps1` and `startserver.ps1` to start
 
 Petto allows these two scripts to output a PID for managing process. When Petto exits, it will automatically kill the process to avoid resource occupation.
 
+#### Window Information Retrieval
+
+> This command is used to specify the method for retrieving window information. Please be aware of potential privacy and security issues.
+>
+> By default, it retrieves the window name, and Petto will pass the current window title as information to the language model.
+>
+> Note that if you set the "Window Information Retrieval Command" to empty, Petto will not retrieve any window information regardless of the mode selected.
+
+Petto provides two default scripts: `getwindowname.ps1` and `getscreenshot.ps1`. The former retrieves the window name, while the latter captures a screenshot of the window.
+
+For Windows users, if you change the option to screenshot retrieval, you need to modify the "Window Information Retrieval Command" from `getwindowname.ps1` to `getscreenshot.ps1`.
+
+The default scripts only support Windows. If you are using macOS, you need to write your own script to retrieve window information and modify the value of the "Window Information Retrieval Command".
+
 #### Streaming Speech Recognition
 
 > If the recognition address is left blank, the Whisper recognition mode will be used.
@@ -167,6 +181,6 @@ To start the local streaming speech recognition service, go to the `data\flutter
 ## TODO
 
 - [ ] Support more languages
-- [ ] MacOS and Linux support
+- [x] macOS support
 - [ ] Add voice authentication
 - [ ] Optimize UI

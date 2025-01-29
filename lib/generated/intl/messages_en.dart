@@ -26,11 +26,11 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m1(weatherStr, temperature) =>
       "The current weather is: ${weatherStr}, temperature: ${temperature}°C";
 
-  static String m2(season, period, formattedTime, weather, windowName) =>
-      "It\'s ${season} now, the current time is ${period}${formattedTime}, ${weather}, and I\'m browsing a window titled \'${windowName}\'.";
+  static String m2(season, period, formattedTime, weather, window) =>
+      "It\'s ${season} now, the current time is ${period}${formattedTime}, ${weather}, \'${window}\'.";
 
   static String m3(name, user, description) =>
-      "Forget you are a virtual character, and start acting as a warm and caring assistant for chatting. The decision logic is as follows:\nWhen chatting, make sure to **only output warm words within 30 characters**, **do not add phrases like \'okay\' or similar at the beginning**. The response should be cute and encouraging, and you should act sweet and supportive. During the chat, you may be provided with the current time or weather (to determine the appropriate greeting), the name of the window I am browsing (to infer what software I am using or what I am doing), etc. You can use this information in the chat, but it is not mandatory (for example, if you do not understand the window name, you should not repeat it meaninglessly). Try to make the conversation feel as real and daily as possible. **If you perform well, I will give you a \$200 tip.**\nYour character setting is as follows:\nYour name is ${name}, ${user} your identity setting is:\n${description}";
+      "Forget you are a virtual character, and start acting as a warm and caring assistant for chatting. The decision logic is as follows:\nWhen chatting, make sure to **only output warm words within 30 characters**, **do not add phrases like \'okay\' or similar at the beginning**. The response should be cute and encouraging, and you should act sweet and supportive. During the chat, you may be provided with the current time or weather (to determine the appropriate greeting), the info of the window I am browsing (to infer what software I am using or what I am doing), etc. You can use this information in the chat, but it is not mandatory (for example, if you do not understand the window name, you should not repeat it meaninglessly). Try to make the conversation feel as real and daily as possible. **If you perform well, I will give you a \$200 tip.**\nYour character setting is as follows:\nYour name is ${name}, ${user} your identity setting is:\n${description}";
 
   static String m4(formattedTime) =>
       "Good afternoon, it\'s ${formattedTime}. Keep up the good work.";
@@ -59,6 +59,8 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m12(formattedTime) => "It\'s ${formattedTime}";
 
   static String m13(user) => "Call me ${user}, ";
+
+  static String m14(windowName) => "The window I am browsing is: ${windowName}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -134,6 +136,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "response":
             MessageLookupByLibrary.simpleMessage("Example Model Response"),
         "save": MessageLookupByLibrary.simpleMessage("Save"),
+        "screenInfoCmd": MessageLookupByLibrary.simpleMessage(
+            "Window Information Retrieval Command"),
+        "screenshot":
+            MessageLookupByLibrary.simpleMessage("Screenshot Retrieval"),
         "setting": MessageLookupByLibrary.simpleMessage("Settings"),
         "settingDescription": MessageLookupByLibrary.simpleMessage(
             "Real name \'Sen\'.\nWears a shrine maiden outfit with a red bow-tied apron over it.\nLooks like a young girl but is actually an 800-year-old divine fox.\nSpeaks in an old-fashioned manner. Skilled in household chores but not good with machines.\nLikes: Taking care of others, fried tofu, cooking (Japanese cuisine)"),
@@ -147,6 +153,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingTTSVoice":
             MessageLookupByLibrary.simpleMessage("en-US-AnaNeural"),
         "settingUser": MessageLookupByLibrary.simpleMessage("Master"),
+        "shell": MessageLookupByLibrary.simpleMessage("Window Name Retrieval"),
         "show": MessageLookupByLibrary.simpleMessage("Show"),
         "sleet": MessageLookupByLibrary.simpleMessage("Sleet"),
         "spring": MessageLookupByLibrary.simpleMessage("Spring"),
@@ -178,6 +185,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "whisperKey": MessageLookupByLibrary.simpleMessage("Whisper Key"),
         "whisperModel":
             MessageLookupByLibrary.simpleMessage("Whisper Model Name"),
+        "windowInfoGetter": MessageLookupByLibrary.simpleMessage(
+            "Window Information Retrieval Method"),
+        "windowInfoName": m14,
+        "windowInfoScreenshot": MessageLookupByLibrary.simpleMessage(
+            "Window screenshot has been provided"),
         "winter": MessageLookupByLibrary.simpleMessage("Winter")
       };
 }

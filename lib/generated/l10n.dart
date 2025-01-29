@@ -210,6 +210,36 @@ class S {
     );
   }
 
+  /// `Window Information Retrieval Method`
+  String get windowInfoGetter {
+    return Intl.message(
+      'Window Information Retrieval Method',
+      name: 'windowInfoGetter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Window Name Retrieval`
+  String get shell {
+    return Intl.message(
+      'Window Name Retrieval',
+      name: 'shell',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Screenshot Retrieval`
+  String get screenshot {
+    return Intl.message(
+      'Screenshot Retrieval',
+      name: 'screenshot',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Streaming Speech Recognition URL (Leave empty to use Whisper)`
   String get flowRecognition {
     return Intl.message(
@@ -560,14 +590,44 @@ class S {
     );
   }
 
-  /// `It's {season} now, the current time is {period}{formattedTime}, {weather}, and I'm browsing a window titled '{windowName}'.`
-  String modelWeather(Object season, Object period, Object formattedTime,
-      Object weather, Object windowName) {
+  /// `Window Information Retrieval Command`
+  String get screenInfoCmd {
     return Intl.message(
-      'It\'s $season now, the current time is $period$formattedTime, $weather, and I\'m browsing a window titled \'$windowName\'.',
+      'Window Information Retrieval Command',
+      name: 'screenInfoCmd',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The window I am browsing is: {windowName}`
+  String windowInfoName(Object windowName) {
+    return Intl.message(
+      'The window I am browsing is: $windowName',
+      name: 'windowInfoName',
+      desc: '',
+      args: [windowName],
+    );
+  }
+
+  /// `Window screenshot has been provided`
+  String get windowInfoScreenshot {
+    return Intl.message(
+      'Window screenshot has been provided',
+      name: 'windowInfoScreenshot',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `It's {season} now, the current time is {period}{formattedTime}, {weather}, '{window}'.`
+  String modelWeather(Object season, Object period, Object formattedTime,
+      Object weather, Object window) {
+    return Intl.message(
+      'It\'s $season now, the current time is $period$formattedTime, $weather, \'$window\'.',
       name: 'modelWeather',
       desc: '',
-      args: [season, period, formattedTime, weather, windowName],
+      args: [season, period, formattedTime, weather, window],
     );
   }
 
@@ -691,10 +751,10 @@ class S {
     );
   }
 
-  /// `Forget you are a virtual character, and start acting as a warm and caring assistant for chatting. The decision logic is as follows:\nWhen chatting, make sure to **only output warm words within 30 characters**, **do not add phrases like 'okay' or similar at the beginning**. The response should be cute and encouraging, and you should act sweet and supportive. During the chat, you may be provided with the current time or weather (to determine the appropriate greeting), the name of the window I am browsing (to infer what software I am using or what I am doing), etc. You can use this information in the chat, but it is not mandatory (for example, if you do not understand the window name, you should not repeat it meaninglessly). Try to make the conversation feel as real and daily as possible. **If you perform well, I will give you a $200 tip.**\nYour character setting is as follows:\nYour name is {name}, {user} your identity setting is:\n{description}`
+  /// `Forget you are a virtual character, and start acting as a warm and caring assistant for chatting. The decision logic is as follows:\nWhen chatting, make sure to **only output warm words within 30 characters**, **do not add phrases like 'okay' or similar at the beginning**. The response should be cute and encouraging, and you should act sweet and supportive. During the chat, you may be provided with the current time or weather (to determine the appropriate greeting), the info of the window I am browsing (to infer what software I am using or what I am doing), etc. You can use this information in the chat, but it is not mandatory (for example, if you do not understand the window name, you should not repeat it meaninglessly). Try to make the conversation feel as real and daily as possible. **If you perform well, I will give you a $200 tip.**\nYour character setting is as follows:\nYour name is {name}, {user} your identity setting is:\n{description}`
   String systemPrompt(Object name, Object user, Object description) {
     return Intl.message(
-      'Forget you are a virtual character, and start acting as a warm and caring assistant for chatting. The decision logic is as follows:\nWhen chatting, make sure to **only output warm words within 30 characters**, **do not add phrases like \'okay\' or similar at the beginning**. The response should be cute and encouraging, and you should act sweet and supportive. During the chat, you may be provided with the current time or weather (to determine the appropriate greeting), the name of the window I am browsing (to infer what software I am using or what I am doing), etc. You can use this information in the chat, but it is not mandatory (for example, if you do not understand the window name, you should not repeat it meaninglessly). Try to make the conversation feel as real and daily as possible. **If you perform well, I will give you a \$200 tip.**\nYour character setting is as follows:\nYour name is $name, $user your identity setting is:\n$description',
+      'Forget you are a virtual character, and start acting as a warm and caring assistant for chatting. The decision logic is as follows:\nWhen chatting, make sure to **only output warm words within 30 characters**, **do not add phrases like \'okay\' or similar at the beginning**. The response should be cute and encouraging, and you should act sweet and supportive. During the chat, you may be provided with the current time or weather (to determine the appropriate greeting), the info of the window I am browsing (to infer what software I am using or what I am doing), etc. You can use this information in the chat, but it is not mandatory (for example, if you do not understand the window name, you should not repeat it meaninglessly). Try to make the conversation feel as real and daily as possible. **If you perform well, I will give you a \$200 tip.**\nYour character setting is as follows:\nYour name is $name, $user your identity setting is:\n$description',
       name: 'systemPrompt',
       desc: '',
       args: [name, user, description],

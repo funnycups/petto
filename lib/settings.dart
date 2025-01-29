@@ -57,6 +57,8 @@ Future<void> saveDefaultSettings() async {
       'tts_voice': S.current.settingTTSVoice,
       'exapi': 'ws://127.0.0.1:10086/api',
       'hide': false,
+      'window_info_getter': S.current.shell,
+      'screen_info_cmd': "powershell -ExecutionPolicy Bypass -File ${await loadAsset("scripts\\getwindowname.ps1")}"
     };
     // await file.writeAsString(jsonEncode(defaultSettings));
     await saveSettings(jsonEncode(defaultSettings));

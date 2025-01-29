@@ -7,8 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
-import 'settings.dart';
 import 'package:dart_openai/dart_openai.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'generated/l10n.dart';
+import 'settings.dart';
 import 'model.dart';
 
 Timer? _currentTimer;
@@ -132,7 +134,7 @@ Future<void> hideWindow() async {
 Future<void> quit() async {
   // if (pid != null) {
   for (var p in _pid) {
-    if(p.isNotEmpty){
+    if (p.isNotEmpty) {
       await runCmd("taskkill /F /PID $p");
     }
   }
@@ -141,4 +143,8 @@ Future<void> quit() async {
 
 void insertPid(String pid) {
   _pid.add(pid);
+}
+
+Future<String?> getWindow(var infoGetter, var cmd) async {
+  return decode(await runCmd(cmd));
 }

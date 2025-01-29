@@ -65,8 +65,10 @@ class _QuestionPageState extends State<QuestionPage>
   final TextEditingController _TTSModelController = TextEditingController();
   final TextEditingController _TTSVoiceController = TextEditingController();
   final TextEditingController _keywordsController = TextEditingController();
+  final TextEditingController _screenInfoCmd = TextEditingController();
   bool _isClosedChecked = false;
   bool _isFlowChecked = false;
+  String _windowInfoGetter = '';
   late Recognizer _foregroundRecognizer;
   Recognizer? _backgroundRecognizer;
   bool _isRecording = false;
@@ -76,7 +78,7 @@ class _QuestionPageState extends State<QuestionPage>
   bool _isProcessing = false;
   bool _onLaunch = true;
 
-  Future<void> trayManagerInit() async{
+  Future<void> trayManagerInit() async {
     await trayManager.setIcon(await loadAsset('images\\tray_icon.ico'));
     Menu menu = Menu(
       items: [
@@ -222,7 +224,8 @@ class _QuestionPageState extends State<QuestionPage>
       _TTSModelController.text = data['tts_model'] ?? '';
       _TTSVoiceController.text = data['tts_voice'] ?? '';
       _keywordsController.text = data['keywords'] ?? '';
-      if(!_onLaunch){
+      _screenInfoCmd.text = data['screen_info_cmd'] ?? '';
+      if (!_onLaunch) {
         return;
       }
       _onLaunch = false;
@@ -240,6 +243,7 @@ class _QuestionPageState extends State<QuestionPage>
       setState(() {
         _isClosedChecked = data['hide'] ?? false;
         _isFlowChecked = data['flow'] ?? false;
+        _windowInfoGetter = data['window_info_getter'] ?? '';
       });
       if (_durationController.text.isNotEmpty) {
         startDuration(_durationController.text, _hitokotoController.text,
@@ -290,6 +294,8 @@ class _QuestionPageState extends State<QuestionPage>
         'tts_model': _TTSModelController.text,
         'tts_voice': _TTSVoiceController.text,
         'hide': _isClosedChecked,
+        'window_info_getter': _windowInfoGetter,
+        'screen_info_cmd': _screenInfoCmd.text
       };
       // final file = File(_settingsFile);
       // await file.writeAsString(jsonEncode(data));
@@ -338,7 +344,8 @@ class _QuestionPageState extends State<QuestionPage>
                 ),
                 TextField(
                     controller: _descriptionController,
-                    decoration: InputDecoration(labelText: S.current.description),
+                    decoration:
+                        InputDecoration(labelText: S.current.description),
                     maxLines: null),
                 TextField(
                   controller: _userController,
@@ -364,18 +371,43 @@ class _QuestionPageState extends State<QuestionPage>
                 ),
                 TextField(
                   controller: _LLMCmdController,
-                  decoration:
-                      InputDecoration(labelText: S.current.LLMCmd),
+                  decoration: InputDecoration(labelText: S.current.LLMCmd),
                 ),
                 TextField(
                   controller: _ASRCmdController,
+                  decoration: InputDecoration(labelText: S.current.ASRCmd),
+                ),
+                Row(
+                  children: [
+                    Text(S.current.windowInfoGetter),
+                    Expanded(
+                        child: StatefulBuilder(builder: (context, setState) {
+                      return DropdownMenu(
+                        dropdownMenuEntries: [
+                          S.current.shell,
+                          S.current.screenshot
+                        ].map((String value) {
+                          return DropdownMenuEntry(value: value, label: value);
+                        }).toList(),
+                        onSelected: (String? value) {
+                          setState(() {
+                            _windowInfoGetter = value!;
+                          });
+                        },
+                        initialSelection: _windowInfoGetter,
+                      );
+                    }))
+                  ],
+                ),
+                TextField(
+                  controller: _screenInfoCmd,
                   decoration:
-                      InputDecoration(labelText: S.current.ASRCmd),
+                      InputDecoration(labelText: S.current.screenInfoCmd),
                 ),
                 TextField(
                   controller: _recognitionUrlController,
-                  decoration: InputDecoration(
-                      labelText: S.current.flowRecognition),
+                  decoration:
+                      InputDecoration(labelText: S.current.flowRecognition),
                 ),
                 Row(
                   children: [
@@ -408,7 +440,8 @@ class _QuestionPageState extends State<QuestionPage>
                 ),
                 TextField(
                   controller: _whisperModelController,
-                  decoration: InputDecoration(labelText: S.current.whisperModel),
+                  decoration:
+                      InputDecoration(labelText: S.current.whisperModel),
                 ),
                 TextField(
                   controller: _durationController,
@@ -420,8 +453,7 @@ class _QuestionPageState extends State<QuestionPage>
                 ),
                 TextField(
                   controller: _TTSController,
-                  decoration:
-                      InputDecoration(labelText: S.current.TTS),
+                  decoration: InputDecoration(labelText: S.current.TTS),
                 ),
                 TextField(
                   controller: _TTSKeyController,
@@ -529,9 +561,12 @@ class _QuestionPageState extends State<QuestionPage>
       appBar: AppBar(
         title: Text(S.current.chat),
         actions: [
-          IconButton(onPressed: () async {
-            await launchUrl(Uri.parse("https://github.com/funnycups/petto"));
-          }, icon: const Icon(Feather.github)),
+          IconButton(
+              onPressed: () async {
+                await launchUrl(
+                    Uri.parse("https://github.com/funnycups/petto"));
+              },
+              icon: const Icon(Feather.github)),
           IconButton(
             icon: const Icon(Feather.settings),
             onPressed: _showSettingsDialog,
@@ -575,7 +610,9 @@ class _QuestionPageState extends State<QuestionPage>
             ),
             ElevatedButton(
               onPressed: _toggleRecording,
-              child: Text(_isRecording ? S.current.stopRecording : S.current.startRecording),
+              child: Text(_isRecording
+                  ? S.current.stopRecording
+                  : S.current.startRecording),
             ),
           ],
         ),

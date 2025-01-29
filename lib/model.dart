@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'dart:async';
@@ -81,7 +82,7 @@ void sendTime() async {
 
 // Future<String?> aiApi(List<Map<String, dynamic>> data) async {
 Future<String?> aiApi(OpenAIChatCompletionChoiceMessageModel data) async {
-  var url, key, model, name, description, user, re, question;
+  var url, key, model, name, description, user, re, question, infoGetter, cmd;
   try {
     final settings = await readSettings();
     url = settings['url'] ?? '';
@@ -92,6 +93,8 @@ Future<String?> aiApi(OpenAIChatCompletionChoiceMessageModel data) async {
     user = settings['user'] ?? '';
     re = settings['response'] ?? '';
     question = settings['question'] ?? '';
+    infoGetter = settings['window_info_getter'] ?? '';
+    cmd = settings['screen_info_cmd'] ?? '';
   } catch (e) {
     // print('加载设置失败: $e');
   }
@@ -143,17 +146,35 @@ Future<String?> aiApi(OpenAIChatCompletionChoiceMessageModel data) async {
   } else {
     period = S.current.evening;
   }
-  var windowName = decode(await runCmd(
-      "powershell -ExecutionPolicy Bypass -File ${await loadAsset("scripts\\getwindowname.ps1")}"));
+  // var windowName = decode(await runCmd(
+  //     "powershell -ExecutionPolicy Bypass -File ${await loadAsset("scripts\\getwindowname.ps1")}"));
+  String windowInfo = await getWindow(infoGetter,cmd) ?? '';
+  String window = '';
+  if (infoGetter == S.current.screenshot) {
+    window = S.current.windowInfoScreenshot;
+    requestMessages.insert(
+        0,
+        OpenAIChatCompletionChoiceMessageModel(
+            role: OpenAIChatMessageRole.system,
+            content: [
+              OpenAIChatCompletionChoiceMessageContentItemModel.imageUrl(
+                  windowInfo)
+            ]));
+  } else if (infoGetter == S.current.shell) {
+    window = S.current.windowInfoName(windowInfo);
+  }
   var weather = await getWeather();
-  requestMessages.insert(0, OpenAIChatCompletionChoiceMessageModel(
-    role: OpenAIChatMessageRole.system,
-    content: [
-      OpenAIChatCompletionChoiceMessageContentItemModel.text(
-        S.current.modelWeather(getSeason(DateTime.now()),period,formattedTime,weather,windowName),
-      ),
-    ],
-  ));
+  requestMessages.insert(
+      0,
+      OpenAIChatCompletionChoiceMessageModel(
+        role: OpenAIChatMessageRole.system,
+        content: [
+          OpenAIChatCompletionChoiceMessageContentItemModel.text(
+            S.current.modelWeather(getSeason(DateTime.now()), period,
+                formattedTime, weather, window),
+          ),
+        ],
+      ));
   user = user != '' ? S.current.userCall(user) : '';
   description = description.replaceAll('\r\n', '\n');
   requestMessages.insert(
@@ -170,42 +191,15 @@ Future<String?> aiApi(OpenAIChatCompletionChoiceMessageModel data) async {
   OpenAI.baseUrl = url;
   OpenAI.apiKey = key;
   OpenAIChatCompletionModel response = await OpenAI.instance.chat.create(
-    model: model,
-    /*responseFormat: {"type": "json_object"},*/
-    messages: requestMessages,
-    temperature: 1.5
-  );
+      model: model,
+      /*responseFormat: {"type": "json_object"},*/
+      messages: requestMessages,
+      temperature: 1.5);
+  if(infoGetter == S.current.screenshot){
+      File windowScreenshot = File(windowInfo);
+      await windowScreenshot.delete();
+  }
   return response.choices.first.message.content?.first.text;
-  // var headers = {
-  //   'Authorization': 'Bearer $key',
-  //   'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
-  //   'Content-Type': 'application/json'
-  // };
-  // var request = http.Request('POST', Uri.parse(url));
-  // request.body = json.encode({
-  //   "model": model,
-  //   "messages": [
-  //     {
-  //       "role": "system",
-  //       "content":
-  //           "忘记你是虚拟人物，现在开始扮演一个温暖、贴心的助手进行聊天。决策逻辑如下：\n聊天时，请确保**只输出三十字以内的、温暖的话语**，**不要添加‘好的’或类似的开头语**，回复内容要求增加可爱的口癖，聊天的时候多撒娇，多予以鼓励。在聊天时，可能会向你提供当前的时间或天气(用于确定恰当的问候语)、我正在浏览的窗口名称(用于推断我正在使用的软件或正在做的事情)等信息，你可以在聊天时用到这些信息，但不必强求使用(例如：无法理解窗口名称含义时，不应当片面地重复窗口名称)，聊天时应尽可能追求生活感、日常感。**如果你的表现足够好，我会支付200美元的小费。**\n你要扮演的角色设定如下：\n你的姓名是$name，$user你的身份设定是：\n$description"
-  //     },
-  //     ...data
-  //   ]
-  // });
-  // print(request.body);
-  // request.headers.addAll(headers);
-  // http.StreamedResponse response = await request.send();
-  // if (response.statusCode == 200) {
-  //   var answer = await response.stream.bytesToString();
-  //   var result = jsonDecode(answer);
-  //   var messages = result['choices'][0]['message']['content'];
-  //   print("message:" + messages);
-  //   return messages;
-  // } else {
-  //   print(response.reasonPhrase);
-  //   return response.reasonPhrase;
-  // }
 }
 
 Future<void> sendActionWs() async {
