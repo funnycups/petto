@@ -86,7 +86,6 @@ flutter:
     - speech/static/
     #     - speech/models/
     - speech/models/pun_models/
-    - speech/models/conformer_streaming_fbank/
   #   - images/a_dot_ham.jpeg
 
 
