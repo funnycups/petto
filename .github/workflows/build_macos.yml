@@ -20,7 +20,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - run: flutter build macos --release
+      - name: pod install & update
+        run: cd ios && pod install && pod update && cd ..
+
+      - name: Build macOS
+        run: flutter build macos --release
 
       - name: Archive macOS build
         uses: actions/upload-artifact@v4

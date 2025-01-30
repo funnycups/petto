@@ -20,7 +20,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - run: flutter build windows --release
+      - name: Build Windows
+        run: flutter build windows --release
 
       - name: Archive Windows build
         uses: actions/upload-artifact@v4
