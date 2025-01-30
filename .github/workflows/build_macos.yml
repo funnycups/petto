@@ -26,11 +26,8 @@ jobs:
       - name: Build macOS
         run: flutter build macos --release
 
-      - name: zip files
-        run: zip -r build/macos/Build/Products/Release/petto.app.zip build/macos/Build/Products/Release/petto.app
-
       - name: Archive macOS build
         uses: actions/upload-artifact@v4
         with:
           name: macos-build
-          path: build/macos/Build/Products/Release/petto.app.zip
+          path: build/macos/Build/Products/Release/petto.app
