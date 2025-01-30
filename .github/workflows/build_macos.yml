@@ -21,7 +21,7 @@ jobs:
         run: flutter pub get
 
       - name: pod install & update
-        run: cd ios && pod install && pod update && cd ..
+        run: cd macos && pod install && pod update && cd ..
 
       - name: Build macOS
         run: flutter build macos --release
