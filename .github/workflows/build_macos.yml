@@ -20,8 +20,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: pod install & update
-        run: cd macos && pod install && pod update && cd ..
+      - name: Create podfile
+        run: flutter create --platforms=macos . && sed -i '' "s/^#* *platform :.*$/platform :osx, '10.15'/" macos/Podfile
 
       - name: Build macOS
         run: flutter build macos --release
