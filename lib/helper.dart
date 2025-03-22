@@ -115,7 +115,7 @@ Future<int?> tts(Object message) async {
         voice: ttsVoice,
         responseFormat: OpenAIAudioSpeechResponseFormat.mp3,
         outputDirectory: Directory.current);
-    print("语音输出:$message\n该语音文件位于:${speechFile.path}");
+    // print("语音输出:$message\n该语音文件位于:${speechFile.path}");
     final soloud = SoLoud.instance;
     await soloud.init();
     final source = await soloud.loadFile(speechFile.path);

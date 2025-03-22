@@ -41,7 +41,7 @@ Petto是一款基于Live2DViewerEX的智能桌面助手。支持流式语音识�
 
 > Petto支持符合OpenAI用法的语言模型API。
 
-Petto默认配置了一个公用的语言模型：[https://api.cups.moe/api/chat](https://api.cups.moe/api/chat)
+Petto默认配置了一个公用的语言模型：[https://api.cups.moe/api/chat/v1](https://api.cups.moe/api/chat/v1)
 ，该模型基于[Duck2api](https://github.com/aurora-develop/Duck2api)项目部署。
 
 不过由于Duckduckgo官方限制，该模型短期内请求次数过多会暂时无法响应。请考虑使用自己的API或在本机上自行部署语言模型。

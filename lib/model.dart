@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'dart:async';
 import 'dart:math';
-import 'package:dart_openai/dart_openai.dart';
+import 'package:openai_dart/openai_dart.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
@@ -27,24 +27,23 @@ void sendHitokoto(String hitokoto) async {
   }
 }
 
-void sendModel(
-    {String prompt = '',
-    OpenAIChatMessageRole role = OpenAIChatMessageRole.user}) async {
+void sendModel({String prompt = ''}) async {
   String question;
   if (prompt == '') {
     question = S.current.modelGreeting;
   } else {
     question = prompt;
   }
-  // var response = await aiApi([
-  //   {"role": "user", "content": question}
+  // final userMessage =
+  //     OpenAIChatCompletionChoiceMessageModel(role: role, content: [
+  //   OpenAIChatCompletionChoiceMessageContentItemModel.text(
+  //     question,
+  //   ),
   // ]);
-  final userMessage =
-      OpenAIChatCompletionChoiceMessageModel(role: role, content: [
-    OpenAIChatCompletionChoiceMessageContentItemModel.text(
-      question,
-    ),
-  ]);
+  final userMessage = [
+    ChatCompletionMessage.user(
+        content: ChatCompletionUserMessageContent.string(question))
+  ];
   var response = await aiApi(userMessage);
   sendSpeechWs(response as Object, null);
 }
@@ -81,7 +80,7 @@ void sendTime() async {
 }
 
 // Future<String?> aiApi(List<Map<String, dynamic>> data) async {
-Future<String?> aiApi(OpenAIChatCompletionChoiceMessageModel data) async {
+Future<String?> aiApi(List<ChatCompletionMessage> requestMessages) async {
   var url, key, model, name, description, user, re, question, infoGetter, cmd;
   try {
     final settings = await readSettings();
@@ -98,32 +97,35 @@ Future<String?> aiApi(OpenAIChatCompletionChoiceMessageModel data) async {
   } catch (e) {
     // print('加载设置失败: $e');
   }
-  var requestMessages = [data];
+  // var requestMessages = data;
   if (re != '') {
-    // data.insert(0, {"role": "assistant", "content": re});
-    requestMessages.insert(
-        0,
-        OpenAIChatCompletionChoiceMessageModel(
-          role: OpenAIChatMessageRole.assistant,
-          content: [
-            OpenAIChatCompletionChoiceMessageContentItemModel.text(
-              re,
-            ),
-          ],
-        ));
+    // requestMessages.insert(
+    //     0,
+    //     OpenAIChatCompletionChoiceMessageModel(
+    //       role: OpenAIChatMessageRole.assistant,
+    //       content: [
+    //         OpenAIChatCompletionChoiceMessageContentItemModel.text(
+    //           re,
+    //         ),
+    //       ],
+    //     ));
+    requestMessages.insert(0, ChatCompletionMessage.assistant(content: re));
   }
   if (question != '') {
-    // data.insert(0, {"role": "user", "content": question});
+    // requestMessages.insert(
+    //     0,
+    //     OpenAIChatCompletionChoiceMessageModel(
+    //       role: OpenAIChatMessageRole.user,
+    //       content: [
+    //         OpenAIChatCompletionChoiceMessageContentItemModel.text(
+    //           question,
+    //         ),
+    //       ],
+    //     ));
     requestMessages.insert(
         0,
-        OpenAIChatCompletionChoiceMessageModel(
-          role: OpenAIChatMessageRole.user,
-          content: [
-            OpenAIChatCompletionChoiceMessageContentItemModel.text(
-              question,
-            ),
-          ],
-        ));
+        ChatCompletionMessage.user(
+            content: ChatCompletionUserMessageContent.string(question)));
   }
   DateTime now = DateTime.now();
   var hour = now.hour;
@@ -148,58 +150,83 @@ Future<String?> aiApi(OpenAIChatCompletionChoiceMessageModel data) async {
   }
   // var windowName = decode(await runCmd(
   //     "powershell -ExecutionPolicy Bypass -File ${await loadAsset("scripts\\getwindowname.ps1")}"));
-  String windowInfo = await getWindow(infoGetter,cmd) ?? '';
+  String windowInfo = await getWindow(infoGetter, cmd) ?? '';
   String window = '';
   if (infoGetter == S.current.screenshot) {
     window = S.current.windowInfoScreenshot;
+    final bytes = await File(windowInfo).readAsBytes();
+    String base64 = base64Encode(bytes);
+    // requestMessages.insert(
+    //     0,
+    //     OpenAIChatCompletionChoiceMessageModel(
+    //         role: OpenAIChatMessageRole.system,
+    //         content: [
+    //           OpenAIChatCompletionChoiceMessageContentItemModel.imageUrl(
+    //               base64)
+    //         ]));
     requestMessages.insert(
         0,
-        OpenAIChatCompletionChoiceMessageModel(
-            role: OpenAIChatMessageRole.system,
-            content: [
-              OpenAIChatCompletionChoiceMessageContentItemModel.imageUrl(
-                  windowInfo)
-            ]));
+        ChatCompletionMessage.user(
+            content: ChatCompletionMessageContentParts([
+          ChatCompletionMessageContentPart.text(
+            text: window,
+          ),
+          ChatCompletionMessageContentPart.image(
+              imageUrl: ChatCompletionMessageImageUrl(url: base64))
+        ])));
   } else if (infoGetter == S.current.shell) {
     window = S.current.windowInfoName(windowInfo);
   }
   var weather = await getWeather();
+  // requestMessages.insert(
+  //     0,
+  //     OpenAIChatCompletionChoiceMessageModel(
+  //       role: OpenAIChatMessageRole.system,
+  //       content: [
+  //         OpenAIChatCompletionChoiceMessageContentItemModel.text(
+  //           S.current.modelWeather(getSeason(DateTime.now()), period,
+  //               formattedTime, weather, window),
+  //         ),
+  //       ],
+  //     ));
   requestMessages.insert(
       0,
-      OpenAIChatCompletionChoiceMessageModel(
-        role: OpenAIChatMessageRole.system,
-        content: [
-          OpenAIChatCompletionChoiceMessageContentItemModel.text(
-            S.current.modelWeather(getSeason(DateTime.now()), period,
-                formattedTime, weather, window),
-          ),
-        ],
-      ));
+      ChatCompletionMessage.system(
+          content: S.current.modelWeather(getSeason(DateTime.now()), period,
+              formattedTime, weather, window)));
   user = user != '' ? S.current.userCall(user) : '';
   description = description.replaceAll('\r\n', '\n');
+  // requestMessages.insert(
+  //     0,
+  //     OpenAIChatCompletionChoiceMessageModel(
+  //       role: OpenAIChatMessageRole.system,
+  //       content: [
+  //         OpenAIChatCompletionChoiceMessageContentItemModel.text(
+  //           S.current.systemPrompt(name, user, description),
+  //         ),
+  //       ],
+  //     ));
   requestMessages.insert(
       0,
-      OpenAIChatCompletionChoiceMessageModel(
-        role: OpenAIChatMessageRole.system,
-        content: [
-          OpenAIChatCompletionChoiceMessageContentItemModel.text(
-            S.current.systemPrompt(name, user, description),
-          ),
-        ],
-      ));
-  // print(requestMessages);
-  OpenAI.baseUrl = url;
-  OpenAI.apiKey = key;
-  OpenAIChatCompletionModel response = await OpenAI.instance.chat.create(
-      model: model,
-      /*responseFormat: {"type": "json_object"},*/
-      messages: requestMessages,
-      temperature: 1.5);
-  if(infoGetter == S.current.screenshot){
-      File windowScreenshot = File(windowInfo);
-      await windowScreenshot.delete();
+      ChatCompletionMessage.system(
+          content: S.current.systemPrompt(name, user, description)));
+  // OpenAI.baseUrl = url;
+  // OpenAI.apiKey = key;
+  final client = OpenAIClient(
+    apiKey: key,
+    baseUrl: url,
+  );
+  final response = await client.createChatCompletion(
+      request: CreateChatCompletionRequest(
+          model: ChatCompletionModel.modelId(model),
+          /*responseFormat: {"type": "json_object"},*/
+          messages: requestMessages,
+          temperature: 1.5));
+  if (infoGetter == S.current.screenshot) {
+    File windowScreenshot = File(windowInfo);
+    await windowScreenshot.delete();
   }
-  return response.choices.first.message.content?.first.text;
+  return response.choices.first.message.content;
 }
 
 Future<void> sendActionWs() async {
@@ -228,12 +255,13 @@ Future<void> sendSpeechWs(Object message, List<String>? choices) async {
   String url = settings['exapi'] ?? '';
   final channel = WebSocketChannel.connect(Uri.parse(url));
   await _lock.synchronized(() async {
-    final duration = (await tts(message)) ?? 3000;
+    String messageText = message.toString().trim();
+    final duration = (await tts(messageText)) ?? 3000;
     // print("duration: $duration");
     Map<String, dynamic> json = {
       "msg": 11000,
       "msgId": 1,
-      "data": {"id": modelNo, "text": message, "duration": duration}
+      "data": {"id": modelNo, "text": messageText, "duration": duration}
     };
     if (choices != null) {
       json['data']['choices'] = choices;
@@ -264,13 +292,17 @@ Future<void> sendSpeechWs(Object message, List<String>? choices) async {
 
 Future<void> sendRequest(String question) async {
   await hideWindow();
-  final userMessage = OpenAIChatCompletionChoiceMessageModel(
-      role: OpenAIChatMessageRole.user,
-      content: [
-        OpenAIChatCompletionChoiceMessageContentItemModel.text(
-          question,
-        ),
-      ]);
+  // final userMessage = OpenAIChatCompletionChoiceMessageModel(
+  //     role: OpenAIChatMessageRole.user,
+  //     content: [
+  //       OpenAIChatCompletionChoiceMessageContentItemModel.text(
+  //         question,
+  //       ),
+  //     ]);
+  final userMessage = [
+    ChatCompletionMessage.user(
+        content: ChatCompletionUserMessageContent.string(question))
+  ];
   var response = await aiApi(userMessage);
   sendSpeechWs(response as Object, null);
 }

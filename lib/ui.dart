@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:dart_openai/dart_openai.dart';
+import 'package:openai_dart/openai_dart.dart';
 import 'package:icons_flutter/icons_flutter.dart';
 import 'dart:convert';
 import 'dart:async';
@@ -164,21 +164,26 @@ class _QuestionPageState extends State<QuestionPage>
         return;
       }
       _isProcessing = true;
-      print("result:$result");
+      // print("result:$result");
       var keywords = _keywordsController.text.split(',');
       var match = keywords.firstWhere((element) => result.contains(element),
           orElse: () => '');
       if (match.isNotEmpty) {
-        print("后台识别到唤醒关键词: $match");
+        // print("后台识别到唤醒关键词: $match");
         await _backgroundRecognizer!.stop();
         _backgroundRecognitionTimer?.cancel();
-        final userMessage = OpenAIChatCompletionChoiceMessageModel(
-            role: OpenAIChatMessageRole.system,
-            content: [
-              OpenAIChatCompletionChoiceMessageContentItemModel.text(
-                S.current.backgroundRecognized(match),
-              ),
-            ]);
+        // final userMessage = OpenAIChatCompletionChoiceMessageModel(
+        //     role: OpenAIChatMessageRole.system,
+        //     content: [
+        //       OpenAIChatCompletionChoiceMessageContentItemModel.text(
+        //         S.current.backgroundRecognized(match),
+        //       ),
+        //     ]);
+        final userMessage = [
+          ChatCompletionMessage.system(
+            content: S.current.backgroundRecognized(match),
+          )
+        ];
         var result = await aiApi(userMessage);
         await sendSpeechWs(result as Object, null);
         _toggleRecording();
@@ -514,7 +519,7 @@ class _QuestionPageState extends State<QuestionPage>
 
   void _toggleRecording() async {
     if (_isRecording) {
-      print("录音结束，识别结果: $_result");
+      // print("录音结束，识别结果: $_result");
       await _foregroundRecognizer.stop();
       sendRequest(_result);
       setResult('');

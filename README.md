@@ -41,7 +41,7 @@ Below are explanations for some settings:
 
 > Petto supports language model APIs compatible with OpenAI usage.
 
-Petto is pre-configured with a public language model: [https://api.cups.moe/api/chat](https://api.cups.moe/api/chat), which is deployed based on the [Duck2api](https://github.com/aurora-develop/Duck2api) project.
+Petto is pre-configured with a public language model: [https://api.cups.moe/api/chat/v1](https://api.cups.moe/api/chat/v1), which is deployed based on the [Duck2api](https://github.com/aurora-develop/Duck2api) project.
 
 However, due to restrictions from Duckduckgo, the model may temporarily be unresponsive if there are too many requests in a short period. Consider using your own API or deploying the language model locally.
 
