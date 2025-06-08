@@ -16,6 +16,47 @@ import 'model.dart';
 Timer? _currentTimer;
 List<String> _pid = [];
 
+const String _logFileName = 'error.log';
+bool _logFileInitialized = false;
+
+Future<void> _initLogging() async {
+  if (!_logFileInitialized) {
+    final settings = await readSettings();
+    final bool enableLogging = settings['enable_logging'] ?? false;
+    if (enableLogging) {
+      final logFile = File(p.join(Directory.current.path, _logFileName));
+      if (await logFile.exists()) {
+        try {
+          await logFile.delete();
+        } catch (e) {
+          // print('Failed to delete old log file: $e');
+        }
+      }
+    }
+    _logFileInitialized = true;
+  }
+}
+
+Future<void> writeLog(String logContent) async {
+  await _initLogging();
+  final settings = await readSettings();
+  final bool enableLogging = settings['enable_logging'] ?? false;
+
+  if (!enableLogging) {
+    return;
+  }
+
+  final logFile = File(p.join(Directory.current.path, _logFileName));
+  final timestamp = DateTime.now().toIso8601String();
+  final logEntry = '$timestamp - $logContent\n';
+
+  try {
+    await logFile.writeAsString(logEntry, mode: FileMode.append, flush: true);
+  } catch (e) {
+    // print('Failed to write to log file: $e');
+  }
+}
+
 String decode(String str) {
   return utf8.decode(base64.decode(str.replaceAll(RegExp(r'\s+'), '')));
 }

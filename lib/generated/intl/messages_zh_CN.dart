@@ -29,7 +29,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "现在是${season}，现在的时间是${period}${formattedTime}，${weather}，“${window}”";
 
   static String m3(name, user, description) =>
-      "忘记你是虚拟人物，现在开始扮演一个温暖、贴心的助手进行聊天。决策逻辑如下：\n聊天时，请确保**只输出三十字以内的、温暖的话语**，**不要添加‘好的’或类似的开头语**，回复内容要求增加可爱的口癖，聊天的时候多撒娇，多予以鼓励。在聊天时，可能会向你提供当前的时间或天气(用于确定恰当的问候语)、我正在浏览的窗口信息(用于推断我正在使用的软件或正在做的事情)等信息，你可以在聊天时用到这些信息，但不必强求使用(例如：无法理解窗口名称含义时，不应当片面地重复窗口名称)，聊天时应尽可能追求生活感、日常感。**如果你的表现足够好，我会支付200美元的小费。**\n你要扮演的角色设定如下：\n你的姓名是${name}，${user}你的身份设定是：\n${description}";
+      "忘记你是虚拟人物，现在开始扮演一个温暖、贴心的助手进行聊天。决策逻辑如下：\n聊天时，请确保**只输出三十字以内的、温暖的话语**，**不要添加‘好的’或类似的开头语**，回复内容要求增加可爱的口癖，聊天的时候多撒娇，多予以鼓励。\n在聊天时，可能会向你提供当前的时间或天气、我正在浏览的窗口内容等信息，在聊天时尽可能地用到这些信息，以确保你的回复更加具体实际。聊天时应尽可能追求生活感、日常感。\n你要扮演的角色设定如下：\n你的姓名是${name}，${user}你的身份设定是：\n${description}";
 
   static String m4(formattedTime) => "下午好，现在是${formattedTime}，继续加油吧";
 
@@ -75,6 +75,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "drizzle": MessageLookupByLibrary.simpleMessage("毛毛雨"),
         "duration": MessageLookupByLibrary.simpleMessage("*聊天间隔"),
         "enableFlow": MessageLookupByLibrary.simpleMessage("启用后台流式识别(重启生效)"),
+        "enableLogging": MessageLookupByLibrary.simpleMessage("记录日志"),
         "evening": MessageLookupByLibrary.simpleMessage("傍晚"),
         "exapi": MessageLookupByLibrary.simpleMessage("*ExAPI地址"),
         "exit": MessageLookupByLibrary.simpleMessage("退出"),
@@ -98,6 +99,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lightSnow": MessageLookupByLibrary.simpleMessage("小雪"),
         "lightSnowShower": MessageLookupByLibrary.simpleMessage("小雪"),
         "model": MessageLookupByLibrary.simpleMessage("LLM模型"),
+        "modelError": MessageLookupByLibrary.simpleMessage("抱歉，我现在有点累，稍后再试吧。"),
         "modelGreeting":
             MessageLookupByLibrary.simpleMessage("给我一段30字以内的温暖问候吧"),
         "modelNo": MessageLookupByLibrary.simpleMessage("*Live2d模型序号"),
@@ -161,8 +163,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "whisperModel": MessageLookupByLibrary.simpleMessage("Whisper模型名称"),
         "windowInfoGetter": MessageLookupByLibrary.simpleMessage("窗口信息获取方式"),
         "windowInfoName": m14,
-        "windowInfoScreenshot":
-            MessageLookupByLibrary.simpleMessage("窗口截图已经提供"),
+        "windowInfoScreenshot": MessageLookupByLibrary.simpleMessage(
+            "我当前的窗口截图已经提供。如果可以理解我正在做什么，请在回复时参考这个截图，以使得你的回复更加切合实际"),
         "winter": MessageLookupByLibrary.simpleMessage("冬")
       };
 }

@@ -55,7 +55,7 @@
   "evening": "Evening",
   "screenInfoCmd": "Window Information Retrieval Command",
   "windowInfoName": "The window I am browsing is: {windowName}",
-  "windowInfoScreenshot": "Window screenshot has been provided",
+  "windowInfoScreenshot": "Window screenshot has been provided, and can be used as a reference when replying",
   "modelWeather": "It's {season} now, the current time is {period}{formattedTime}, {weather}, '{window}'.",
   "modelGreeting": "Please give me a warm greeting within 30 characters.",
   "timeSleep": "It's {formattedTime}, time to rest. Good night.",
@@ -97,5 +97,7 @@
   "spring": "Spring",
   "summer": "Summer",
   "autumn": "Autumn",
-  "winter": "Winter"
+  "winter": "Winter",
+  "enableLogging": "Enable Logging",
+  "modelError": "Sorry, I'm a bit tired right now. Please try again later."
 }

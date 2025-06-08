@@ -89,6 +89,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "duration": MessageLookupByLibrary.simpleMessage("*Chat Interval"),
         "enableFlow": MessageLookupByLibrary.simpleMessage(
             "Enable Background Streaming Recognition (Effective after restart)"),
+        "enableLogging": MessageLookupByLibrary.simpleMessage("Enable Logging"),
         "evening": MessageLookupByLibrary.simpleMessage("Evening"),
         "exapi": MessageLookupByLibrary.simpleMessage("*ExAPI URL"),
         "exit": MessageLookupByLibrary.simpleMessage("Exit"),
@@ -116,6 +117,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "lightSnowShower":
             MessageLookupByLibrary.simpleMessage("Light Snow Shower"),
         "model": MessageLookupByLibrary.simpleMessage("LLM Model"),
+        "modelError": MessageLookupByLibrary.simpleMessage(
+            "Sorry, I\'m a bit tired right now. Please try again later."),
         "modelGreeting": MessageLookupByLibrary.simpleMessage(
             "Please give me a warm greeting within 30 characters."),
         "modelNo": MessageLookupByLibrary.simpleMessage("*Live2d Model Number"),
@@ -189,7 +192,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Window Information Retrieval Method"),
         "windowInfoName": m14,
         "windowInfoScreenshot": MessageLookupByLibrary.simpleMessage(
-            "Window screenshot has been provided"),
+            "Window screenshot has been provided, and can be used as a reference when replying"),
         "winter": MessageLookupByLibrary.simpleMessage("Winter")
       };
 }

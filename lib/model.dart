@@ -24,6 +24,7 @@ void sendHitokoto(String hitokoto) async {
     sendSpeechWs(response.body, null);
   } else {
     // print('Request failed with status: ${response.statusCode}.');
+    writeLog('Hitokoto request failed with status: ${response.statusCode}, body: ${response.body}');
   }
 }
 
@@ -96,6 +97,7 @@ Future<String?> aiApi(List<ChatCompletionMessage> requestMessages) async {
     cmd = settings['screen_info_cmd'] ?? '';
   } catch (e) {
     // print('加载设置失败: $e');
+    writeLog('Failed to load settings in aiApi: $e');
   }
   // var requestMessages = data;
   if (re != '') {
@@ -172,7 +174,7 @@ Future<String?> aiApi(List<ChatCompletionMessage> requestMessages) async {
             text: window,
           ),
           ChatCompletionMessageContentPart.image(
-              imageUrl: ChatCompletionMessageImageUrl(url: base64))
+              imageUrl: ChatCompletionMessageImageUrl(url: 'data:image/png;base64,$base64'))
         ])));
   } else if (infoGetter == S.current.shell) {
     window = S.current.windowInfoName(windowInfo);
@@ -216,17 +218,24 @@ Future<String?> aiApi(List<ChatCompletionMessage> requestMessages) async {
     apiKey: key,
     baseUrl: url,
   );
-  final response = await client.createChatCompletion(
-      request: CreateChatCompletionRequest(
-          model: ChatCompletionModel.modelId(model),
-          /*responseFormat: {"type": "json_object"},*/
-          messages: requestMessages,
-          temperature: 1.5));
-  if (infoGetter == S.current.screenshot) {
-    File windowScreenshot = File(windowInfo);
-    await windowScreenshot.delete();
+  try {
+    final response = await client.createChatCompletion(
+        request: CreateChatCompletionRequest(
+            model: ChatCompletionModel.modelId(model),
+            /*responseFormat: {"type": "json_object"},*/
+            messages: requestMessages,
+            temperature: 1.5));
+    if (infoGetter == S.current.screenshot) {
+      File windowScreenshot = File(windowInfo);
+      await windowScreenshot.delete();
+    }
+    final responseContent = response.choices.first.message.content;
+    writeLog('OpenAI API response: ${response.choices.first.message.role} - ${responseContent?.substring(0, min(responseContent.length, 100))}...'); // Log first 100 chars
+    return responseContent;
+  } catch (e) {
+    writeLog('OpenAI API request failed: $e. Request messages: ${jsonEncode(requestMessages.map((m) => m.toJson()).toList())}');
+    return S.current.modelError;
   }
-  return response.choices.first.message.content;
 }
 
 Future<void> sendActionWs() async {
@@ -234,7 +243,18 @@ Future<void> sendActionWs() async {
   String modelNo = settings['model_no'] ?? '';
   String group = settings['group'] ?? '';
   String url = settings['exapi'] ?? '';
-  final channel = WebSocketChannel.connect(Uri.parse(url));
+  if (url.isEmpty) {
+    writeLog('ExAPI URL is empty in sendActionWs.');
+    return;
+  }
+  WebSocketChannel channel;
+  try {
+    channel = WebSocketChannel.connect(Uri.parse(url));
+  } catch (e) {
+    writeLog('Failed to connect to WebSocket in sendActionWs: $e');
+    return;
+  }
+
   var g = group.split(",");
   Random r = Random();
   group = g[r.nextInt(g.length)];
@@ -244,16 +264,43 @@ Future<void> sendActionWs() async {
     "data": {"id": modelNo, "type": 0, "mtn": group}
   };
   final message = jsonEncode(json);
-  channel.sink.add(message);
-  await Future.delayed(const Duration(seconds: 5));
-  channel.sink.close();
+  try {
+    channel.sink.add(message);
+    writeLog('Sent ActionWS message: $message');
+    channel.stream.listen(
+      (data) {
+        writeLog('Received ActionWS data: $data');
+      },
+      onError: (error) {
+        writeLog('ActionWS error: $error');
+      },
+      onDone: () {
+        writeLog('ActionWS connection closed.');
+      },
+    );
+    await Future.delayed(const Duration(seconds: 5));
+    await channel.sink.close();
+  } catch (e) {
+    writeLog('Error sending/closing ActionWS: $e');
+  }
 }
 
 Future<void> sendSpeechWs(Object message, List<String>? choices) async {
   var settings = await readSettings();
   String modelNo = settings['model_no'] ?? '';
   String url = settings['exapi'] ?? '';
-  final channel = WebSocketChannel.connect(Uri.parse(url));
+  if (url.isEmpty) {
+    writeLog('ExAPI URL is empty in sendSpeechWs.');
+    return;
+  }
+  WebSocketChannel channel;
+  try {
+    channel = WebSocketChannel.connect(Uri.parse(url));
+  } catch (e) {
+    writeLog('Failed to connect to WebSocket in sendSpeechWs: $e');
+    return;
+  }
+
   await _lock.synchronized(() async {
     String messageText = message.toString().trim();
     final duration = (await tts(messageText)) ?? 3000;
@@ -267,26 +314,35 @@ Future<void> sendSpeechWs(Object message, List<String>? choices) async {
       json['data']['choices'] = choices;
     }
     final messages = jsonEncode(json);
-    channel.sink.add(messages);
-    channel.stream.listen((messages) {
-      // print('Received message: $message');
-      switch (jsonDecode(messages)['data']) {
-        case -1:
-          // print('未选择');
-          break;
-        case 0:
-          sendSpeechWs(S.current.goodNight, null);
-          break;
-        default:
-        // print('未知结果');
-      }
-    }, onError: (error) {
-      // print('Error: $error');
-    }, onDone: () {
-      // print('WebSocket connection closed.');
-    });
-    await Future.delayed(Duration(milliseconds: duration));
-    await channel.sink.close();
+    try {
+      channel.sink.add(messages);
+      writeLog('Sent SpeechWS message: $messages');
+      channel.stream.listen((receivedMessage) {
+        writeLog('Received SpeechWS message: $receivedMessage');
+        // print('Received message: $message');
+        switch (jsonDecode(receivedMessage)['data']) {
+          case -1:
+            // print('未选择');
+            writeLog('SpeechWS: Choice not made.');
+            break;
+          case 0:
+            sendSpeechWs(S.current.goodNight, null);
+            break;
+          default:
+          // print('未知结果');
+        }
+      }, onError: (error) {
+        // print('Error: $error');
+        writeLog('SpeechWS error: $error');
+      }, onDone: () {
+        // print('WebSocket connection closed.');
+        writeLog('SpeechWS connection closed.');
+      });
+      await Future.delayed(Duration(milliseconds: duration));
+      await channel.sink.close();
+    } catch (e) {
+      writeLog('Error sending/closing SpeechWS: $e');
+    }
   });
 }
 

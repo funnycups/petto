@@ -58,7 +58,8 @@ Future<void> saveDefaultSettings() async {
       'exapi': 'ws://127.0.0.1:10086/api',
       'hide': false,
       'window_info_getter': S.current.shell,
-      'screen_info_cmd': "powershell -ExecutionPolicy Bypass -File ${await loadAsset("scripts\\getwindowname.ps1")}"
+      'screen_info_cmd': "powershell -ExecutionPolicy Bypass -File ${await loadAsset("scripts\\getwindowname.ps1")}",
+      'enable_logging': false
     };
     // await file.writeAsString(jsonEncode(defaultSettings));
     await saveSettings(jsonEncode(defaultSettings));

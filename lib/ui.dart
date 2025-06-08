@@ -68,6 +68,7 @@ class _QuestionPageState extends State<QuestionPage>
   final TextEditingController _screenInfoCmd = TextEditingController();
   bool _isClosedChecked = false;
   bool _isFlowChecked = false;
+  bool _isLogEnabled = false;
   String _windowInfoGetter = '';
   late Recognizer _foregroundRecognizer;
   Recognizer? _backgroundRecognizer;
@@ -230,6 +231,7 @@ class _QuestionPageState extends State<QuestionPage>
       _TTSVoiceController.text = data['tts_voice'] ?? '';
       _keywordsController.text = data['keywords'] ?? '';
       _screenInfoCmd.text = data['screen_info_cmd'] ?? '';
+      _isLogEnabled = data['enable_logging'] ?? false;
       if (!_onLaunch) {
         return;
       }
@@ -300,7 +302,8 @@ class _QuestionPageState extends State<QuestionPage>
         'tts_voice': _TTSVoiceController.text,
         'hide': _isClosedChecked,
         'window_info_getter': _windowInfoGetter,
-        'screen_info_cmd': _screenInfoCmd.text
+        'screen_info_cmd': _screenInfoCmd.text,
+        'enable_logging': _isLogEnabled,
       };
       // final file = File(_settingsFile);
       // await file.writeAsString(jsonEncode(data));
@@ -486,6 +489,23 @@ class _QuestionPageState extends State<QuestionPage>
                           onChanged: (bool? value) {
                             setState(() {
                               _isClosedChecked = value!;
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(S.current.enableLogging),
+                    StatefulBuilder(
+                      builder: (context, setState) {
+                        return Checkbox(
+                          value: _isLogEnabled,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              _isLogEnabled = value!;
                             });
                           },
                         );

@@ -610,10 +610,10 @@ class S {
     );
   }
 
-  /// `Window screenshot has been provided`
+  /// `Window screenshot has been provided, and can be used as a reference when replying`
   String get windowInfoScreenshot {
     return Intl.message(
-      'Window screenshot has been provided',
+      'Window screenshot has been provided, and can be used as a reference when replying',
       name: 'windowInfoScreenshot',
       desc: '',
       args: [],
@@ -1036,6 +1036,26 @@ class S {
     return Intl.message(
       'Winter',
       name: 'winter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable Logging`
+  String get enableLogging {
+    return Intl.message(
+      'Enable Logging',
+      name: 'enableLogging',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sorry, I'm a bit tired right now. Please try again later.`
+  String get modelError {
+    return Intl.message(
+      'Sorry, I\'m a bit tired right now. Please try again later.',
+      name: 'modelError',
       desc: '',
       args: [],
     );
