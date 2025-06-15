@@ -184,3 +184,7 @@ To start the local streaming speech recognition service, go to the `data\flutter
 - [x] macOS support
 - [ ] Add voice authentication
 - [ ] Optimize UI
+
+## Sponsor
+
+Sponsored by [NETJETT](https://netjett.com/aff.php?aff=45).

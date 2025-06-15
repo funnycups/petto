@@ -186,3 +186,7 @@ TTS Key: ecWdn$TJ&ktP#89
 - [x] macOS支持
 - [ ] 添加语音认证
 - [ ] 优化UI界面
+
+## 赞助
+
+由[NETJETT](https://netjett.com/aff.php?aff=45)提供支持。
