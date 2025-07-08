@@ -68,7 +68,7 @@ class _QuestionPageState extends State<QuestionPage>
   final TextEditingController _screenInfoCmd = TextEditingController();
   bool _isClosedChecked = false;
   bool _isFlowChecked = false;
-  bool _isLogEnabled = false;
+  bool _isLoggingEnabled = false;
   String _windowInfoGetter = '';
   late Recognizer _foregroundRecognizer;
   Recognizer? _backgroundRecognizer;
@@ -231,7 +231,6 @@ class _QuestionPageState extends State<QuestionPage>
       _TTSVoiceController.text = data['tts_voice'] ?? '';
       _keywordsController.text = data['keywords'] ?? '';
       _screenInfoCmd.text = data['screen_info_cmd'] ?? '';
-      _isLogEnabled = data['enable_logging'] ?? false;
       if (!_onLaunch) {
         return;
       }
@@ -251,6 +250,7 @@ class _QuestionPageState extends State<QuestionPage>
         _isClosedChecked = data['hide'] ?? false;
         _isFlowChecked = data['flow'] ?? false;
         _windowInfoGetter = data['window_info_getter'] ?? '';
+        _isLoggingEnabled = data['enable_logging'] ?? false;
       });
       if (_durationController.text.isNotEmpty) {
         startDuration(_durationController.text, _hitokotoController.text,
@@ -303,7 +303,7 @@ class _QuestionPageState extends State<QuestionPage>
         'hide': _isClosedChecked,
         'window_info_getter': _windowInfoGetter,
         'screen_info_cmd': _screenInfoCmd.text,
-        'enable_logging': _isLogEnabled,
+        'enable_logging': _isLoggingEnabled
       };
       // final file = File(_settingsFile);
       // await file.writeAsString(jsonEncode(data));
@@ -502,10 +502,10 @@ class _QuestionPageState extends State<QuestionPage>
                     StatefulBuilder(
                       builder: (context, setState) {
                         return Checkbox(
-                          value: _isLogEnabled,
+                          value: _isLoggingEnabled,
                           onChanged: (bool? value) {
                             setState(() {
-                              _isLogEnabled = value!;
+                              _isLoggingEnabled = value!;
                             });
                           },
                         );

@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:dart_openai/dart_openai.dart';
+import 'package:synchronized/synchronized.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
 import 'settings.dart';
@@ -18,6 +19,7 @@ List<String> _pid = [];
 
 const String _logFileName = 'error.log';
 bool _logFileInitialized = false;
+final _logLock = Lock();
 
 Future<void> _initLogging() async {
   if (!_logFileInitialized) {
@@ -45,16 +47,16 @@ Future<void> writeLog(String logContent) async {
   if (!enableLogging) {
     return;
   }
-
-  final logFile = File(p.join(Directory.current.path, _logFileName));
-  final timestamp = DateTime.now().toIso8601String();
-  final logEntry = '$timestamp - $logContent\n';
-
-  try {
-    await logFile.writeAsString(logEntry, mode: FileMode.append, flush: true);
-  } catch (e) {
-    // print('Failed to write to log file: $e');
-  }
+  await _logLock.synchronized(() async {
+    final logFile = File(p.join(Directory.current.path, _logFileName));
+    final timestamp = DateTime.now().toIso8601String();
+    final logEntry = '$timestamp - $logContent\n';
+    try {
+      await logFile.writeAsString(logEntry, mode: FileMode.append, flush: true);
+    } catch (e) {
+      // print('Failed to write to log file: $e');
+    }
+  });
 }
 
 String decode(String str) {

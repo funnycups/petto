@@ -12,7 +12,7 @@ import 'helper.dart';
 import 'weather.dart';
 import 'settings.dart';
 
-var _lock = Lock();
+var _wsLock = Lock();
 
 void sendHitokoto(String hitokoto) async {
   final url = hitokoto;
@@ -24,7 +24,7 @@ void sendHitokoto(String hitokoto) async {
     sendSpeechWs(response.body, null);
   } else {
     // print('Request failed with status: ${response.statusCode}.');
-    writeLog('Hitokoto request failed with status: ${response.statusCode}, body: ${response.body}');
+    await writeLog('Hitokoto request failed with status: ${response.statusCode}, body: ${response.body}');
   }
 }
 
@@ -97,7 +97,7 @@ Future<String?> aiApi(List<ChatCompletionMessage> requestMessages) async {
     cmd = settings['screen_info_cmd'] ?? '';
   } catch (e) {
     // print('加载设置失败: $e');
-    writeLog('Failed to load settings in aiApi: $e');
+    await writeLog('Failed to load settings in aiApi: $e');
   }
   // var requestMessages = data;
   if (re != '') {
@@ -230,10 +230,10 @@ Future<String?> aiApi(List<ChatCompletionMessage> requestMessages) async {
       await windowScreenshot.delete();
     }
     final responseContent = response.choices.first.message.content;
-    writeLog('OpenAI API response: ${response.choices.first.message.role} - ${responseContent?.substring(0, min(responseContent.length, 100))}...'); // Log first 100 chars
+    await writeLog('OpenAI API response: ${response.choices.first.message.role} - ${responseContent?.substring(0, min(responseContent.length, 100))}...'); // Log first 100 chars
     return responseContent;
   } catch (e) {
-    writeLog('OpenAI API request failed: $e. Request messages: ${jsonEncode(requestMessages.map((m) => m.toJson()).toList())}');
+    await writeLog('OpenAI API request failed: $e. Request messages: ${jsonEncode(requestMessages.map((m) => m.toJson()).toList())}');
     return S.current.modelError;
   }
 }
@@ -244,14 +244,14 @@ Future<void> sendActionWs() async {
   String group = settings['group'] ?? '';
   String url = settings['exapi'] ?? '';
   if (url.isEmpty) {
-    writeLog('ExAPI URL is empty in sendActionWs.');
+    await writeLog('ExAPI URL is empty in sendActionWs.');
     return;
   }
   WebSocketChannel channel;
   try {
     channel = WebSocketChannel.connect(Uri.parse(url));
   } catch (e) {
-    writeLog('Failed to connect to WebSocket in sendActionWs: $e');
+    await writeLog('Failed to connect to WebSocket in sendActionWs: $e');
     return;
   }
 
@@ -266,7 +266,7 @@ Future<void> sendActionWs() async {
   final message = jsonEncode(json);
   try {
     channel.sink.add(message);
-    writeLog('Sent ActionWS message: $message');
+    await writeLog('Sent ActionWS message: $message');
     channel.stream.listen(
       (data) {
         writeLog('Received ActionWS data: $data');
@@ -281,27 +281,28 @@ Future<void> sendActionWs() async {
     await Future.delayed(const Duration(seconds: 5));
     await channel.sink.close();
   } catch (e) {
-    writeLog('Error sending/closing ActionWS: $e');
+    await writeLog('Error sending/closing ActionWS: $e');
   }
 }
 
 Future<void> sendSpeechWs(Object message, List<String>? choices) async {
+  await writeLog('sendSpeechWs called with message: $message, choices: $choices');
   var settings = await readSettings();
   String modelNo = settings['model_no'] ?? '';
   String url = settings['exapi'] ?? '';
   if (url.isEmpty) {
-    writeLog('ExAPI URL is empty in sendSpeechWs.');
+    await writeLog('ExAPI URL is empty in sendSpeechWs.');
     return;
   }
   WebSocketChannel channel;
   try {
     channel = WebSocketChannel.connect(Uri.parse(url));
   } catch (e) {
-    writeLog('Failed to connect to WebSocket in sendSpeechWs: $e');
+    await writeLog('Failed to connect to WebSocket in sendSpeechWs: $e');
     return;
   }
 
-  await _lock.synchronized(() async {
+  await _wsLock.synchronized(() async {
     String messageText = message.toString().trim();
     final duration = (await tts(messageText)) ?? 3000;
     // print("duration: $duration");
@@ -316,7 +317,7 @@ Future<void> sendSpeechWs(Object message, List<String>? choices) async {
     final messages = jsonEncode(json);
     try {
       channel.sink.add(messages);
-      writeLog('Sent SpeechWS message: $messages');
+      await writeLog('Sent SpeechWS message: $messages');
       channel.stream.listen((receivedMessage) {
         writeLog('Received SpeechWS message: $receivedMessage');
         // print('Received message: $message');
@@ -341,7 +342,7 @@ Future<void> sendSpeechWs(Object message, List<String>? choices) async {
       await Future.delayed(Duration(milliseconds: duration));
       await channel.sink.close();
     } catch (e) {
-      writeLog('Error sending/closing SpeechWS: $e');
+      await writeLog('Error sending/closing SpeechWS: $e');
     }
   });
 }
@@ -360,5 +361,17 @@ Future<void> sendRequest(String question) async {
         content: ChatCompletionUserMessageContent.string(question))
   ];
   var response = await aiApi(userMessage);
-  sendSpeechWs(response as Object, null);
+  if (response == null || response.isEmpty) {
+    await writeLog('AI API returned null or empty response.');
+    return;
+  }
+  await writeLog('Got AI API response: $response');
+  try{
+    await writeLog('Calling sendSpeechWs');
+    await sendSpeechWs(response as Object, null);
+    await writeLog('sendSpeechWs successfully called.');
+  }catch (e, st) {
+    await writeLog('Error calling sendSpeechWs: $e\n$st');
+  }
+
 }
