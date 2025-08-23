@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:openai_dart/openai_dart.dart';
 import 'package:icons_flutter/icons_flutter.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:tray_manager/tray_manager.dart';
@@ -78,6 +80,9 @@ class _QuestionPageState extends State<QuestionPage>
   Timer? _foregroundRecognitionTimer;
   bool _isProcessing = false;
   bool _onLaunch = true;
+  HotKey? _currentHotKey;
+  HotKey? _recordingHotKey;
+  bool _isRecordingHotKey = false;
 
   Future<void> trayManagerInit() async {
     await trayManager.setIcon(await loadAsset('images\\tray_icon.ico'));
@@ -116,6 +121,9 @@ class _QuestionPageState extends State<QuestionPage>
     _loadSettings();
     _foregroundRecognizer = Recognizer();
     _foregroundRecognizer.onResult = setResult;
+    // Initialize hotkey variables to null
+    _currentHotKey = null;
+    _recordingHotKey = null;
   }
 
   @override
@@ -134,8 +142,18 @@ class _QuestionPageState extends State<QuestionPage>
 
   @override
   void dispose() {
-    trayManager.removeListener(this);
-    windowManager.removeListener(this);
+    try {
+      trayManager.removeListener(this);
+      windowManager.removeListener(this);
+      // Unregister hotkey when disposing
+      if (_isHotkeyRegistered && _registeredHotKey != null) {
+        hotKeyManager.unregister(_registeredHotKey!).catchError((e) {
+          print('Failed to unregister hotkey on dispose: $e');
+        });
+      }
+    } catch (e) {
+      print('Error in dispose: $e');
+    }
     super.dispose();
   }
 
@@ -165,21 +183,12 @@ class _QuestionPageState extends State<QuestionPage>
         return;
       }
       _isProcessing = true;
-      // print("result:$result");
       var keywords = _keywordsController.text.split(',');
       var match = keywords.firstWhere((element) => result.contains(element),
           orElse: () => '');
       if (match.isNotEmpty) {
-        // print("后台识别到唤醒关键词: $match");
         await _backgroundRecognizer!.stop();
         _backgroundRecognitionTimer?.cancel();
-        // final userMessage = OpenAIChatCompletionChoiceMessageModel(
-        //     role: OpenAIChatMessageRole.system,
-        //     content: [
-        //       OpenAIChatCompletionChoiceMessageContentItemModel.text(
-        //         S.current.backgroundRecognized(match),
-        //       ),
-        //     ]);
         final userMessage = [
           ChatCompletionMessage.system(
             content: S.current.backgroundRecognized(match),
@@ -193,10 +202,8 @@ class _QuestionPageState extends State<QuestionPage>
       }
       _isProcessing = false;
     };
-    // await _backgroundRecognizer!.start(_recognitionUrlController.text, _isFlowChecked);
     _backgroundRecognitionTimer =
         Timer.periodic(Duration(seconds: 10), (timer) async {
-      // print("launch");
       await _backgroundRecognizer!.stop();
       await _backgroundRecognizer!
           .start(_recognitionUrlController.text, _isFlowChecked);
@@ -206,6 +213,7 @@ class _QuestionPageState extends State<QuestionPage>
   void _loadSettings() async {
     try {
       final data = await readSettings();
+
       _urlController.text = data['url'] ?? '';
       _keyController.text = data['key'] ?? '';
       _modelController.text = data['model'] ?? '';
@@ -239,12 +247,6 @@ class _QuestionPageState extends State<QuestionPage>
         windowManager.waitUntilReadyToShow(null, () async {
           await windowManager.hide();
         });
-        // WidgetsBinding.instance.addPostFrameCallback((_) async {
-        //   await windowManager.hide();
-        // });
-        // Future.microtask(() async {
-        //   await windowManager.hide();
-        // });
       }
       setState(() {
         _isClosedChecked = data['hide'] ?? false;
@@ -252,28 +254,103 @@ class _QuestionPageState extends State<QuestionPage>
         _windowInfoGetter = data['window_info_getter'] ?? '';
         _isLoggingEnabled = data['enable_logging'] ?? false;
       });
+
+      // Load hotkey settings using HotKey.fromJson
+      try {
+        if (data['wake_hotkey'] != null && data['wake_hotkey'] is Map) {
+          final hotkeyData = data['wake_hotkey'] as Map<String, dynamic>;
+          print('Loading hotkey data: ${jsonEncode(hotkeyData)}');
+
+          try {
+            _currentHotKey = HotKey.fromJson(hotkeyData);
+            print(
+                'Successfully loaded hotkey: ${_formatHotKey(_currentHotKey)}');
+
+            // Delay hotkey registration to avoid startup issues
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              await Future.delayed(Duration(milliseconds: 500));
+              try {
+                await _registerHotKey();
+                print('Hotkey registered successfully');
+              } catch (e) {
+                print('Failed to register hotkey on startup: $e');
+              }
+            });
+          } catch (e) {
+            print('Failed with new format, trying old format: $e');
+            // If that fails, try the old format (backward compatibility)
+            if (hotkeyData.containsKey('key') && hotkeyData['key'] is int) {
+              final key = PhysicalKeyboardKey.findKeyByCode(hotkeyData['key']);
+              if (key != null) {
+                List<HotKeyModifier> modifiers = [];
+                if (hotkeyData['modifiers'] is List) {
+                  for (var modName in hotkeyData['modifiers']) {
+                    try {
+                      final modifier = HotKeyModifier.values.firstWhere(
+                        (m) => m.name == modName,
+                      );
+                      modifiers.add(modifier);
+                    } catch (e) {
+                      print('Failed to load modifier: $modName');
+                    }
+                  }
+                }
+                _currentHotKey = HotKey(
+                  key: key,
+                  modifiers: modifiers.isEmpty ? null : modifiers,
+                  scope: HotKeyScope.system,
+                );
+
+                // Also delay registration for old format
+                WidgetsBinding.instance.addPostFrameCallback((_) async {
+                  await Future.delayed(Duration(milliseconds: 500));
+                  try {
+                    await _registerHotKey();
+                    print('Hotkey registered successfully (old format)');
+                  } catch (e) {
+                    print(
+                        'Failed to register hotkey on startup (old format): $e');
+                  }
+                });
+              }
+            }
+          }
+        }
+      } catch (e) {
+        print('Failed to load hotkey settings: $e');
+        _currentHotKey = null;
+      }
+
       if (_durationController.text.isNotEmpty) {
         startDuration(_durationController.text, _hitokotoController.text,
             _actionGroupController.text, _urlController.text);
       }
       if (_ASRCmdController.text.isNotEmpty) {
-        // _pid.insert(0, await powershell(_controller14.text));
         insertPid(await runCmd(_ASRCmdController.text));
       }
       if (_LLMCmdController.text.isNotEmpty) {
-        // _pid.insert(0, await powershell(_controller7.text));
         insertPid(await runCmd(_LLMCmdController.text));
       }
       if (_isFlowChecked && _recognitionUrlController.text.isNotEmpty) {
         _startBackgroundRecognition();
       }
     } catch (e) {
-      // print('加载设置失败: $e');
+      print('Error loading settings: $e');
     }
   }
 
-  void _saveSettings() async {
+  Future<void> _saveSettings() async {
     try {
+      // Debug: Log hotkey JSON
+      if (_currentHotKey != null) {
+        try {
+          final hotkeyJson = _currentHotKey!.toJson();
+          print('Hotkey JSON: ${jsonEncode(hotkeyJson)}');
+        } catch (e) {
+          print('Failed to serialize hotkey: $e');
+        }
+      }
+
       final data = {
         'url': _urlController.text,
         'key': _keyController.text,
@@ -303,18 +380,24 @@ class _QuestionPageState extends State<QuestionPage>
         'hide': _isClosedChecked,
         'window_info_getter': _windowInfoGetter,
         'screen_info_cmd': _screenInfoCmd.text,
-        'enable_logging': _isLoggingEnabled
+        'enable_logging': _isLoggingEnabled,
+        'wake_hotkey': _currentHotKey?.toJson(),
       };
-      // final file = File(_settingsFile);
-      // await file.writeAsString(jsonEncode(data));
-      // await _storage.write(key: 'settings', value: jsonEncode(data));
+      print('Saving settings: ${jsonEncode(data)}');
       await saveSettings(jsonEncode(data));
       if (_durationController.text.isNotEmpty) {
         startDuration(_durationController.text, _hitokotoController.text,
             _actionGroupController.text, _urlController.text);
       }
+      // Register the hotkey after saving
+      try {
+        await _registerHotKey();
+      } catch (e) {
+        print('Failed to register hotkey after saving: $e');
+      }
     } catch (e) {
-      // print('保存设置失败: $e');
+      print('Failed to save settings: $e');
+      // Optionally show an error dialog to the user
     }
   }
 
@@ -324,214 +407,412 @@ class _QuestionPageState extends State<QuestionPage>
     });
   }
 
+  // Track if hotkey is registered
+  bool _isHotkeyRegistered = false;
+  HotKey? _registeredHotKey;  // Track the actually registered hotkey
+
+  // Register the wake-up hotkey
+  Future<void> _registerHotKey() async {
+    try {
+      // First unregister any existing hotkey if it was registered
+      if (_isHotkeyRegistered && _registeredHotKey != null) {
+        try {
+          await hotKeyManager.unregister(_registeredHotKey!);
+          _isHotkeyRegistered = false;
+          _registeredHotKey = null;
+          print('Previous hotkey unregistered');
+        } catch (e) {
+          print('Failed to unregister previous hotkey: $e');
+        }
+      }
+
+      // Only register if _currentHotKey is not null
+      if (_currentHotKey != null) {
+        await hotKeyManager.register(
+          _currentHotKey!,
+          keyDownHandler: (hotKey) {
+            _handleHotKeyPressed();
+          },
+        );
+        _isHotkeyRegistered = true;
+        _registeredHotKey = _currentHotKey;
+        print('Hotkey registered: ${_formatHotKey(_currentHotKey)}');
+      } else {
+        print('No hotkey to register (cleared)');
+      }
+    } catch (e) {
+      // Log error but don't crash
+      print('Failed to register hotkey: $e');
+      _isHotkeyRegistered = false;
+      _registeredHotKey = null;
+    }
+  }
+
+  // Handle hotkey press - toggle window visibility
+  void _handleHotKeyPressed() async {
+    if (await windowManager.isVisible()) {
+      await windowManager.hide();
+    } else {
+      await windowManager.show();
+      await windowManager.focus();
+    }
+  }
+
+  // Format hotkey for display
+  String _formatHotKey(HotKey? hotKey) {
+    if (hotKey == null) return S.current.none;
+
+    List<String> parts = [];
+    if (hotKey.modifiers != null) {
+      for (var modifier in hotKey.modifiers!) {
+        if (modifier.physicalKeys.isNotEmpty) {
+          parts.add(modifier.physicalKeys.first.keyLabel);
+        }
+      }
+    }
+    parts.add(hotKey.physicalKey.keyLabel);
+    return parts.join(' + ');
+  }
+
   void _showSettingsDialog() {
+    // Create local copies of the hotkey variables for the dialog
+    HotKey? dialogCurrentHotKey = _currentHotKey;
+    HotKey? dialogRecordingHotKey = _recordingHotKey;
+    bool dialogIsRecordingHotKey = false;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(S.current.setting),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: _urlController,
-                  decoration: InputDecoration(labelText: S.current.url),
-                ),
-                TextField(
-                  controller: _keyController,
-                  decoration: InputDecoration(labelText: S.current.key),
-                ),
-                TextField(
-                  controller: _modelController,
-                  decoration: InputDecoration(labelText: S.current.model),
-                ),
-                TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(labelText: S.current.name),
-                ),
-                TextField(
-                    controller: _descriptionController,
-                    decoration:
-                        InputDecoration(labelText: S.current.description),
-                    maxLines: null),
-                TextField(
-                  controller: _userController,
-                  decoration: InputDecoration(labelText: S.current.user),
-                ),
-                TextField(
-                  controller: _questionController,
-                  decoration: InputDecoration(labelText: S.current.question),
-                  maxLines: null,
-                ),
-                TextField(
-                  controller: _responseController,
-                  decoration: InputDecoration(labelText: S.current.response),
-                  maxLines: null,
-                ),
-                TextField(
-                  controller: _exapiController,
-                  decoration: InputDecoration(labelText: S.current.exapi),
-                ),
-                TextField(
-                  controller: _modelNoController,
-                  decoration: InputDecoration(labelText: S.current.modelNo),
-                ),
-                TextField(
-                  controller: _LLMCmdController,
-                  decoration: InputDecoration(labelText: S.current.LLMCmd),
-                ),
-                TextField(
-                  controller: _ASRCmdController,
-                  decoration: InputDecoration(labelText: S.current.ASRCmd),
-                ),
-                Row(
+        return StatefulBuilder(
+          builder: (context, dialogSetState) {
+            return AlertDialog(
+              title: Text(S.current.setting),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(S.current.windowInfoGetter),
-                    Expanded(
-                        child: StatefulBuilder(builder: (context, setState) {
-                      return DropdownMenu(
-                        dropdownMenuEntries: [
-                          S.current.shell,
-                          S.current.screenshot
-                        ].map((String value) {
-                          return DropdownMenuEntry(value: value, label: value);
-                        }).toList(),
-                        onSelected: (String? value) {
-                          setState(() {
-                            _windowInfoGetter = value!;
-                          });
-                        },
-                        initialSelection: _windowInfoGetter,
-                      );
-                    }))
-                  ],
-                ),
-                TextField(
-                  controller: _screenInfoCmd,
-                  decoration:
-                      InputDecoration(labelText: S.current.screenInfoCmd),
-                ),
-                TextField(
-                  controller: _recognitionUrlController,
-                  decoration:
-                      InputDecoration(labelText: S.current.flowRecognition),
-                ),
-                Row(
-                  children: [
-                    Text(S.current.enableFlow),
-                    StatefulBuilder(
-                      builder: (context, setState) {
-                        return Checkbox(
-                          value: _isFlowChecked,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _isFlowChecked = value!;
-                            });
+                    TextField(
+                      controller: _urlController,
+                      decoration: InputDecoration(labelText: S.current.url),
+                    ),
+                    TextField(
+                      controller: _keyController,
+                      decoration: InputDecoration(labelText: S.current.key),
+                    ),
+                    TextField(
+                      controller: _modelController,
+                      decoration: InputDecoration(labelText: S.current.model),
+                    ),
+                    TextField(
+                      controller: _nameController,
+                      decoration: InputDecoration(labelText: S.current.name),
+                    ),
+                    TextField(
+                        controller: _descriptionController,
+                        decoration:
+                            InputDecoration(labelText: S.current.description),
+                        maxLines: null),
+                    TextField(
+                      controller: _userController,
+                      decoration: InputDecoration(labelText: S.current.user),
+                    ),
+                    TextField(
+                      controller: _questionController,
+                      decoration:
+                          InputDecoration(labelText: S.current.question),
+                      maxLines: null,
+                    ),
+                    TextField(
+                      controller: _responseController,
+                      decoration:
+                          InputDecoration(labelText: S.current.response),
+                      maxLines: null,
+                    ),
+                    TextField(
+                      controller: _exapiController,
+                      decoration: InputDecoration(labelText: S.current.exapi),
+                    ),
+                    TextField(
+                      controller: _modelNoController,
+                      decoration: InputDecoration(labelText: S.current.modelNo),
+                    ),
+                    TextField(
+                      controller: _LLMCmdController,
+                      decoration: InputDecoration(labelText: S.current.LLMCmd),
+                    ),
+                    TextField(
+                      controller: _ASRCmdController,
+                      decoration: InputDecoration(labelText: S.current.ASRCmd),
+                    ),
+                    Row(
+                      children: [
+                        Text(S.current.windowInfoGetter),
+                        Expanded(child:
+                            StatefulBuilder(builder: (context, setState) {
+                          return DropdownMenu(
+                            dropdownMenuEntries: [
+                              S.current.shell,
+                              S.current.screenshot
+                            ].map((String value) {
+                              return DropdownMenuEntry(
+                                  value: value, label: value);
+                            }).toList(),
+                            onSelected: (String? value) {
+                              setState(() {
+                                _windowInfoGetter = value!;
+                              });
+                            },
+                            initialSelection: _windowInfoGetter,
+                          );
+                        }))
+                      ],
+                    ),
+                    TextField(
+                      controller: _screenInfoCmd,
+                      decoration:
+                          InputDecoration(labelText: S.current.screenInfoCmd),
+                    ),
+                    TextField(
+                      controller: _recognitionUrlController,
+                      decoration:
+                          InputDecoration(labelText: S.current.flowRecognition),
+                    ),
+                    Row(
+                      children: [
+                        Text(S.current.enableFlow),
+                        StatefulBuilder(
+                          builder: (context, setState) {
+                            return Checkbox(
+                              value: _isFlowChecked,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isFlowChecked = value!;
+                                });
+                              },
+                            );
                           },
-                        );
-                      },
+                        ),
+                      ],
+                    ),
+                    TextField(
+                      controller: _keywordsController,
+                      decoration:
+                          InputDecoration(labelText: S.current.keywords),
+                    ),
+                    TextField(
+                      controller: _whisperController,
+                      decoration: InputDecoration(labelText: S.current.whisper),
+                    ),
+                    TextField(
+                      controller: _whisperKeyController,
+                      decoration:
+                          InputDecoration(labelText: S.current.whisperKey),
+                    ),
+                    TextField(
+                      controller: _whisperModelController,
+                      decoration:
+                          InputDecoration(labelText: S.current.whisperModel),
+                    ),
+                    TextField(
+                      controller: _durationController,
+                      decoration:
+                          InputDecoration(labelText: S.current.duration),
+                    ),
+                    TextField(
+                      controller: _hitokotoController,
+                      decoration:
+                          InputDecoration(labelText: S.current.hitokoto),
+                    ),
+                    TextField(
+                      controller: _TTSController,
+                      decoration: InputDecoration(labelText: S.current.TTS),
+                    ),
+                    TextField(
+                      controller: _TTSKeyController,
+                      decoration: InputDecoration(labelText: S.current.TTSKey),
+                    ),
+                    TextField(
+                      controller: _TTSModelController,
+                      decoration:
+                          InputDecoration(labelText: S.current.TTSModel),
+                    ),
+                    TextField(
+                      controller: _TTSVoiceController,
+                      decoration:
+                          InputDecoration(labelText: S.current.TTSVoice),
+                    ),
+                    TextField(
+                      controller: _actionGroupController,
+                      decoration:
+                          InputDecoration(labelText: S.current.actionGroup),
+                    ),
+                    Row(
+                      children: [
+                        Text(S.current.hide),
+                        StatefulBuilder(
+                          builder: (context, setState) {
+                            return Checkbox(
+                              value: _isClosedChecked,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isClosedChecked = value!;
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(S.current.enableLogging),
+                        StatefulBuilder(
+                          builder: (context, setState) {
+                            return Checkbox(
+                              value: _isLoggingEnabled,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isLoggingEnabled = value!;
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    // Hotkey recording section
+                    Container(
+                      margin: EdgeInsets.only(top: 16),
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border:
+                            Border.all(color: Theme.of(context).dividerColor),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(S.current.wakeHotkey,
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          SizedBox(height: 8),
+                          Text(S.current.currentHotkey(
+                              _formatHotKey(dialogCurrentHotKey))),
+                          SizedBox(height: 12),
+                          Column(
+                            children: [
+                              if (dialogIsRecordingHotKey)
+                                Container(
+                                  padding: EdgeInsets.all(16),
+                                  margin: EdgeInsets.only(bottom: 8),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Center(
+                                    child: Column(
+                                      children: [
+                                        if (dialogRecordingHotKey != null)
+                                          HotKeyVirtualView(
+                                              hotKey: dialogRecordingHotKey!)
+                                        else
+                                          Text(S.current.hotkeyRecording),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  if (!dialogIsRecordingHotKey) ...[
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        dialogSetState(() {
+                                          dialogIsRecordingHotKey = true;
+                                          dialogRecordingHotKey = null;
+                                        });
+                                      },
+                                      child: Text(S.current.recordHotkey),
+                                    ),
+                                    if (dialogCurrentHotKey != null)
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          dialogSetState(() {
+                                            dialogRecordingHotKey = null;
+                                            dialogCurrentHotKey = null;
+                                          });
+                                        },
+                                        child: Text(S.current.clearHotkey),
+                                      ),
+                                  ] else ...[
+                                    ElevatedButton(
+                                      onPressed: dialogRecordingHotKey == null
+                                          ? null
+                                          : () {
+                                              dialogSetState(() {
+                                                dialogCurrentHotKey =
+                                                    dialogRecordingHotKey;
+                                                dialogIsRecordingHotKey = false;
+                                              });
+                                            },
+                                      child: Text(S.current.saveHotkey),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        dialogSetState(() {
+                                          dialogIsRecordingHotKey = false;
+                                          dialogRecordingHotKey = null;
+                                        });
+                                      },
+                                      child: Text(S.current.cancel),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              if (dialogIsRecordingHotKey)
+                                Container(
+                                  height: 0,
+                                  width: 0,
+                                  child: HotKeyRecorder(
+                                    onHotKeyRecorded: (hotKey) {
+                                      dialogSetState(() {
+                                        dialogRecordingHotKey = hotKey;
+                                      });
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-                TextField(
-                  controller: _keywordsController,
-                  decoration: InputDecoration(labelText: S.current.keywords),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () async {
+                    // Update the main state with dialog values
+                    _currentHotKey = dialogCurrentHotKey;
+                    _recordingHotKey = dialogRecordingHotKey;
+
+                    await _saveSettings();
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(S.current.save),
                 ),
-                TextField(
-                  controller: _whisperController,
-                  decoration: InputDecoration(labelText: S.current.whisper),
-                ),
-                TextField(
-                  controller: _whisperKeyController,
-                  decoration: InputDecoration(labelText: S.current.whisperKey),
-                ),
-                TextField(
-                  controller: _whisperModelController,
-                  decoration:
-                      InputDecoration(labelText: S.current.whisperModel),
-                ),
-                TextField(
-                  controller: _durationController,
-                  decoration: InputDecoration(labelText: S.current.duration),
-                ),
-                TextField(
-                  controller: _hitokotoController,
-                  decoration: InputDecoration(labelText: S.current.hitokoto),
-                ),
-                TextField(
-                  controller: _TTSController,
-                  decoration: InputDecoration(labelText: S.current.TTS),
-                ),
-                TextField(
-                  controller: _TTSKeyController,
-                  decoration: InputDecoration(labelText: S.current.TTSKey),
-                ),
-                TextField(
-                  controller: _TTSModelController,
-                  decoration: InputDecoration(labelText: S.current.TTSModel),
-                ),
-                TextField(
-                  controller: _TTSVoiceController,
-                  decoration: InputDecoration(labelText: S.current.TTSVoice),
-                ),
-                TextField(
-                  controller: _actionGroupController,
-                  decoration: InputDecoration(labelText: S.current.actionGroup),
-                ),
-                Row(
-                  children: [
-                    Text(S.current.hide),
-                    StatefulBuilder(
-                      builder: (context, setState) {
-                        return Checkbox(
-                          value: _isClosedChecked,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _isClosedChecked = value!;
-                            });
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(S.current.enableLogging),
-                    StatefulBuilder(
-                      builder: (context, setState) {
-                        return Checkbox(
-                          value: _isLoggingEnabled,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _isLoggingEnabled = value!;
-                            });
-                          },
-                        );
-                      },
-                    ),
-                  ],
+                TextButton(
+                  onPressed: () {
+                    _loadSettings();
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(S.current.cancel),
                 ),
               ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                _saveSettings();
-                Navigator.of(context).pop();
-              },
-              child: Text(S.current.save),
-            ),
-            TextButton(
-              onPressed: () {
-                _loadSettings();
-                Navigator.of(context).pop();
-              },
-              child: Text(S.current.cancel),
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -539,7 +820,6 @@ class _QuestionPageState extends State<QuestionPage>
 
   void _toggleRecording() async {
     if (_isRecording) {
-      // print("录音结束，识别结果: $_result");
       await _foregroundRecognizer.stop();
       sendRequest(_result);
       setResult('');

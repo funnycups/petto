@@ -1,6 +1,7 @@
 {
   "show": "显示",
   "exit": "退出",
+  "none": "无",
   "backgroundRecognized": "用户正在向你对话，他说：{match}\n请简短地示意他继续说下去",
   "setting": "设置",
   "url": "LLM API地址",
@@ -99,5 +100,11 @@
   "autumn": "秋",
   "winter": "冬",
   "enableLogging": "记录日志",
-  "modelError": "抱歉，我现在有点累，稍后再试吧。"
+  "modelError": "抱歉，我现在有点累，稍后再试吧。",
+  "wakeHotkey": "唤醒快捷键",
+  "recordHotkey": "录制快捷键",
+  "clearHotkey": "清除",
+  "saveHotkey": "保存",
+  "hotkeyRecording": "按下快捷键...",
+  "currentHotkey": "当前: {hotkey}"
 }

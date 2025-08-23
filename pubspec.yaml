@@ -50,6 +50,7 @@ dependencies:
   flutter_soloud: any
   url_launcher: any
   icons_flutter: any
+  hotkey_manager: any
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

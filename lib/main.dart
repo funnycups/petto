@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'settings.dart';
 import 'server.dart';
 import 'ui.dart';
@@ -14,6 +15,12 @@ import 'recognizer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // For hot reload, unregisterAll needs to be called
+  try {
+    await hotKeyManager.unregisterAll();
+  } catch (e) {
+    print('Failed to unregister all hotkeys: $e');
+  }
   int port = 4040;
   while (true) {
     if (await isPortInUse(port)) {

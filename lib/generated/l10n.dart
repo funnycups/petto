@@ -70,6 +70,16 @@ class S {
     );
   }
 
+  /// `None`
+  String get none {
+    return Intl.message(
+      'None',
+      name: 'none',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `User is talking to you, they said: {match}\nPlease briefly encourage them to continue`
   String backgroundRecognized(Object match) {
     return Intl.message(
@@ -1058,6 +1068,66 @@ class S {
       name: 'modelError',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Wake Hotkey`
+  String get wakeHotkey {
+    return Intl.message(
+      'Wake Hotkey',
+      name: 'wakeHotkey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Record Hotkey`
+  String get recordHotkey {
+    return Intl.message(
+      'Record Hotkey',
+      name: 'recordHotkey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear`
+  String get clearHotkey {
+    return Intl.message(
+      'Clear',
+      name: 'clearHotkey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save`
+  String get saveHotkey {
+    return Intl.message(
+      'Save',
+      name: 'saveHotkey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Press keys...`
+  String get hotkeyRecording {
+    return Intl.message(
+      'Press keys...',
+      name: 'hotkeyRecording',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current: {hotkey}`
+  String currentHotkey(Object hotkey) {
+    return Intl.message(
+      'Current: $hotkey',
+      name: 'currentHotkey',
+      desc: '',
+      args: [hotkey],
     );
   }
 }

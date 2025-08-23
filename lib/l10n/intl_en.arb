@@ -1,6 +1,7 @@
 {
   "show": "Show",
   "exit": "Exit",
+  "none": "None",
   "backgroundRecognized": "User is talking to you, they said: {match}\nPlease briefly encourage them to continue",
   "setting": "Settings",
   "url": "LLM API URL",
@@ -99,5 +100,11 @@
   "autumn": "Autumn",
   "winter": "Winter",
   "enableLogging": "Enable Logging",
-  "modelError": "Sorry, I'm a bit tired right now. Please try again later."
+  "modelError": "Sorry, I'm a bit tired right now. Please try again later.",
+  "wakeHotkey": "Wake Hotkey",
+  "recordHotkey": "Record Hotkey",
+  "clearHotkey": "Clear",
+  "saveHotkey": "Save",
+  "hotkeyRecording": "Press keys...",
+  "currentHotkey": "Current: {hotkey}"
 }
