@@ -1130,6 +1130,56 @@ class S {
       args: [hotkey],
     );
   }
+
+  /// `Check for updates automatically`
+  String get checkUpdate {
+    return Intl.message(
+      'Check for updates automatically',
+      name: 'checkUpdate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update Available`
+  String get updateAvailable {
+    return Intl.message(
+      'Update Available',
+      name: 'updateAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New version {version} is available. Would you like to download it?`
+  String updateMessage(Object version) {
+    return Intl.message(
+      'New version $version is available. Would you like to download it?',
+      name: 'updateMessage',
+      desc: '',
+      args: [version],
+    );
+  }
+
+  /// `Update Now`
+  String get updateNow {
+    return Intl.message(
+      'Update Now',
+      name: 'updateNow',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remind Me Later`
+  String get updateLater {
+    return Intl.message(
+      'Remind Me Later',
+      name: 'updateLater',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

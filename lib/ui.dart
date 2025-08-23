@@ -71,6 +71,7 @@ class _QuestionPageState extends State<QuestionPage>
   bool _isClosedChecked = false;
   bool _isFlowChecked = false;
   bool _isLoggingEnabled = false;
+  bool _isCheckUpdateEnabled = true;
   String _windowInfoGetter = '';
   late Recognizer _foregroundRecognizer;
   Recognizer? _backgroundRecognizer;
@@ -242,7 +243,6 @@ class _QuestionPageState extends State<QuestionPage>
       if (!_onLaunch) {
         return;
       }
-      _onLaunch = false;
       if (data['hide'] ?? false) {
         windowManager.waitUntilReadyToShow(null, () async {
           await windowManager.hide();
@@ -253,6 +253,7 @@ class _QuestionPageState extends State<QuestionPage>
         _isFlowChecked = data['flow'] ?? false;
         _windowInfoGetter = data['window_info_getter'] ?? '';
         _isLoggingEnabled = data['enable_logging'] ?? false;
+        _isCheckUpdateEnabled = data['check_update'] ?? true;
       });
 
       // Load hotkey settings using HotKey.fromJson
@@ -334,6 +335,23 @@ class _QuestionPageState extends State<QuestionPage>
       if (_isFlowChecked && _recognitionUrlController.text.isNotEmpty) {
         _startBackgroundRecognition();
       }
+
+      // 检查更新（仅在启动时）
+      if (_isCheckUpdateEnabled && _onLaunch) {
+        writeLog('Version check enabled and on launch, scheduling update check...');
+        // 延迟执行，确保 UI 完全加载
+        Future.delayed(Duration(seconds: 2), () {
+          if (mounted) {
+            writeLog('Starting version update check...');
+            checkForUpdateInBackground(context);
+          }
+        });
+      } else {
+        writeLog('Version check skipped: _isCheckUpdateEnabled=$_isCheckUpdateEnabled, _onLaunch=$_onLaunch');
+      }
+      
+      // 在所有启动时操作完成后，将 _onLaunch 设置为 false
+      _onLaunch = false;
     } catch (e) {
       print('Error loading settings: $e');
     }
@@ -381,6 +399,7 @@ class _QuestionPageState extends State<QuestionPage>
         'window_info_getter': _windowInfoGetter,
         'screen_info_cmd': _screenInfoCmd.text,
         'enable_logging': _isLoggingEnabled,
+        'check_update': _isCheckUpdateEnabled,
         'wake_hotkey': _currentHotKey?.toJson(),
       };
       print('Saving settings: ${jsonEncode(data)}');
@@ -409,7 +428,7 @@ class _QuestionPageState extends State<QuestionPage>
 
   // Track if hotkey is registered
   bool _isHotkeyRegistered = false;
-  HotKey? _registeredHotKey;  // Track the actually registered hotkey
+  HotKey? _registeredHotKey; // Track the actually registered hotkey
 
   // Register the wake-up hotkey
   Future<void> _registerHotKey() async {
@@ -673,6 +692,23 @@ class _QuestionPageState extends State<QuestionPage>
                               onChanged: (bool? value) {
                                 setState(() {
                                   _isLoggingEnabled = value!;
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(S.current.checkUpdate),
+                        StatefulBuilder(
+                          builder: (context, setState) {
+                            return Checkbox(
+                              value: _isCheckUpdateEnabled,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isCheckUpdateEnabled = value!;
                                 });
                               },
                             );

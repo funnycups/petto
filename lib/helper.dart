@@ -10,6 +10,10 @@ import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'generated/l10n.dart';
 import 'settings.dart';
 import 'model.dart';
@@ -190,4 +194,291 @@ void insertPid(String pid) {
 
 Future<String?> getWindow(var infoGetter, var cmd) async {
   return decode(await runCmd(cmd));
+}
+
+// 更新检查相关函数
+
+/// 异步检查更新
+Future<void> checkForUpdateInBackground(BuildContext context) async {
+  try {
+    final settings = await readSettings();
+    final bool checkUpdate = settings['check_update'] ?? true;
+
+    if (!checkUpdate) {
+      await writeLog('Update check is disabled in settings');
+      return;
+    }
+
+    await writeLog('Starting update check...');
+
+    // 获取当前版本信息
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    final String currentVersion = packageInfo.version;
+
+    // 增加超时时间，并添加重试机制
+    http.Response? response;
+    int retryCount = 0;
+    const maxRetries = 2;
+
+    while (response == null && retryCount < maxRetries) {
+      try {
+        response = await http.get(
+          Uri.parse(
+              'https://api.github.com/repos/funnycups/petto/releases/latest'),
+          headers: {
+            'Accept': 'application/vnd.github.v3+json',
+          },
+        ).timeout(const Duration(seconds: 30)); // 增加超时时间到30秒
+      } catch (e) {
+        retryCount++;
+        if (retryCount < maxRetries) {
+          await writeLog(
+              'Update check failed, retrying... (attempt $retryCount/$maxRetries)');
+          await Future.delayed(const Duration(seconds: 2)); // 等待2秒后重试
+        } else {
+          throw e;
+        }
+      }
+    }
+
+    if (response != null && response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final tagName = data['tag_name'] ?? '';
+
+      if (tagName.isNotEmpty) {
+        // 处理 v 开头的版本号
+        final latestVersion =
+            tagName.startsWith('v') ? tagName.substring(1) : tagName;
+        await writeLog(
+            'Latest version: $latestVersion, Current version: $currentVersion');
+
+        final hasUpdate = _compareVersions(latestVersion, currentVersion) > 0;
+
+        if (hasUpdate) {
+          await writeLog('Update available: $latestVersion');
+
+          // 确保窗口显示
+          bool isVisible = await windowManager.isVisible();
+          if (!isVisible) {
+            await windowManager.show();
+            await windowManager.focus();
+          }
+
+          if (context.mounted) {
+            await _showUpdateDialog(
+              context,
+              latestVersion,
+              data['body'] ?? '',
+            );
+          }
+        } else {
+          await writeLog('Already on latest version');
+        }
+      }
+    } else {
+      await writeLog(
+          'Failed to check update, status code: ${response?.statusCode}');
+    }
+  } catch (e) {
+    await writeLog('Error checking for updates: $e');
+  }
+}
+
+/// 比较版本号
+int _compareVersions(String version1, String version2) {
+  final parts1 = version1.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+  final parts2 = version2.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+
+  // 确保两个版本号有相同的部分数量
+  while (parts1.length < parts2.length) {
+    parts1.add(0);
+  }
+  while (parts2.length < parts1.length) {
+    parts2.add(0);
+  }
+
+  for (int i = 0; i < parts1.length; i++) {
+    if (parts1[i] > parts2[i]) {
+      return 1;
+    } else if (parts1[i] < parts2[i]) {
+      return -1;
+    }
+  }
+
+  return 0;
+}
+
+/// 显示更新对话框
+Future<void> _showUpdateDialog(
+    BuildContext context, String latestVersion, String releaseNotes) async {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(S.current.updateAvailable),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(S.current.updateMessage(latestVersion)),
+            if (releaseNotes.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              const Text(
+                'Release Notes:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: SingleChildScrollView(
+                  child: _buildSimpleMarkdown(releaseNotes),
+                ),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(S.current.updateLater),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await launchUrl(Uri.parse(
+                  'https://github.com/funnycups/petto/releases/latest'));
+            },
+            child: Text(S.current.updateNow),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+/// 简单的 Markdown 解析器
+Widget _buildSimpleMarkdown(String text) {
+  final lines = text.split('\n');
+  final List<Widget> widgets = [];
+
+  for (var line in lines) {
+    line = line.trim();
+
+    if (line.isEmpty) {
+      widgets.add(const SizedBox(height: 8));
+      continue;
+    }
+
+    // 处理标题
+    if (line.startsWith('### ')) {
+      widgets.add(Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 4),
+        child: Text(
+          line.substring(4),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ));
+    } else if (line.startsWith('## ')) {
+      widgets.add(Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 4),
+        child: Text(
+          line.substring(3),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ));
+    } else if (line.startsWith('# ')) {
+      widgets.add(Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 4),
+        child: Text(
+          line.substring(2),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      ));
+    }
+    // 处理列表项
+    else if (line.startsWith('- ') || line.startsWith('* ')) {
+      widgets.add(Padding(
+        padding: const EdgeInsets.only(left: 16, bottom: 2),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('• ', style: TextStyle(fontSize: 16)),
+            Expanded(
+              child: _parseInlineMarkdown(line.substring(2)),
+            ),
+          ],
+        ),
+      ));
+    }
+    // 普通文本
+    else {
+      widgets.add(Padding(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: _parseInlineMarkdown(line),
+      ));
+    }
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: widgets,
+  );
+}
+
+/// 解析行内 Markdown（粗体、斜体、代码）
+Widget _parseInlineMarkdown(String text) {
+  final List<TextSpan> spans = [];
+  final RegExp pattern = RegExp(r'(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)');
+
+  int lastEnd = 0;
+  for (final match in pattern.allMatches(text)) {
+    // 添加普通文本
+    if (match.start > lastEnd) {
+      spans.add(TextSpan(text: text.substring(lastEnd, match.start)));
+    }
+
+    final matchText = match.group(0)!;
+
+    // 粗体
+    if (matchText.startsWith('**') && matchText.endsWith('**')) {
+      spans.add(TextSpan(
+        text: matchText.substring(2, matchText.length - 2),
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ));
+    }
+    // 斜体
+    else if (matchText.startsWith('*') && matchText.endsWith('*')) {
+      spans.add(TextSpan(
+        text: matchText.substring(1, matchText.length - 1),
+        style: const TextStyle(fontStyle: FontStyle.italic),
+      ));
+    }
+    // 代码
+    else if (matchText.startsWith('`') && matchText.endsWith('`')) {
+      spans.add(TextSpan(
+        text: matchText.substring(1, matchText.length - 1),
+        style: const TextStyle(
+          fontFamily: 'monospace',
+          backgroundColor: Color(0xFFE0E0E0),
+        ),
+      ));
+    }
+
+    lastEnd = match.end;
+  }
+
+  // 添加剩余的文本
+  if (lastEnd < text.length) {
+    spans.add(TextSpan(text: text.substring(lastEnd)));
+  }
+
+  return RichText(
+    text: TextSpan(
+      style: const TextStyle(color: Colors.black, fontSize: 14),
+      children: spans,
+    ),
+  );
 }

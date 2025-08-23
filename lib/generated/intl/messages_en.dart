@@ -60,9 +60,12 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m13(formattedTime) => "It\'s ${formattedTime}";
 
-  static String m14(user) => "Call me ${user}, ";
+  static String m14(version) =>
+      "New version ${version} is available. Would you like to download it?";
 
-  static String m15(windowName) => "The window I am browsing is: ${windowName}";
+  static String m15(user) => "Call me ${user}, ";
+
+  static String m16(windowName) => "The window I am browsing is: ${windowName}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -81,6 +84,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "backgroundRecognized": m0,
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "chat": MessageLookupByLibrary.simpleMessage("Chat"),
+        "checkUpdate": MessageLookupByLibrary.simpleMessage(
+            "Check for updates automatically"),
         "clearHotkey": MessageLookupByLibrary.simpleMessage("Clear"),
         "cloudy": MessageLookupByLibrary.simpleMessage("Cloudy"),
         "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
@@ -190,9 +195,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "timeSleep": m12,
         "timeUnknown": m13,
         "unknown": MessageLookupByLibrary.simpleMessage("Unknown"),
+        "updateAvailable":
+            MessageLookupByLibrary.simpleMessage("Update Available"),
+        "updateLater": MessageLookupByLibrary.simpleMessage("Remind Me Later"),
+        "updateMessage": m14,
+        "updateNow": MessageLookupByLibrary.simpleMessage("Update Now"),
         "url": MessageLookupByLibrary.simpleMessage("LLM API URL"),
         "user": MessageLookupByLibrary.simpleMessage("User Name"),
-        "userCall": m14,
+        "userCall": m15,
         "wakeHotkey": MessageLookupByLibrary.simpleMessage("Wake Hotkey"),
         "whisper": MessageLookupByLibrary.simpleMessage("Whisper URL"),
         "whisperKey": MessageLookupByLibrary.simpleMessage("Whisper Key"),
@@ -200,7 +210,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Whisper Model Name"),
         "windowInfoGetter": MessageLookupByLibrary.simpleMessage(
             "Window Information Retrieval Method"),
-        "windowInfoName": m15,
+        "windowInfoName": m16,
         "windowInfoScreenshot": MessageLookupByLibrary.simpleMessage(
             "Window screenshot has been provided, and can be used as a reference when replying"),
         "winter": MessageLookupByLibrary.simpleMessage("Winter")

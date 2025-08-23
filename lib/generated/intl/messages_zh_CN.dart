@@ -51,9 +51,11 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m13(formattedTime) => "现在是${formattedTime}";
 
-  static String m14(user) => "称呼我为${user}，";
+  static String m14(version) => "发现新版本 ${version}，是否前往下载？";
 
-  static String m15(windowName) => "我正在浏览的窗口是：${windowName}";
+  static String m15(user) => "称呼我为${user}，";
+
+  static String m16(windowName) => "我正在浏览的窗口是：${windowName}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -69,6 +71,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "backgroundRecognized": m0,
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
         "chat": MessageLookupByLibrary.simpleMessage("聊天"),
+        "checkUpdate": MessageLookupByLibrary.simpleMessage("自动检查更新"),
         "clearHotkey": MessageLookupByLibrary.simpleMessage("清除"),
         "cloudy": MessageLookupByLibrary.simpleMessage("多云"),
         "confirm": MessageLookupByLibrary.simpleMessage("确认"),
@@ -163,15 +166,19 @@ class MessageLookup extends MessageLookupByLibrary {
         "timeSleep": m12,
         "timeUnknown": m13,
         "unknown": MessageLookupByLibrary.simpleMessage("未知"),
+        "updateAvailable": MessageLookupByLibrary.simpleMessage("发现新版本"),
+        "updateLater": MessageLookupByLibrary.simpleMessage("稍后提醒"),
+        "updateMessage": m14,
+        "updateNow": MessageLookupByLibrary.simpleMessage("立即更新"),
         "url": MessageLookupByLibrary.simpleMessage("LLM API地址"),
         "user": MessageLookupByLibrary.simpleMessage("用户称呼"),
-        "userCall": m14,
+        "userCall": m15,
         "wakeHotkey": MessageLookupByLibrary.simpleMessage("唤醒快捷键"),
         "whisper": MessageLookupByLibrary.simpleMessage("Whisper地址"),
         "whisperKey": MessageLookupByLibrary.simpleMessage("Whisper Key"),
         "whisperModel": MessageLookupByLibrary.simpleMessage("Whisper模型名称"),
         "windowInfoGetter": MessageLookupByLibrary.simpleMessage("窗口信息获取方式"),
-        "windowInfoName": m15,
+        "windowInfoName": m16,
         "windowInfoScreenshot": MessageLookupByLibrary.simpleMessage(
             "我当前的窗口截图已经提供。如果可以理解我正在做什么，请在回复时参考这个截图，以使得你的回复更加切合实际"),
         "winter": MessageLookupByLibrary.simpleMessage("冬")

@@ -106,5 +106,10 @@
   "clearHotkey": "Clear",
   "saveHotkey": "Save",
   "hotkeyRecording": "Press keys...",
-  "currentHotkey": "Current: {hotkey}"
+  "currentHotkey": "Current: {hotkey}",
+  "checkUpdate": "Check for updates automatically",
+  "updateAvailable": "Update Available",
+  "updateMessage": "New version {version} is available. Would you like to download it?",
+  "updateNow": "Update Now",
+  "updateLater": "Remind Me Later"
 }
