@@ -73,6 +73,9 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
     'TTSVoice': TextEditingController(),
     'keywords': TextEditingController(),
     'screenInfoCmd': TextEditingController(),
+    'kageExecutable': TextEditingController(),
+    'kageModelPath': TextEditingController(),
+    'kageApiUrl': TextEditingController(text: 'ws://localhost:23333'),
   };
   
   final TextEditingController _messageController = TextEditingController();
@@ -86,6 +89,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
   bool _isRecording = false;
   String _result = '';
   bool _onLaunch = true;
+  String _petMode = 'kage'; // Default to Kage
   
   // Recording and hotkey related
   late Recognizer _foregroundRecognizer;
@@ -196,6 +200,12 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
       _controllers['keywords']!.text = data['keywords'] ?? '';
       _controllers['screenInfoCmd']!.text = data['screen_info_cmd'] ?? '';
       
+      // Load Kage-related settings
+      _petMode = data['pet_mode'] ?? 'kage';
+      _controllers['kageExecutable']!.text = data['kage_executable'] ?? '';
+      _controllers['kageModelPath']!.text = data['kage_model_path'] ?? '';
+      _controllers['kageApiUrl']!.text = data['kage_api_url'] ?? 'ws://localhost:23333';
+      
       if (!_onLaunch) {
         return;
       }
@@ -223,6 +233,9 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
       }
       
       // Run startup commands
+      // DEPRECATED: LLM and ASR startup commands are no longer supported
+      // These features were unreliable and have been removed
+      /*
       if (_controllers['ASRCmd']!.text.isNotEmpty) {
         SystemService.instance.addPid(
           await PlatformUtils.runCmd(_controllers['ASRCmd']!.text)
@@ -233,6 +246,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
           await PlatformUtils.runCmd(_controllers['LLMCmd']!.text)
         );
       }
+      */
       
       // Start background recognition if enabled
       if (_isFlowChecked && _controllers['recognitionUrl']!.text.isNotEmpty) {
@@ -348,16 +362,20 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
         'whisper': _controllers['whisper']!.text,
         'whisper_key': _controllers['whisperKey']!.text,
         'whisper_model': _controllers['whisperModel']!.text,
-        'exapi': _controllers['exapi']!.text,
         'tts': _controllers['TTS']!.text,
         'tts_key': _controllers['TTSKey']!.text,
         'tts_model': _controllers['TTSModel']!.text,
         'tts_voice': _controllers['TTSVoice']!.text,
+        'exapi': _controllers['exapi']!.text,
         'hide': _isClosedChecked,
         'window_info_getter': _windowInfoGetter,
         'screen_info_cmd': _controllers['screenInfoCmd']!.text,
         'enable_logging': _isLoggingEnabled,
         'check_update': _isCheckUpdateEnabled,
+        'pet_mode': _petMode,
+        'kage_executable': _controllers['kageExecutable']!.text,
+        'kage_model_path': _controllers['kageModelPath']!.text,
+        'kage_api_url': _controllers['kageApiUrl']!.text,
         'wake_hotkey': _currentHotKey?.toJson(),
       };
       
@@ -540,6 +558,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
           isCheckUpdateEnabled: _isCheckUpdateEnabled,
           windowInfoGetter: _windowInfoGetter,
           currentHotKey: _currentHotKey,
+          petMode: _petMode,
           onSave: (values) async {
             _isClosedChecked = values['isClosedChecked'];
             _isFlowChecked = values['isFlowChecked'];
@@ -547,6 +566,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
             _isCheckUpdateEnabled = values['isCheckUpdateEnabled'];
             _windowInfoGetter = values['windowInfoGetter'];
             _currentHotKey = values['currentHotKey'];
+            _petMode = values['pet_mode'] ?? _petMode;
             
             await _saveSettings();
           },

@@ -28,44 +28,48 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m2(weatherStr, temperature) =>
       "The current weather is: ${weatherStr}, temperature: ${temperature}°C";
 
-  static String m3(season, period, formattedTime, weather, window) =>
+  static String m3(count) => "Fetched ${count} expressions";
+
+  static String m4(error) => "Failed to fetch expressions: ${error}";
+
+  static String m5(season, period, formattedTime, weather, window) =>
       "It\'s ${season} now, the current time is ${period}${formattedTime}, ${weather}, \'${window}\'.";
 
-  static String m4(name, user, description) =>
+  static String m6(name, user, description) =>
       "Forget you are a virtual character, and start acting as a warm and caring assistant for chatting. The decision logic is as follows:\nWhen chatting, make sure to **only output warm words within 30 characters**, **do not add phrases like \'okay\' or similar at the beginning**. The response should be cute and encouraging, and you should act sweet and supportive. During the chat, you may be provided with the current time or weather (to determine the appropriate greeting), the info of the window I am browsing (to infer what software I am using or what I am doing), etc. You can use this information in the chat, but it is not mandatory (for example, if you do not understand the window name, you should not repeat it meaninglessly). Try to make the conversation feel as real and daily as possible. **If you perform well, I will give you a \$200 tip.**\nYour character setting is as follows:\nYour name is ${name}, ${user} your identity setting is:\n${description}";
 
-  static String m5(formattedTime) =>
+  static String m7(formattedTime) =>
       "Good afternoon, it\'s ${formattedTime}. Keep up the good work.";
 
-  static String m6(formattedTime) =>
+  static String m8(formattedTime) =>
       "It\'s ${formattedTime}, please rest early. Staying up late is bad for your health.";
 
-  static String m7(formattedTime) =>
+  static String m9(formattedTime) =>
       "Good evening, it\'s ${formattedTime}. How was your day?";
 
-  static String m8(formattedTime) =>
+  static String m10(formattedTime) =>
       "Good forenoon, it\'s ${formattedTime}. Have a productive day.";
 
-  static String m9(formattedTime) =>
+  static String m11(formattedTime) =>
       "Good morning, it\'s ${formattedTime}. A new day has begun.";
 
-  static String m10(formattedTime) =>
+  static String m12(formattedTime) =>
       "Good night, it\'s ${formattedTime}. What are you up to?";
 
-  static String m11(formattedTime) =>
+  static String m13(formattedTime) =>
       "Good noon, it\'s ${formattedTime}. Have you had lunch?";
 
-  static String m12(formattedTime) =>
+  static String m14(formattedTime) =>
       "It\'s ${formattedTime}, time to rest. Good night.";
 
-  static String m13(formattedTime) => "It\'s ${formattedTime}";
+  static String m15(formattedTime) => "It\'s ${formattedTime}";
 
-  static String m14(version) =>
+  static String m16(version) =>
       "New version ${version} is available. Would you like to download it?";
 
-  static String m15(user) => "Call me ${user}, ";
+  static String m17(user) => "Call me ${user}, ";
 
-  static String m16(windowName) => "The window I am browsing is: ${windowName}";
+  static String m18(windowName) => "The window I am browsing is: ${windowName}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -102,6 +106,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "evening": MessageLookupByLibrary.simpleMessage("Evening"),
         "exapi": MessageLookupByLibrary.simpleMessage("*ExAPI URL"),
         "exit": MessageLookupByLibrary.simpleMessage("Exit"),
+        "expressionsFetched": m3,
+        "fetchExpressions":
+            MessageLookupByLibrary.simpleMessage("Fetch Expressions"),
+        "fetchExpressionsFailed": m4,
         "flowRecognition": MessageLookupByLibrary.simpleMessage(
             "Streaming Speech Recognition URL (Leave empty to use Whisper)"),
         "fog": MessageLookupByLibrary.simpleMessage("Fog"),
@@ -119,6 +127,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "hitokoto": MessageLookupByLibrary.simpleMessage("Hitokoto API URL"),
         "hotkeyRecording":
             MessageLookupByLibrary.simpleMessage("Press keys..."),
+        "kageApiUrl": MessageLookupByLibrary.simpleMessage("Kage API URL"),
+        "kageApiUrlRequired": MessageLookupByLibrary.simpleMessage(
+            "Please configure Kage API URL first"),
+        "kageExecutable":
+            MessageLookupByLibrary.simpleMessage("Kage Executable Path"),
+        "kageModelPath": MessageLookupByLibrary.simpleMessage(
+            "Kage Model Path (.model3.json)"),
         "key": MessageLookupByLibrary.simpleMessage("LLM API Key"),
         "keywords":
             MessageLookupByLibrary.simpleMessage("Background Wake-up Keywords"),
@@ -133,7 +148,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "modelGreeting": MessageLookupByLibrary.simpleMessage(
             "Please give me a warm greeting within 30 characters."),
         "modelNo": MessageLookupByLibrary.simpleMessage("*Live2d Model Number"),
-        "modelWeather": m3,
+        "modelWeather": m5,
         "moderateRain": MessageLookupByLibrary.simpleMessage("Moderate Rain"),
         "moderateShower":
             MessageLookupByLibrary.simpleMessage("Moderate Shower"),
@@ -141,9 +156,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "morning": MessageLookupByLibrary.simpleMessage("Morning"),
         "name": MessageLookupByLibrary.simpleMessage("Character Name"),
         "night": MessageLookupByLibrary.simpleMessage("Night"),
+        "noExpressionsFound":
+            MessageLookupByLibrary.simpleMessage("No expressions found"),
         "none": MessageLookupByLibrary.simpleMessage("None"),
         "noon": MessageLookupByLibrary.simpleMessage("Noon"),
         "overcast": MessageLookupByLibrary.simpleMessage("Overcast"),
+        "petMode": MessageLookupByLibrary.simpleMessage("Pet Mode"),
         "placeholder": MessageLookupByLibrary.simpleMessage(
             "What would you like to talk about?"),
         "question":
@@ -179,30 +197,30 @@ class MessageLookup extends MessageLookupByLibrary {
         "stopRecording": MessageLookupByLibrary.simpleMessage("Stop Recording"),
         "summer": MessageLookupByLibrary.simpleMessage("Summer"),
         "sunny": MessageLookupByLibrary.simpleMessage("Sunny"),
-        "systemPrompt": m4,
+        "systemPrompt": m6,
         "thunderstorm": MessageLookupByLibrary.simpleMessage("Thunderstorm"),
         "thunderstormWithLargeHail": MessageLookupByLibrary.simpleMessage(
             "Thunderstorm with Large Hail"),
         "thunderstormWithSmallHail": MessageLookupByLibrary.simpleMessage(
             "Thunderstorm with Small Hail"),
-        "timeAfternoon": m5,
-        "timeDawn": m6,
-        "timeEvening": m7,
-        "timeForenoon": m8,
-        "timeMorning": m9,
-        "timeNight": m10,
-        "timeNoon": m11,
-        "timeSleep": m12,
-        "timeUnknown": m13,
+        "timeAfternoon": m7,
+        "timeDawn": m8,
+        "timeEvening": m9,
+        "timeForenoon": m10,
+        "timeMorning": m11,
+        "timeNight": m12,
+        "timeNoon": m13,
+        "timeSleep": m14,
+        "timeUnknown": m15,
         "unknown": MessageLookupByLibrary.simpleMessage("Unknown"),
         "updateAvailable":
             MessageLookupByLibrary.simpleMessage("Update Available"),
         "updateLater": MessageLookupByLibrary.simpleMessage("Remind Me Later"),
-        "updateMessage": m14,
+        "updateMessage": m16,
         "updateNow": MessageLookupByLibrary.simpleMessage("Update Now"),
         "url": MessageLookupByLibrary.simpleMessage("LLM API URL"),
         "user": MessageLookupByLibrary.simpleMessage("User Name"),
-        "userCall": m15,
+        "userCall": m17,
         "wakeHotkey": MessageLookupByLibrary.simpleMessage("Wake Hotkey"),
         "whisper": MessageLookupByLibrary.simpleMessage("Whisper URL"),
         "whisperKey": MessageLookupByLibrary.simpleMessage("Whisper Key"),
@@ -210,7 +228,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Whisper Model Name"),
         "windowInfoGetter": MessageLookupByLibrary.simpleMessage(
             "Window Information Retrieval Method"),
-        "windowInfoName": m16,
+        "windowInfoName": m18,
         "windowInfoScreenshot": MessageLookupByLibrary.simpleMessage(
             "Window screenshot has been provided, and can be used as a reference when replying"),
         "winter": MessageLookupByLibrary.simpleMessage("Winter")

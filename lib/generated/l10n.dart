@@ -200,6 +200,96 @@ class S {
     );
   }
 
+  /// `Pet Mode`
+  String get petMode {
+    return Intl.message(
+      'Pet Mode',
+      name: 'petMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Kage Executable Path`
+  String get kageExecutable {
+    return Intl.message(
+      'Kage Executable Path',
+      name: 'kageExecutable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Kage Model Path (.model3.json)`
+  String get kageModelPath {
+    return Intl.message(
+      'Kage Model Path (.model3.json)',
+      name: 'kageModelPath',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Kage API URL`
+  String get kageApiUrl {
+    return Intl.message(
+      'Kage API URL',
+      name: 'kageApiUrl',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fetch Expressions`
+  String get fetchExpressions {
+    return Intl.message(
+      'Fetch Expressions',
+      name: 'fetchExpressions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please configure Kage API URL first`
+  String get kageApiUrlRequired {
+    return Intl.message(
+      'Please configure Kage API URL first',
+      name: 'kageApiUrlRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fetched {count} expressions`
+  String expressionsFetched(Object count) {
+    return Intl.message(
+      'Fetched $count expressions',
+      name: 'expressionsFetched',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `No expressions found`
+  String get noExpressionsFound {
+    return Intl.message(
+      'No expressions found',
+      name: 'noExpressionsFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to fetch expressions: {error}`
+  String fetchExpressionsFailed(Object error) {
+    return Intl.message(
+      'Failed to fetch expressions: $error',
+      name: 'fetchExpressionsFailed',
+      desc: '',
+      args: [error],
+    );
+  }
+
   /// `Pre-execution LLM Command (Effective after restart)`
   String get LLMCmd {
     return Intl.message(

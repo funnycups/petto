@@ -26,6 +26,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
 import 'server.dart';
 import 'core/config/constants.dart';
+import 'core/config/settings_manager.dart';
+import 'core/services/process_manager_service.dart';
+import 'core/services/kage_websocket_service.dart';
+import 'core/utils/logger.dart';
 import 'features/chat/chat_page.dart';
 
 Future<void> main() async {
@@ -55,6 +59,10 @@ Future<void> main() async {
       break;
     }
   }
+  
+  // Launch Kage if configured
+  await _launchKageIfNeeded();
+  
   await windowManager.ensureInitialized();
   double windowWidth = Constants.windowWidth;
   double windowHeight = Constants.windowHeight;
@@ -79,5 +87,41 @@ class PettoApp extends StatelessWidget {
       supportedLocales: S.delegate.supportedLocales,
       home: const ChatPage(),
     );
+  }
+}
+
+/// Launch Kage application if configured
+Future<void> _launchKageIfNeeded() async {
+  try {
+    final settings = await SettingsManager.instance.readSettings();
+    final petMode = settings['pet_mode'] ?? 'kage';
+    final kageExecutable = settings['kage_executable'] ?? '';
+    final kageModelPath = settings['kage_model_path'] ?? '';
+    final kageApiUrl = settings['kage_api_url'] ?? 'ws://localhost:23333';
+    
+    if (petMode == 'kage' && kageExecutable.isNotEmpty && await File(kageExecutable).exists()) {
+      await Logger.instance.writeLog('Launching Kage from: $kageExecutable');
+      
+      // Launch Kage using ProcessManagerService
+      await ProcessManagerService.instance.startProcess('kage', kageExecutable, []);
+      
+      // Wait a bit for Kage to start
+      await Future.delayed(Duration(seconds: 2));
+      
+      // If model path is provided, set it via API
+      if (kageModelPath.isNotEmpty && await File(kageModelPath).exists()) {
+        try {
+          final kageService = KageWebSocketService(kageApiUrl);
+          await kageService.connect();
+          await kageService.setModelPath(kageModelPath);
+          await kageService.close();
+          await Logger.instance.writeLog('Set Kage model to: $kageModelPath');
+        } catch (e) {
+          await Logger.instance.writeLog('Failed to set Kage model: $e');
+        }
+      }
+    }
+  } catch (e) {
+    await Logger.instance.writeLog('Failed to launch Kage: $e');
   }
 }

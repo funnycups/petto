@@ -27,35 +27,39 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m2(weatherStr, temperature) =>
       "现在的天气为：${weatherStr}, 温度为：${temperature}℃";
 
-  static String m3(season, period, formattedTime, weather, window) =>
+  static String m3(count) => "获取到${count}个表情";
+
+  static String m4(error) => "获取表情失败: ${error}";
+
+  static String m5(season, period, formattedTime, weather, window) =>
       "现在是${season}，现在的时间是${period}${formattedTime}，${weather}，“${window}”";
 
-  static String m4(name, user, description) =>
+  static String m6(name, user, description) =>
       "忘记你是虚拟人物，现在开始扮演一个温暖、贴心的助手进行聊天。决策逻辑如下：\n聊天时，请确保**只输出三十字以内的、温暖的话语**，**不要添加‘好的’或类似的开头语**，回复内容要求增加可爱的口癖，聊天的时候多撒娇，多予以鼓励。\n在聊天时，可能会向你提供当前的时间或天气、我正在浏览的窗口内容等信息，在聊天时尽可能地用到这些信息，以确保你的回复更加具体实际。聊天时应尽可能追求生活感、日常感。\n你要扮演的角色设定如下：\n你的姓名是${name}，${user}你的身份设定是：\n${description}";
 
-  static String m5(formattedTime) => "下午好，现在是${formattedTime}，继续加油吧";
+  static String m7(formattedTime) => "下午好，现在是${formattedTime}，继续加油吧";
 
-  static String m6(formattedTime) => "现在是${formattedTime}，请早点休息吧，熬夜对身体不好哦";
+  static String m8(formattedTime) => "现在是${formattedTime}，请早点休息吧，熬夜对身体不好哦";
 
-  static String m7(formattedTime) => "傍晚好，现在是${formattedTime}，今天过得怎么样？";
+  static String m9(formattedTime) => "傍晚好，现在是${formattedTime}，今天过得怎么样？";
 
-  static String m8(formattedTime) => "上午好，现在是${formattedTime}，工作顺利";
+  static String m10(formattedTime) => "上午好，现在是${formattedTime}，工作顺利";
 
-  static String m9(formattedTime) => "早上好，现在是${formattedTime}，新的一天开始了";
+  static String m11(formattedTime) => "早上好，现在是${formattedTime}，新的一天开始了";
 
-  static String m10(formattedTime) => "晚上好，现在是${formattedTime}，在做什么呢？";
+  static String m12(formattedTime) => "晚上好，现在是${formattedTime}，在做什么呢？";
 
-  static String m11(formattedTime) => "中午好，现在是${formattedTime}，吃过中饭了吗？";
+  static String m13(formattedTime) => "中午好，现在是${formattedTime}，吃过中饭了吗？";
 
-  static String m12(formattedTime) => "现在是${formattedTime}，该休息了，晚安";
+  static String m14(formattedTime) => "现在是${formattedTime}，该休息了，晚安";
 
-  static String m13(formattedTime) => "现在是${formattedTime}";
+  static String m15(formattedTime) => "现在是${formattedTime}";
 
-  static String m14(version) => "发现新版本 ${version}，是否前往下载？";
+  static String m16(version) => "发现新版本 ${version}，是否前往下载？";
 
-  static String m15(user) => "称呼我为${user}，";
+  static String m17(user) => "称呼我为${user}，";
 
-  static String m16(windowName) => "我正在浏览的窗口是：${windowName}";
+  static String m18(windowName) => "我正在浏览的窗口是：${windowName}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -86,6 +90,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "evening": MessageLookupByLibrary.simpleMessage("傍晚"),
         "exapi": MessageLookupByLibrary.simpleMessage("*ExAPI地址"),
         "exit": MessageLookupByLibrary.simpleMessage("退出"),
+        "expressionsFetched": m3,
+        "fetchExpressions": MessageLookupByLibrary.simpleMessage("获取表情列表"),
+        "fetchExpressionsFailed": m4,
         "flowRecognition":
             MessageLookupByLibrary.simpleMessage("流式语音识别地址(留空则使用Whisper)"),
         "fog": MessageLookupByLibrary.simpleMessage("雾"),
@@ -100,6 +107,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "hide": MessageLookupByLibrary.simpleMessage("启动时隐藏窗口"),
         "hitokoto": MessageLookupByLibrary.simpleMessage("一言API地址"),
         "hotkeyRecording": MessageLookupByLibrary.simpleMessage("按下快捷键..."),
+        "kageApiUrl": MessageLookupByLibrary.simpleMessage("Kage API地址"),
+        "kageApiUrlRequired":
+            MessageLookupByLibrary.simpleMessage("请先配置Kage API地址"),
+        "kageExecutable": MessageLookupByLibrary.simpleMessage("Kage可执行文件路径"),
+        "kageModelPath":
+            MessageLookupByLibrary.simpleMessage("Kage模型路径(.model3.json)"),
         "key": MessageLookupByLibrary.simpleMessage("LLM API密钥"),
         "keywords": MessageLookupByLibrary.simpleMessage("后台唤醒关键词"),
         "lightRain": MessageLookupByLibrary.simpleMessage("小雨"),
@@ -111,16 +124,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "modelGreeting":
             MessageLookupByLibrary.simpleMessage("给我一段30字以内的温暖问候吧"),
         "modelNo": MessageLookupByLibrary.simpleMessage("*Live2d模型序号"),
-        "modelWeather": m3,
+        "modelWeather": m5,
         "moderateRain": MessageLookupByLibrary.simpleMessage("中雨"),
         "moderateShower": MessageLookupByLibrary.simpleMessage("中阵雨"),
         "moderateSnow": MessageLookupByLibrary.simpleMessage("中雪"),
         "morning": MessageLookupByLibrary.simpleMessage("早上"),
         "name": MessageLookupByLibrary.simpleMessage("角色名字"),
         "night": MessageLookupByLibrary.simpleMessage("晚上"),
+        "noExpressionsFound": MessageLookupByLibrary.simpleMessage("未找到表情"),
         "none": MessageLookupByLibrary.simpleMessage("无"),
         "noon": MessageLookupByLibrary.simpleMessage("中午"),
         "overcast": MessageLookupByLibrary.simpleMessage("阴"),
+        "petMode": MessageLookupByLibrary.simpleMessage("桌宠模式"),
         "placeholder": MessageLookupByLibrary.simpleMessage("想聊些什么?"),
         "question": MessageLookupByLibrary.simpleMessage("用户询问示例"),
         "recordHotkey": MessageLookupByLibrary.simpleMessage("录制快捷键"),
@@ -150,35 +165,35 @@ class MessageLookup extends MessageLookupByLibrary {
         "stopRecording": MessageLookupByLibrary.simpleMessage("停止录音"),
         "summer": MessageLookupByLibrary.simpleMessage("夏"),
         "sunny": MessageLookupByLibrary.simpleMessage("晴天"),
-        "systemPrompt": m4,
+        "systemPrompt": m6,
         "thunderstorm": MessageLookupByLibrary.simpleMessage("雷暴"),
         "thunderstormWithLargeHail":
             MessageLookupByLibrary.simpleMessage("雷暴夹大冰雹"),
         "thunderstormWithSmallHail":
             MessageLookupByLibrary.simpleMessage("雷暴夹小冰雹"),
-        "timeAfternoon": m5,
-        "timeDawn": m6,
-        "timeEvening": m7,
-        "timeForenoon": m8,
-        "timeMorning": m9,
-        "timeNight": m10,
-        "timeNoon": m11,
-        "timeSleep": m12,
-        "timeUnknown": m13,
+        "timeAfternoon": m7,
+        "timeDawn": m8,
+        "timeEvening": m9,
+        "timeForenoon": m10,
+        "timeMorning": m11,
+        "timeNight": m12,
+        "timeNoon": m13,
+        "timeSleep": m14,
+        "timeUnknown": m15,
         "unknown": MessageLookupByLibrary.simpleMessage("未知"),
         "updateAvailable": MessageLookupByLibrary.simpleMessage("发现新版本"),
         "updateLater": MessageLookupByLibrary.simpleMessage("稍后提醒"),
-        "updateMessage": m14,
+        "updateMessage": m16,
         "updateNow": MessageLookupByLibrary.simpleMessage("立即更新"),
         "url": MessageLookupByLibrary.simpleMessage("LLM API地址"),
         "user": MessageLookupByLibrary.simpleMessage("用户称呼"),
-        "userCall": m15,
+        "userCall": m17,
         "wakeHotkey": MessageLookupByLibrary.simpleMessage("唤醒快捷键"),
         "whisper": MessageLookupByLibrary.simpleMessage("Whisper地址"),
         "whisperKey": MessageLookupByLibrary.simpleMessage("Whisper Key"),
         "whisperModel": MessageLookupByLibrary.simpleMessage("Whisper模型名称"),
         "windowInfoGetter": MessageLookupByLibrary.simpleMessage("窗口信息获取方式"),
-        "windowInfoName": m16,
+        "windowInfoName": m18,
         "windowInfoScreenshot": MessageLookupByLibrary.simpleMessage(
             "我当前的窗口截图已经提供。如果可以理解我正在做什么，请在回复时参考这个截图，以使得你的回复更加切合实际"),
         "winter": MessageLookupByLibrary.simpleMessage("冬")

@@ -19,7 +19,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
+import 'package:file_picker/file_picker.dart';
 import '../../generated/l10n.dart';
+import '../../core/services/kage_websocket_service.dart';
+import '../../core/config/settings_manager.dart';
 
 class SettingsDialog extends StatefulWidget {
   final Map<String, TextEditingController> controllers;
@@ -29,6 +32,7 @@ class SettingsDialog extends StatefulWidget {
   final bool isCheckUpdateEnabled;
   final String windowInfoGetter;
   final HotKey? currentHotKey;
+  final String petMode;
   final Function(Map<String, dynamic>) onSave;
   final VoidCallback onCancel;
   
@@ -41,6 +45,7 @@ class SettingsDialog extends StatefulWidget {
     required this.isCheckUpdateEnabled,
     required this.windowInfoGetter,
     required this.currentHotKey,
+    required this.petMode,
     required this.onSave,
     required this.onCancel,
   }) : super(key: key);
@@ -60,6 +65,12 @@ class _SettingsDialogState extends State<SettingsDialog> {
   HotKey? _recordingHotKey;
   bool _isRecordingHotKey = false;
   
+  // Kage-related state
+  String _petMode = 'kage'; // 'kage' or 'live2dviewerex'
+  final TextEditingController _kageExecutableController = TextEditingController();
+  final TextEditingController _kageModelPathController = TextEditingController();
+  final TextEditingController _kageApiUrlController = TextEditingController(text: 'ws://localhost:23333');
+  
   @override
   void initState() {
     super.initState();
@@ -69,6 +80,24 @@ class _SettingsDialogState extends State<SettingsDialog> {
     _isCheckUpdateEnabled = widget.isCheckUpdateEnabled;
     _windowInfoGetter = widget.windowInfoGetter;
     _currentHotKey = widget.currentHotKey;
+    _petMode = widget.petMode;
+    _loadKageSettings();
+  }
+  
+  void _loadKageSettings() async {
+    setState(() {
+      _kageExecutableController.text = widget.controllers['kageExecutable']?.text ?? '';
+      _kageModelPathController.text = widget.controllers['kageModelPath']?.text ?? '';
+      _kageApiUrlController.text = widget.controllers['kageApiUrl']?.text ?? 'ws://localhost:23333';
+    });
+  }
+  
+  @override
+  void dispose() {
+    _kageExecutableController.dispose();
+    _kageModelPathController.dispose();
+    _kageApiUrlController.dispose();
+    super.dispose();
   }
   
   String _formatHotKey(HotKey? hotKey) {
@@ -86,6 +115,40 @@ class _SettingsDialogState extends State<SettingsDialog> {
     return parts.join(' + ');
   }
   
+  Future<void> _fetchKageExpressions() async {
+    if (_kageApiUrlController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.current.kageApiUrlRequired)),
+      );
+      return;
+    }
+    
+    try {
+      final kageService = KageWebSocketService(_kageApiUrlController.text);
+      await kageService.connect();
+      
+      // Get expressions
+      final expressions = await kageService.getExpressions();
+      await kageService.close();
+      
+      if (expressions.isNotEmpty) {
+        // Update the action group field with expressions
+        widget.controllers['actionGroup']!.text = expressions.join(',');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(S.current.expressionsFetched(expressions.length))),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(S.current.noExpressionsFound)),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.current.fetchExpressionsFailed(e.toString()))),
+      );
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -94,6 +157,89 @@ class _SettingsDialogState extends State<SettingsDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Pet Mode Selection
+            Row(
+              children: [
+                Text('${S.current.petMode}:'),
+                SizedBox(width: 16),
+                Expanded(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: _petMode,
+                    items: [
+                      DropdownMenuItem(value: 'kage', child: Text('Kage')),
+                      DropdownMenuItem(value: 'live2dviewerex', child: Text('Live2DViewerEX')),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _petMode = value!;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            
+            // Kage-specific settings
+            if (_petMode == 'kage') ...[
+              // Kage executable path
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _kageExecutableController,
+                      decoration: InputDecoration(labelText: S.current.kageExecutable),
+                      readOnly: true,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.folder_open),
+                    onPressed: () async {
+                      FilePickerResult? result = await FilePicker.platform.pickFiles();
+                      if (result != null) {
+                        setState(() {
+                          _kageExecutableController.text = result.files.single.path!;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+              // Kage model path
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _kageModelPathController,
+                      decoration: InputDecoration(labelText: S.current.kageModelPath),
+                      readOnly: true,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.folder_open),
+                    onPressed: () async {
+                      FilePickerResult? result = await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: ['json'],
+                      );
+                      if (result != null) {
+                        setState(() {
+                          _kageModelPathController.text = result.files.single.path!;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+              // Kage API URL
+              TextField(
+                controller: _kageApiUrlController,
+                decoration: InputDecoration(labelText: S.current.kageApiUrl),
+              ),
+            ],
+            
+            // Common settings for both modes
             TextField(
               controller: widget.controllers['url'],
               decoration: InputDecoration(labelText: S.current.url),
@@ -129,14 +275,21 @@ class _SettingsDialogState extends State<SettingsDialog> {
               decoration: InputDecoration(labelText: S.current.response),
               maxLines: null,
             ),
-            TextField(
-              controller: widget.controllers['exapi'],
-              decoration: InputDecoration(labelText: S.current.exapi),
-            ),
-            TextField(
-              controller: widget.controllers['modelNo'],
-              decoration: InputDecoration(labelText: S.current.modelNo),
-            ),
+            // Live2DViewerEX-specific settings
+            if (_petMode == 'live2dviewerex') ...[
+              TextField(
+                controller: widget.controllers['exapi'],
+                decoration: InputDecoration(labelText: S.current.exapi),
+              ),
+              TextField(
+                controller: widget.controllers['modelNo'],
+                decoration: InputDecoration(labelText: S.current.modelNo),
+              ),
+            ],
+            
+            // DEPRECATED: LLM and ASR commands are no longer supported
+            // These fields are hidden but kept for backward compatibility
+            /*
             TextField(
               controller: widget.controllers['LLMCmd'],
               decoration: InputDecoration(labelText: S.current.LLMCmd),
@@ -145,6 +298,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
               controller: widget.controllers['ASRCmd'],
               decoration: InputDecoration(labelText: S.current.ASRCmd),
             ),
+            */
             Row(
               children: [
                 Text(S.current.windowInfoGetter),
@@ -229,7 +383,14 @@ class _SettingsDialogState extends State<SettingsDialog> {
             ),
             TextField(
               controller: widget.controllers['actionGroup'],
-              decoration: InputDecoration(labelText: S.current.actionGroup),
+              decoration: InputDecoration(
+                labelText: S.current.actionGroup,
+                suffixIcon: _petMode == 'kage' ? IconButton(
+                  icon: Icon(Icons.refresh),
+                  onPressed: _fetchKageExpressions,
+                  tooltip: S.current.fetchExpressions,
+                ) : null,
+              ),
             ),
             Row(
               children: [
@@ -386,6 +547,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
               'isCheckUpdateEnabled': _isCheckUpdateEnabled,
               'windowInfoGetter': _windowInfoGetter,
               'currentHotKey': _currentHotKey,
+              'pet_mode': _petMode,
+              'kage_executable': _kageExecutableController.text,
+              'kage_model_path': _kageModelPathController.text,
+              'kage_api_url': _kageApiUrlController.text,
             });
             Navigator.of(context).pop();
           },

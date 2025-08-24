@@ -18,7 +18,7 @@
 // Project introduction: https://www.cups.moe/archives/petto.html
 
 import 'dart:io';
-import '../utils/platform_utils.dart';
+import './process_manager_service.dart';
 
 class SystemService {
   static final SystemService _instance = SystemService._internal();
@@ -26,18 +26,28 @@ class SystemService {
   
   SystemService._internal();
   
+  // DEPRECATED: Direct PID management is no longer supported
+  // Use ProcessManagerService instead
   final List<String> _pids = [];
   
+  @Deprecated('Use ProcessManagerService.startProcess instead')
   void addPid(String pid) {
     _pids.add(pid);
   }
   
   Future<void> terminateAllProcesses() async {
+    // Kill all processes managed by ProcessManagerService
+    await ProcessManagerService.instance.killAllProcesses();
+    
+    // Legacy PID cleanup - this will be removed in future versions
+    // Currently kept for backward compatibility
+    /*
     for (var pid in _pids) {
       if (pid.isNotEmpty) {
         await PlatformUtils.runCmd("taskkill /F /PID $pid");
       }
     }
+    */
   }
   
   Future<void> quit() async {

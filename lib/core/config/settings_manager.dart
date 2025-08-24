@@ -65,14 +65,16 @@ class SettingsManager {
         'name': S.current.settingName,
         'description': S.current.settingDescription,
         'model_no': '0',
-        'cmd': '#powershell -ExecutionPolicy Bypass -File ${await PlatformUtils.loadAsset("scripts\\startmodel.ps1")}',
+        // DEPRECATED: LLM startup command is no longer supported
+        'cmd': '',  // Was: '#powershell -ExecutionPolicy Bypass -File ${await PlatformUtils.loadAsset("scripts\\startmodel.ps1")}',
         'duration': '30',
         'hitokoto': 'https://v1.hitokoto.cn?encode=text&c=a&c=b&c=d&c=i&c=k',
         'user': S.current.settingUser,
         'question': S.current.settingQuestion,
         'response': S.current.settingResponse,
         'group': 'Tap,Taphead',
-        'speech': '#powershell -ExecutionPolicy Bypass -File ${await PlatformUtils.loadAsset("scripts\\startserver.ps1")}',
+        // DEPRECATED: ASR startup command is no longer supported
+        'speech': '',  // Was: '#powershell -ExecutionPolicy Bypass -File ${await PlatformUtils.loadAsset("scripts\\startserver.ps1")}',
         'recognition_url': 'wss://api.cups.moe/api/asr/',
         'flow': false,
         'keywords': S.current.settingKeywords,
