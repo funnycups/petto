@@ -168,7 +168,6 @@ class _SettingsDialogState extends State<SettingsDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Pet Mode Selection
             Row(
               children: [
                 Text('${S.current.petMode}:'),
@@ -193,10 +192,17 @@ class _SettingsDialogState extends State<SettingsDialog> {
               ],
             ),
             SizedBox(height: 16),
-
-            // Kage-specific settings
+            if (_petMode == 'live2dviewerex') ...[
+              TextField(
+                controller: widget.controllers['exapi'],
+                decoration: InputDecoration(labelText: S.current.exapi),
+              ),
+              TextField(
+                controller: widget.controllers['modelNo'],
+                decoration: InputDecoration(labelText: S.current.modelNo),
+              ),
+            ],
             if (_petMode == 'kage') ...[
-              // Kage executable path
               Row(
                 children: [
                   Expanded(
@@ -222,7 +228,6 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   ),
                 ],
               ),
-              // Kage model path
               Row(
                 children: [
                   Expanded(
@@ -251,14 +256,11 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   ),
                 ],
               ),
-              // Kage API URL
               TextField(
                 controller: _kageApiUrlController,
                 decoration: InputDecoration(labelText: S.current.kageApiUrl),
               ),
             ],
-
-            // Common settings for both modes
             TextField(
               controller: widget.controllers['url'],
               decoration: InputDecoration(labelText: S.current.url),
@@ -270,6 +272,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
             TextField(
               controller: widget.controllers['model'],
               decoration: InputDecoration(labelText: S.current.model),
+            ),
+            TextField(
+              controller: widget.controllers['duration'],
+              decoration: InputDecoration(labelText: S.current.duration),
             ),
             TextField(
               controller: widget.controllers['name'],
@@ -294,30 +300,25 @@ class _SettingsDialogState extends State<SettingsDialog> {
               decoration: InputDecoration(labelText: S.current.response),
               maxLines: null,
             ),
-            // Live2DViewerEX-specific settings
-            if (_petMode == 'live2dviewerex') ...[
-              TextField(
-                controller: widget.controllers['exapi'],
-                decoration: InputDecoration(labelText: S.current.exapi),
-              ),
-              TextField(
-                controller: widget.controllers['modelNo'],
-                decoration: InputDecoration(labelText: S.current.modelNo),
-              ),
-            ],
-
-            // DEPRECATED: LLM and ASR commands are no longer supported
-            // These fields are hidden but kept for backward compatibility
-            /*
             TextField(
-              controller: widget.controllers['LLMCmd'],
-              decoration: InputDecoration(labelText: S.current.LLMCmd),
+              controller: widget.controllers['actionGroup'],
+              decoration: InputDecoration(
+                labelText: S.current.actionGroup,
+                suffixIcon: _petMode == 'kage'
+                    ? IconButton(
+                        icon: Icon(Icons.refresh),
+                        onPressed: _fetchKageExpressions,
+                        tooltip: S.current.fetchExpressions,
+                      )
+                    : null,
+              ),
             ),
             TextField(
-              controller: widget.controllers['ASRCmd'],
-              decoration: InputDecoration(labelText: S.current.ASRCmd),
+              controller: _textDisplayDurationController,
+              decoration:
+                  InputDecoration(labelText: S.current.textDisplayDuration),
+              keyboardType: TextInputType.number,
             ),
-            */
             Row(
               children: [
                 Text(S.current.enableScreenshot),
@@ -365,14 +366,6 @@ class _SettingsDialogState extends State<SettingsDialog> {
               decoration: InputDecoration(labelText: S.current.whisperModel),
             ),
             TextField(
-              controller: widget.controllers['duration'],
-              decoration: InputDecoration(labelText: S.current.duration),
-            ),
-            TextField(
-              controller: widget.controllers['hitokoto'],
-              decoration: InputDecoration(labelText: S.current.hitokoto),
-            ),
-            TextField(
               controller: widget.controllers['TTS'],
               decoration: InputDecoration(labelText: S.current.TTS),
             ),
@@ -389,23 +382,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
               decoration: InputDecoration(labelText: S.current.TTSVoice),
             ),
             TextField(
-              controller: widget.controllers['actionGroup'],
-              decoration: InputDecoration(
-                labelText: S.current.actionGroup,
-                suffixIcon: _petMode == 'kage'
-                    ? IconButton(
-                        icon: Icon(Icons.refresh),
-                        onPressed: _fetchKageExpressions,
-                        tooltip: S.current.fetchExpressions,
-                      )
-                    : null,
-              ),
-            ),
-            TextField(
-              controller: _textDisplayDurationController,
-              decoration:
-                  InputDecoration(labelText: S.current.textDisplayDuration),
-              keyboardType: TextInputType.number,
+              controller: widget.controllers['hitokoto'],
+              decoration: InputDecoration(labelText: S.current.hitokoto),
             ),
             Row(
               children: [
@@ -446,7 +424,6 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 ),
               ],
             ),
-            // Hotkey recording section
             Container(
               margin: EdgeInsets.only(top: 16),
               padding: EdgeInsets.all(12),
