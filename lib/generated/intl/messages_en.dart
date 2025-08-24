@@ -103,6 +103,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "enableFlow": MessageLookupByLibrary.simpleMessage(
             "Enable Background Streaming Recognition (Effective after restart)"),
         "enableLogging": MessageLookupByLibrary.simpleMessage("Enable Logging"),
+        "enableScreenshot":
+            MessageLookupByLibrary.simpleMessage("Pass Screenshots to LLM"),
         "evening": MessageLookupByLibrary.simpleMessage("Evening"),
         "exapi": MessageLookupByLibrary.simpleMessage("*ExAPI URL"),
         "exit": MessageLookupByLibrary.simpleMessage("Exit"),
@@ -171,10 +173,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Example Model Response"),
         "save": MessageLookupByLibrary.simpleMessage("Save"),
         "saveHotkey": MessageLookupByLibrary.simpleMessage("Save"),
-        "screenInfoCmd": MessageLookupByLibrary.simpleMessage(
-            "Window Information Retrieval Command"),
-        "screenshot":
-            MessageLookupByLibrary.simpleMessage("Screenshot Retrieval"),
         "setting": MessageLookupByLibrary.simpleMessage("Settings"),
         "settingDescription": MessageLookupByLibrary.simpleMessage(
             "Real name \'Sen\'.\nWears a shrine maiden outfit with a red bow-tied apron over it.\nLooks like a young girl but is actually an 800-year-old divine fox.\nSpeaks in an old-fashioned manner. Skilled in household chores but not good with machines.\nLikes: Taking care of others, fried tofu, cooking (Japanese cuisine)"),
@@ -188,7 +186,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingTTSVoice":
             MessageLookupByLibrary.simpleMessage("en-US-AnaNeural"),
         "settingUser": MessageLookupByLibrary.simpleMessage("Master"),
-        "shell": MessageLookupByLibrary.simpleMessage("Window Name Retrieval"),
         "show": MessageLookupByLibrary.simpleMessage("Show"),
         "sleet": MessageLookupByLibrary.simpleMessage("Sleet"),
         "spring": MessageLookupByLibrary.simpleMessage("Spring"),
@@ -228,8 +225,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "whisperKey": MessageLookupByLibrary.simpleMessage("Whisper Key"),
         "whisperModel":
             MessageLookupByLibrary.simpleMessage("Whisper Model Name"),
-        "windowInfoGetter": MessageLookupByLibrary.simpleMessage(
-            "Window Information Retrieval Method"),
         "windowInfoName": m18,
         "windowInfoScreenshot": MessageLookupByLibrary.simpleMessage(
             "Window screenshot has been provided, and can be used as a reference when replying"),

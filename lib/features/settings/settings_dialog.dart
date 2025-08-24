@@ -29,7 +29,7 @@ class SettingsDialog extends StatefulWidget {
   final bool isFlowChecked;
   final bool isLoggingEnabled;
   final bool isCheckUpdateEnabled;
-  final String windowInfoGetter;
+  final bool enableScreenshot;
   final HotKey? currentHotKey;
   final String petMode;
   final Function(Map<String, dynamic>) onSave;
@@ -42,7 +42,7 @@ class SettingsDialog extends StatefulWidget {
     required this.isFlowChecked,
     required this.isLoggingEnabled,
     required this.isCheckUpdateEnabled,
-    required this.windowInfoGetter,
+    required this.enableScreenshot,
     required this.currentHotKey,
     required this.petMode,
     required this.onSave,
@@ -58,7 +58,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
   late bool _isFlowChecked;
   late bool _isLoggingEnabled;
   late bool _isCheckUpdateEnabled;
-  late String _windowInfoGetter;
+  late bool _enableScreenshot;
 
   HotKey? _currentHotKey;
   HotKey? _recordingHotKey;
@@ -82,7 +82,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
     _isFlowChecked = widget.isFlowChecked;
     _isLoggingEnabled = widget.isLoggingEnabled;
     _isCheckUpdateEnabled = widget.isCheckUpdateEnabled;
-    _windowInfoGetter = widget.windowInfoGetter;
+    _enableScreenshot = widget.enableScreenshot;
     _currentHotKey = widget.currentHotKey;
     _petMode = widget.petMode;
     _loadKageSettings();
@@ -320,26 +320,16 @@ class _SettingsDialogState extends State<SettingsDialog> {
             */
             Row(
               children: [
-                Text(S.current.windowInfoGetter),
-                Expanded(
-                  child: DropdownMenu(
-                    dropdownMenuEntries: [S.current.shell, S.current.screenshot]
-                        .map((String value) {
-                      return DropdownMenuEntry(value: value, label: value);
-                    }).toList(),
-                    onSelected: (String? value) {
-                      setState(() {
-                        _windowInfoGetter = value!;
-                      });
-                    },
-                    initialSelection: _windowInfoGetter,
-                  ),
+                Text(S.current.enableScreenshot),
+                Checkbox(
+                  value: _enableScreenshot,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      _enableScreenshot = value!;
+                    });
+                  },
                 ),
               ],
-            ),
-            TextField(
-              controller: widget.controllers['screenInfoCmd'],
-              decoration: InputDecoration(labelText: S.current.screenInfoCmd),
             ),
             TextField(
               controller: widget.controllers['recognitionUrl'],
@@ -572,7 +562,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
               'isFlowChecked': _isFlowChecked,
               'isLoggingEnabled': _isLoggingEnabled,
               'isCheckUpdateEnabled': _isCheckUpdateEnabled,
-              'windowInfoGetter': _windowInfoGetter,
+              'enableScreenshot': _enableScreenshot,
               'currentHotKey': _currentHotKey,
               'pet_mode': _petMode,
               'kage_executable': _kageExecutableController.text,

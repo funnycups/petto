@@ -83,12 +83,12 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - images/
-    - scripts/
+    # - scripts/
     - speech/
     - speech/configs/
     - speech/dataset/
     - speech/static/
-    #     - speech/models/
+    # - speech/models/
     - speech/models/pun_models/
   #   - images/a_dot_ham.jpeg
 

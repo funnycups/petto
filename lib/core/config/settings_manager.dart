@@ -19,7 +19,6 @@
 
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../utils/platform_utils.dart';
 import '../../generated/l10n.dart';
 import 'constants.dart';
 
@@ -87,8 +86,7 @@ class SettingsManager {
         'tts_voice': S.current.settingTTSVoice,
         'exapi': 'ws://127.0.0.1:10086/api',
         'hide': false,
-        'window_info_getter': S.current.shell,
-        'screen_info_cmd': 'powershell -ExecutionPolicy Bypass -File ${await PlatformUtils.loadAsset("scripts\\getwindowname.ps1")}',
+        'enable_screenshot': false,  // New setting for screenshot
         'enable_logging': false,
         'check_update': true,
         'text_display_duration': 3000  // Default 3 seconds

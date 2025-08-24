@@ -18,12 +18,12 @@
 // Project introduction: https://www.cups.moe/archives/petto.html
 
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 import 'package:openai_dart/openai_dart.dart';
 import '../config/settings_manager.dart';
 import '../utils/logger.dart';
 import '../utils/platform_utils.dart';
+import 'screenshot_service.dart';
 import '../../generated/l10n.dart';
 import 'weather_service.dart';
 
@@ -44,8 +44,7 @@ class AiService {
       final user = settings['user'] ?? '';
       final response = settings['response'] ?? '';
       final question = settings['question'] ?? '';
-      final infoGetter = settings['window_info_getter'] ?? '';
-      final cmd = settings['screen_info_cmd'] ?? '';
+      final enableScreenshot = settings['enable_screenshot'] ?? false;
       
       // Add custom response if configured
       if (response.isNotEmpty) {
@@ -60,7 +59,7 @@ class AiService {
       }
       
       // Add context information
-      await _addContextMessages(requestMessages, infoGetter, cmd);
+      await _addContextMessages(requestMessages, enableScreenshot);
       
       // Add system prompt
       final userCall = user.isNotEmpty ? S.current.userCall(user) : '';
@@ -83,14 +82,7 @@ class AiService {
         )
       );
       
-      // Clean up temporary files if screenshot was used
-      if (infoGetter == S.current.screenshot) {
-        final windowInfo = await PlatformUtils.getWindow(infoGetter, cmd);
-        if (windowInfo != null) {
-          File windowScreenshot = File(windowInfo);
-          await windowScreenshot.delete();
-        }
-      }
+      // Screenshot cleanup is now handled internally by the screenshot service
       
       final responseContent = aiResponse.choices.first.message.content;
       await Logger.instance.writeLog(
@@ -110,8 +102,7 @@ class AiService {
   
   Future<void> _addContextMessages(
     List<ChatCompletionMessage> messages,
-    String infoGetter,
-    String cmd
+    bool enableScreenshot
   ) async {
     // Add time context
     DateTime now = DateTime.now();
@@ -120,27 +111,27 @@ class AiService {
     String formattedTime = '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
     String period = _getTimePeriod(hour);
     
-    // Add window information
-    String windowInfo = await PlatformUtils.getWindow(infoGetter, cmd) ?? '';
+    // Add screenshot if enabled
     String window = '';
     
-    if (infoGetter == S.current.screenshot) {
-      window = S.current.windowInfoScreenshot;
-      final bytes = await File(windowInfo).readAsBytes();
-      String base64Image = base64Encode(bytes);
+    if (enableScreenshot) {
+      final screenshotData = await ScreenshotService.instance.takeScreenshot();
       
-      messages.insert(0, ChatCompletionMessage.user(
-        content: ChatCompletionMessageContentParts([
-          ChatCompletionMessageContentPart.text(text: window),
-          ChatCompletionMessageContentPart.image(
-            imageUrl: ChatCompletionMessageImageUrl(
-              url: 'data:image/png;base64,$base64Image'
+      if (screenshotData != null) {
+        window = S.current.windowInfoScreenshot;
+        String base64Image = base64Encode(screenshotData);
+        
+        messages.insert(0, ChatCompletionMessage.user(
+          content: ChatCompletionMessageContentParts([
+            ChatCompletionMessageContentPart.text(text: window),
+            ChatCompletionMessageContentPart.image(
+              imageUrl: ChatCompletionMessageImageUrl(
+                url: 'data:image/png;base64,$base64Image'
+              )
             )
-          )
-        ])
-      ));
-    } else if (infoGetter == S.current.shell) {
-      window = S.current.windowInfoName(windowInfo);
+          ])
+        ));
+      }
     }
     
     // Add weather and context

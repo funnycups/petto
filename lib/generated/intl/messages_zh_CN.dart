@@ -87,6 +87,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "duration": MessageLookupByLibrary.simpleMessage("*聊天间隔"),
         "enableFlow": MessageLookupByLibrary.simpleMessage("启用后台流式识别(重启生效)"),
         "enableLogging": MessageLookupByLibrary.simpleMessage("记录日志"),
+        "enableScreenshot": MessageLookupByLibrary.simpleMessage("传递全屏截图给模型"),
         "evening": MessageLookupByLibrary.simpleMessage("傍晚"),
         "exapi": MessageLookupByLibrary.simpleMessage("*ExAPI地址"),
         "exit": MessageLookupByLibrary.simpleMessage("退出"),
@@ -142,8 +143,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "response": MessageLookupByLibrary.simpleMessage("模型回答示例"),
         "save": MessageLookupByLibrary.simpleMessage("保存"),
         "saveHotkey": MessageLookupByLibrary.simpleMessage("保存"),
-        "screenInfoCmd": MessageLookupByLibrary.simpleMessage("获取窗口信息命令"),
-        "screenshot": MessageLookupByLibrary.simpleMessage("屏幕截图获取"),
         "setting": MessageLookupByLibrary.simpleMessage("设置"),
         "settingDescription": MessageLookupByLibrary.simpleMessage(
             "本名“仙”。\n身穿神社巫女服，而外面围着家庭围裙，用红色蝴蝶结绑带绑着。\n外表看似幼女，实际活了800岁的神使狐狸。\n说话带着古风的腔调。在家务方面很熟练，却不擅长摆弄机器。\n喜欢的事物：照顾他人、油豆腐、料理（和食）"),
@@ -157,7 +156,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingTTSVoice":
             MessageLookupByLibrary.simpleMessage("zh-CN-XiaoyiNeural"),
         "settingUser": MessageLookupByLibrary.simpleMessage("主人"),
-        "shell": MessageLookupByLibrary.simpleMessage("窗口名称获取"),
         "show": MessageLookupByLibrary.simpleMessage("显示"),
         "sleet": MessageLookupByLibrary.simpleMessage("霰"),
         "spring": MessageLookupByLibrary.simpleMessage("春"),
@@ -194,7 +192,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "whisper": MessageLookupByLibrary.simpleMessage("Whisper地址"),
         "whisperKey": MessageLookupByLibrary.simpleMessage("Whisper Key"),
         "whisperModel": MessageLookupByLibrary.simpleMessage("Whisper模型名称"),
-        "windowInfoGetter": MessageLookupByLibrary.simpleMessage("窗口信息获取方式"),
         "windowInfoName": m18,
         "windowInfoScreenshot": MessageLookupByLibrary.simpleMessage(
             "我当前的窗口截图已经提供。如果可以理解我正在做什么，请在回复时参考这个截图，以使得你的回复更加切合实际"),

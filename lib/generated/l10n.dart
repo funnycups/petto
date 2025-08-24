@@ -310,31 +310,11 @@ class S {
     );
   }
 
-  /// `Window Information Retrieval Method`
-  String get windowInfoGetter {
+  /// `Pass Screenshots to LLM`
+  String get enableScreenshot {
     return Intl.message(
-      'Window Information Retrieval Method',
-      name: 'windowInfoGetter',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Window Name Retrieval`
-  String get shell {
-    return Intl.message(
-      'Window Name Retrieval',
-      name: 'shell',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Screenshot Retrieval`
-  String get screenshot {
-    return Intl.message(
-      'Screenshot Retrieval',
-      name: 'screenshot',
+      'Pass Screenshots to LLM',
+      name: 'enableScreenshot',
       desc: '',
       args: [],
     );
@@ -695,16 +675,6 @@ class S {
     return Intl.message(
       'Evening',
       name: 'evening',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Window Information Retrieval Command`
-  String get screenInfoCmd {
-    return Intl.message(
-      'Window Information Retrieval Command',
-      name: 'screenInfoCmd',
       desc: '',
       args: [],
     );

@@ -72,7 +72,6 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
     'TTSModel': TextEditingController(),
     'TTSVoice': TextEditingController(),
     'keywords': TextEditingController(),
-    'screenInfoCmd': TextEditingController(),
     'kageExecutable': TextEditingController(),
     'kageModelPath': TextEditingController(),
     'kageApiUrl': TextEditingController(text: 'ws://localhost:23333'),
@@ -86,7 +85,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
   bool _isFlowChecked = false;
   bool _isLoggingEnabled = false;
   bool _isCheckUpdateEnabled = true;
-  String _windowInfoGetter = '';
+  bool _enableScreenshot = false;  // New setting for screenshot
   bool _isRecording = false;
   String _result = '';
   bool _onLaunch = true;
@@ -199,7 +198,6 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
       _controllers['TTSModel']!.text = data['tts_model'] ?? '';
       _controllers['TTSVoice']!.text = data['tts_voice'] ?? '';
       _controllers['keywords']!.text = data['keywords'] ?? '';
-      _controllers['screenInfoCmd']!.text = data['screen_info_cmd'] ?? '';
       
       // Load Kage-related settings
       _petMode = data['pet_mode'] ?? 'kage';
@@ -221,7 +219,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
       setState(() {
         _isClosedChecked = data['hide'] ?? false;
         _isFlowChecked = data['flow'] ?? false;
-        _windowInfoGetter = data['window_info_getter'] ?? '';
+        _enableScreenshot = data['enable_screenshot'] ?? false;
         _isLoggingEnabled = data['enable_logging'] ?? false;
         _isCheckUpdateEnabled = data['check_update'] ?? true;
       });
@@ -370,8 +368,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
         'tts_voice': _controllers['TTSVoice']!.text,
         'exapi': _controllers['exapi']!.text,
         'hide': _isClosedChecked,
-        'window_info_getter': _windowInfoGetter,
-        'screen_info_cmd': _controllers['screenInfoCmd']!.text,
+        'enable_screenshot': _enableScreenshot,
         'enable_logging': _isLoggingEnabled,
         'check_update': _isCheckUpdateEnabled,
         'pet_mode': _petMode,
@@ -559,7 +556,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
           isFlowChecked: _isFlowChecked,
           isLoggingEnabled: _isLoggingEnabled,
           isCheckUpdateEnabled: _isCheckUpdateEnabled,
-          windowInfoGetter: _windowInfoGetter,
+          enableScreenshot: _enableScreenshot,
           currentHotKey: _currentHotKey,
           petMode: _petMode,
           onSave: (values) async {
@@ -567,7 +564,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
             _isFlowChecked = values['isFlowChecked'];
             _isLoggingEnabled = values['isLoggingEnabled'];
             _isCheckUpdateEnabled = values['isCheckUpdateEnabled'];
-            _windowInfoGetter = values['windowInfoGetter'];
+            _enableScreenshot = values['enableScreenshot'];
             _currentHotKey = values['currentHotKey'];
             _petMode = values['pet_mode'] ?? _petMode;
             
