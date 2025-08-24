@@ -30,7 +30,7 @@ class TrayService with TrayListener {
   TrayService._internal();
   
   Future<void> init() async {
-    await trayManager.setIcon(await PlatformUtils.loadAsset('images\\tray_icon.ico'));
+    await trayManager.setIcon(await PlatformUtils.loadAsset('images/tray_icon.ico'));
     Menu menu = Menu(
       items: [
         MenuItem(key: 'show_window', label: S.current.show),

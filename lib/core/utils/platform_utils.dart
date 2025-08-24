@@ -46,10 +46,30 @@ class PlatformUtils {
   }
   
   static Future<String> loadAsset(String path) async {
-    final Directory currentDirectory = Directory.current;
-    final String filePath = 
-        p.join(currentDirectory.path, 'data', 'flutter_assets', path);
+    // Normalize path separators to forward slashes for cross-platform compatibility
+    final normalizedPath = path.replaceAll('\\', '/');
+    
+    // Get the correct assets directory based on platform
+    final String assetsPath;
+    if (Platform.isWindows || Platform.isLinux) {
+      // On Windows and Linux, assets are in data/flutter_assets relative to executable
+      final executableDir = p.dirname(Platform.resolvedExecutable);
+      assetsPath = p.join(executableDir, 'data', 'flutter_assets');
+    } else if (Platform.isMacOS) {
+      // On macOS, assets are inside the app bundle
+      final executableDir = p.dirname(Platform.resolvedExecutable);
+      // The executable is at: App.app/Contents/MacOS/App
+      // Assets are at: App.app/Contents/Resources/flutter_assets
+      final bundleDir = p.dirname(p.dirname(executableDir)); // Go up to Contents
+      assetsPath = p.join(bundleDir, 'Resources', 'flutter_assets');
+    } else {
+      // Fallback to current directory approach
+      assetsPath = p.join(Directory.current.path, 'data', 'flutter_assets');
+    }
+    
+    final String filePath = p.join(assetsPath, normalizedPath);
     final File file = File(filePath);
+    
     if (await file.exists()) {
       return filePath;
     } else {
@@ -58,7 +78,7 @@ class PlatformUtils {
         await parentDir.create(recursive: true);
       }
       try {
-        ByteData data = await rootBundle.load(path);
+        ByteData data = await rootBundle.load(normalizedPath);
         await file.writeAsBytes(
           data.buffer.asUint8List(),
           flush: true,
