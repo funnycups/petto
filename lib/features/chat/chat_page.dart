@@ -76,6 +76,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
     'kageExecutable': TextEditingController(),
     'kageModelPath': TextEditingController(),
     'kageApiUrl': TextEditingController(text: 'ws://localhost:23333'),
+    'textDisplayDuration': TextEditingController(),
   };
   
   final TextEditingController _messageController = TextEditingController();
@@ -205,6 +206,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
       _controllers['kageExecutable']!.text = data['kage_executable'] ?? '';
       _controllers['kageModelPath']!.text = data['kage_model_path'] ?? '';
       _controllers['kageApiUrl']!.text = data['kage_api_url'] ?? 'ws://localhost:23333';
+      _controllers['textDisplayDuration']!.text = data['text_display_duration']?.toString() ?? '3000';
       
       if (!_onLaunch) {
         return;
@@ -376,6 +378,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
         'kage_executable': _controllers['kageExecutable']!.text,
         'kage_model_path': _controllers['kageModelPath']!.text,
         'kage_api_url': _controllers['kageApiUrl']!.text,
+        'text_display_duration': int.tryParse(_controllers['textDisplayDuration']!.text) ?? 3000,
         'wake_hotkey': _currentHotKey?.toJson(),
       };
       

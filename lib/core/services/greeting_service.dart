@@ -138,8 +138,18 @@ class GreetingService {
     _petMode = settings['pet_mode'] ?? 'kage';
     
     String messageText = message.toString().trim();
-    final duration =
-        (await SpeechService.instance.textToSpeech(messageText)) ?? 3000;
+    
+    // Get text display duration from settings, default to 3000ms (3 seconds)
+    final textDisplayDuration = settings['text_display_duration'] ?? 3000;
+    
+    // Calculate speech duration
+    final speechDuration = await SpeechService.instance.textToSpeech(messageText);
+    
+    // Use speech duration if available and longer than text display duration
+    // Otherwise use the configured text display duration
+    final duration = (speechDuration != null && speechDuration > textDisplayDuration) 
+        ? speechDuration 
+        : textDisplayDuration;
 
     if (_petMode == 'kage') {
       await _ensureKageService();

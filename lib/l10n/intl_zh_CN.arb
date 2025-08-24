@@ -41,6 +41,7 @@
   "TTSModel": "TTS模型",
   "TTSVoice": "TTS音色",
   "actionGroup": "动作分组",
+  "textDisplayDuration": "文本展示时长(毫秒)",
   "hide": "启动时隐藏窗口",
   "save": "保存",
   "cancel": "取消",

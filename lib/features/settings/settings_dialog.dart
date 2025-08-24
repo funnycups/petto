@@ -22,7 +22,6 @@ import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../generated/l10n.dart';
 import '../../core/services/kage_websocket_service.dart';
-import '../../core/config/settings_manager.dart';
 
 class SettingsDialog extends StatefulWidget {
   final Map<String, TextEditingController> controllers;
@@ -35,7 +34,7 @@ class SettingsDialog extends StatefulWidget {
   final String petMode;
   final Function(Map<String, dynamic>) onSave;
   final VoidCallback onCancel;
-  
+
   const SettingsDialog({
     Key? key,
     required this.controllers,
@@ -49,7 +48,7 @@ class SettingsDialog extends StatefulWidget {
     required this.onSave,
     required this.onCancel,
   }) : super(key: key);
-  
+
   @override
   State<SettingsDialog> createState() => _SettingsDialogState();
 }
@@ -60,17 +59,22 @@ class _SettingsDialogState extends State<SettingsDialog> {
   late bool _isLoggingEnabled;
   late bool _isCheckUpdateEnabled;
   late String _windowInfoGetter;
-  
+
   HotKey? _currentHotKey;
   HotKey? _recordingHotKey;
   bool _isRecordingHotKey = false;
-  
+
   // Kage-related state
   String _petMode = 'kage'; // 'kage' or 'live2dviewerex'
-  final TextEditingController _kageExecutableController = TextEditingController();
-  final TextEditingController _kageModelPathController = TextEditingController();
-  final TextEditingController _kageApiUrlController = TextEditingController(text: 'ws://localhost:23333');
-  
+  final TextEditingController _kageExecutableController =
+      TextEditingController();
+  final TextEditingController _kageModelPathController =
+      TextEditingController();
+  final TextEditingController _kageApiUrlController =
+      TextEditingController(text: 'ws://localhost:23333');
+  final TextEditingController _textDisplayDurationController =
+      TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -83,26 +87,32 @@ class _SettingsDialogState extends State<SettingsDialog> {
     _petMode = widget.petMode;
     _loadKageSettings();
   }
-  
+
   void _loadKageSettings() async {
     setState(() {
-      _kageExecutableController.text = widget.controllers['kageExecutable']?.text ?? '';
-      _kageModelPathController.text = widget.controllers['kageModelPath']?.text ?? '';
-      _kageApiUrlController.text = widget.controllers['kageApiUrl']?.text ?? 'ws://localhost:23333';
+      _kageExecutableController.text =
+          widget.controllers['kageExecutable']?.text ?? '';
+      _kageModelPathController.text =
+          widget.controllers['kageModelPath']?.text ?? '';
+      _kageApiUrlController.text =
+          widget.controllers['kageApiUrl']?.text ?? 'ws://localhost:23333';
+      _textDisplayDurationController.text =
+          widget.controllers['textDisplayDuration']?.text ?? '3000';
     });
   }
-  
+
   @override
   void dispose() {
     _kageExecutableController.dispose();
     _kageModelPathController.dispose();
     _kageApiUrlController.dispose();
+    _textDisplayDurationController.dispose();
     super.dispose();
   }
-  
+
   String _formatHotKey(HotKey? hotKey) {
     if (hotKey == null) return S.current.none;
-    
+
     List<String> parts = [];
     if (hotKey.modifiers != null) {
       for (var modifier in hotKey.modifiers!) {
@@ -114,7 +124,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
     parts.add(hotKey.physicalKey.keyLabel);
     return parts.join(' + ');
   }
-  
+
   Future<void> _fetchKageExpressions() async {
     if (_kageApiUrlController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -122,20 +132,21 @@ class _SettingsDialogState extends State<SettingsDialog> {
       );
       return;
     }
-    
+
     try {
       final kageService = KageWebSocketService(_kageApiUrlController.text);
       await kageService.connect();
-      
+
       // Get expressions
       final expressions = await kageService.getExpressions();
       await kageService.close();
-      
+
       if (expressions.isNotEmpty) {
         // Update the action group field with expressions
         widget.controllers['actionGroup']!.text = expressions.join(',');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(S.current.expressionsFetched(expressions.length))),
+          SnackBar(
+              content: Text(S.current.expressionsFetched(expressions.length))),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -148,7 +159,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
       );
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -168,7 +179,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     value: _petMode,
                     items: [
                       DropdownMenuItem(value: 'kage', child: Text('Kage')),
-                      DropdownMenuItem(value: 'live2dviewerex', child: Text('Live2DViewerEX')),
+                      DropdownMenuItem(
+                          value: 'live2dviewerex',
+                          child: Text('Live2DViewerEX')),
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -180,7 +193,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
               ],
             ),
             SizedBox(height: 16),
-            
+
             // Kage-specific settings
             if (_petMode == 'kage') ...[
               // Kage executable path
@@ -189,17 +202,20 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   Expanded(
                     child: TextField(
                       controller: _kageExecutableController,
-                      decoration: InputDecoration(labelText: S.current.kageExecutable),
+                      decoration:
+                          InputDecoration(labelText: S.current.kageExecutable),
                       readOnly: true,
                     ),
                   ),
                   IconButton(
                     icon: Icon(Icons.folder_open),
                     onPressed: () async {
-                      FilePickerResult? result = await FilePicker.platform.pickFiles();
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles();
                       if (result != null) {
                         setState(() {
-                          _kageExecutableController.text = result.files.single.path!;
+                          _kageExecutableController.text =
+                              result.files.single.path!;
                         });
                       }
                     },
@@ -212,20 +228,23 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   Expanded(
                     child: TextField(
                       controller: _kageModelPathController,
-                      decoration: InputDecoration(labelText: S.current.kageModelPath),
+                      decoration:
+                          InputDecoration(labelText: S.current.kageModelPath),
                       readOnly: true,
                     ),
                   ),
                   IconButton(
                     icon: Icon(Icons.folder_open),
                     onPressed: () async {
-                      FilePickerResult? result = await FilePicker.platform.pickFiles(
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
                         type: FileType.custom,
                         allowedExtensions: ['json'],
                       );
                       if (result != null) {
                         setState(() {
-                          _kageModelPathController.text = result.files.single.path!;
+                          _kageModelPathController.text =
+                              result.files.single.path!;
                         });
                       }
                     },
@@ -238,7 +257,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 decoration: InputDecoration(labelText: S.current.kageApiUrl),
               ),
             ],
-            
+
             // Common settings for both modes
             TextField(
               controller: widget.controllers['url'],
@@ -286,7 +305,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 decoration: InputDecoration(labelText: S.current.modelNo),
               ),
             ],
-            
+
             // DEPRECATED: LLM and ASR commands are no longer supported
             // These fields are hidden but kept for backward compatibility
             /*
@@ -304,10 +323,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 Text(S.current.windowInfoGetter),
                 Expanded(
                   child: DropdownMenu(
-                    dropdownMenuEntries: [
-                      S.current.shell,
-                      S.current.screenshot
-                    ].map((String value) {
+                    dropdownMenuEntries: [S.current.shell, S.current.screenshot]
+                        .map((String value) {
                       return DropdownMenuEntry(value: value, label: value);
                     }).toList(),
                     onSelected: (String? value) {
@@ -385,12 +402,20 @@ class _SettingsDialogState extends State<SettingsDialog> {
               controller: widget.controllers['actionGroup'],
               decoration: InputDecoration(
                 labelText: S.current.actionGroup,
-                suffixIcon: _petMode == 'kage' ? IconButton(
-                  icon: Icon(Icons.refresh),
-                  onPressed: _fetchKageExpressions,
-                  tooltip: S.current.fetchExpressions,
-                ) : null,
+                suffixIcon: _petMode == 'kage'
+                    ? IconButton(
+                        icon: Icon(Icons.refresh),
+                        onPressed: _fetchKageExpressions,
+                        tooltip: S.current.fetchExpressions,
+                      )
+                    : null,
               ),
+            ),
+            TextField(
+              controller: _textDisplayDurationController,
+              decoration:
+                  InputDecoration(labelText: S.current.textDisplayDuration),
+              keyboardType: TextInputType.number,
             ),
             Row(
               children: [
@@ -456,7 +481,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
                           padding: EdgeInsets.all(16),
                           margin: EdgeInsets.only(bottom: 8),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                            color: Theme.of(context)
+                                .primaryColor
+                                .withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Center(
@@ -551,6 +578,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
               'kage_executable': _kageExecutableController.text,
               'kage_model_path': _kageModelPathController.text,
               'kage_api_url': _kageApiUrlController.text,
+              'text_display_duration': _textDisplayDurationController.text,
             });
             Navigator.of(context).pop();
           },

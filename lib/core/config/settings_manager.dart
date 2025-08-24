@@ -90,7 +90,8 @@ class SettingsManager {
         'window_info_getter': S.current.shell,
         'screen_info_cmd': 'powershell -ExecutionPolicy Bypass -File ${await PlatformUtils.loadAsset("scripts\\getwindowname.ps1")}',
         'enable_logging': false,
-        'check_update': true
+        'check_update': true,
+        'text_display_duration': 3000  // Default 3 seconds
       };
       await saveSettings(jsonEncode(defaultSettings));
     }

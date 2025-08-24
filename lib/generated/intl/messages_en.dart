@@ -198,6 +198,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "summer": MessageLookupByLibrary.simpleMessage("Summer"),
         "sunny": MessageLookupByLibrary.simpleMessage("Sunny"),
         "systemPrompt": m6,
+        "textDisplayDuration":
+            MessageLookupByLibrary.simpleMessage("Text Display Duration (ms)"),
         "thunderstorm": MessageLookupByLibrary.simpleMessage("Thunderstorm"),
         "thunderstormWithLargeHail": MessageLookupByLibrary.simpleMessage(
             "Thunderstorm with Large Hail"),

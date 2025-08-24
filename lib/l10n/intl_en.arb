@@ -41,6 +41,7 @@
   "TTSModel": "TTS Model",
   "TTSVoice": "TTS Voice",
   "actionGroup": "Action Group",
+  "textDisplayDuration": "Text Display Duration (ms)",
   "hide": "Hide Window on Startup",
   "save": "Save",
   "cancel": "Cancel",

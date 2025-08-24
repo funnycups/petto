@@ -470,6 +470,16 @@ class S {
     );
   }
 
+  /// `Text Display Duration (ms)`
+  String get textDisplayDuration {
+    return Intl.message(
+      'Text Display Duration (ms)',
+      name: 'textDisplayDuration',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Hide Window on Startup`
   String get hide {
     return Intl.message(

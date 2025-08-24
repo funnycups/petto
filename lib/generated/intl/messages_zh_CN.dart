@@ -166,6 +166,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "summer": MessageLookupByLibrary.simpleMessage("夏"),
         "sunny": MessageLookupByLibrary.simpleMessage("晴天"),
         "systemPrompt": m6,
+        "textDisplayDuration":
+            MessageLookupByLibrary.simpleMessage("文本展示时长(毫秒)"),
         "thunderstorm": MessageLookupByLibrary.simpleMessage("雷暴"),
         "thunderstormWithLargeHail":
             MessageLookupByLibrary.simpleMessage("雷暴夹大冰雹"),
