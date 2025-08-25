@@ -129,13 +129,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "hitokoto": MessageLookupByLibrary.simpleMessage("Hitokoto API URL"),
         "hotkeyRecording":
             MessageLookupByLibrary.simpleMessage("Press keys..."),
-        "kageApiUrl": MessageLookupByLibrary.simpleMessage("Kage API URL"),
+        "kageApiUrl": MessageLookupByLibrary.simpleMessage("*Kage API URL"),
         "kageApiUrlRequired": MessageLookupByLibrary.simpleMessage(
             "Please configure Kage API URL first"),
         "kageExecutable":
-            MessageLookupByLibrary.simpleMessage("Kage Executable Path"),
+            MessageLookupByLibrary.simpleMessage("*Kage Executable Path"),
         "kageModelPath": MessageLookupByLibrary.simpleMessage(
-            "Kage Model Path (.model3.json)"),
+            "*Kage Model Path (.model3.json)"),
         "key": MessageLookupByLibrary.simpleMessage("LLM API Key"),
         "keywords":
             MessageLookupByLibrary.simpleMessage("Background Wake-up Keywords"),
@@ -144,7 +144,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lightSnow": MessageLookupByLibrary.simpleMessage("Light Snow"),
         "lightSnowShower":
             MessageLookupByLibrary.simpleMessage("Light Snow Shower"),
-        "model": MessageLookupByLibrary.simpleMessage("LLM Model"),
+        "model": MessageLookupByLibrary.simpleMessage("*LLM Model"),
         "modelError": MessageLookupByLibrary.simpleMessage(
             "Sorry, I\'m a bit tired right now. Please try again later."),
         "modelGreeting": MessageLookupByLibrary.simpleMessage(
@@ -217,7 +217,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "updateLater": MessageLookupByLibrary.simpleMessage("Remind Me Later"),
         "updateMessage": m16,
         "updateNow": MessageLookupByLibrary.simpleMessage("Update Now"),
-        "url": MessageLookupByLibrary.simpleMessage("LLM API URL"),
+        "url": MessageLookupByLibrary.simpleMessage("*LLM API URL"),
         "user": MessageLookupByLibrary.simpleMessage("User Name"),
         "userCall": m17,
         "wakeHotkey": MessageLookupByLibrary.simpleMessage("Wake Hotkey"),

@@ -100,10 +100,10 @@ class S {
     );
   }
 
-  /// `LLM API URL`
+  /// `*LLM API URL`
   String get url {
     return Intl.message(
-      'LLM API URL',
+      '*LLM API URL',
       name: 'url',
       desc: '',
       args: [],
@@ -120,10 +120,10 @@ class S {
     );
   }
 
-  /// `LLM Model`
+  /// `*LLM Model`
   String get model {
     return Intl.message(
-      'LLM Model',
+      '*LLM Model',
       name: 'model',
       desc: '',
       args: [],
@@ -210,30 +210,30 @@ class S {
     );
   }
 
-  /// `Kage Executable Path`
+  /// `*Kage Executable Path`
   String get kageExecutable {
     return Intl.message(
-      'Kage Executable Path',
+      '*Kage Executable Path',
       name: 'kageExecutable',
       desc: '',
       args: [],
     );
   }
 
-  /// `Kage Model Path (.model3.json)`
+  /// `*Kage Model Path (.model3.json)`
   String get kageModelPath {
     return Intl.message(
-      'Kage Model Path (.model3.json)',
+      '*Kage Model Path (.model3.json)',
       name: 'kageModelPath',
       desc: '',
       args: [],
     );
   }
 
-  /// `Kage API URL`
+  /// `*Kage API URL`
   String get kageApiUrl {
     return Intl.message(
-      'Kage API URL',
+      '*Kage API URL',
       name: 'kageApiUrl',
       desc: '',
       args: [],
