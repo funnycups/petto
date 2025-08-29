@@ -10,12 +10,13 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
 
       - name: Install dependencies
         run: flutter pub get
@@ -31,3 +32,5 @@ jobs:
         with:
           name: macos-build
           path: build/macos/Build/Products/Release/petto.app
+          compression-level: 6
+          retention-days: 7
