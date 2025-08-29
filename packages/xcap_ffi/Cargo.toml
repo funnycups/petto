@@ -1,0 +1,14 @@
+[package]
+name = "xcap_ffi"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "xcap_ffi"
+crate-type = ["cdylib"]
+
+[dependencies]
+xcap = { path = "./xcap" }
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["winuser"] }
