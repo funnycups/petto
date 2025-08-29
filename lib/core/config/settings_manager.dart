@@ -1,21 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
 // Petto: An intelligent desktop assistant.
 // Copyright (C) 2025 FunnyCups (https://github.com/funnycups)
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
-//
-// Project home: https://github.com/funnycups/petto
-// Project introduction: https://www.cups.moe/archives/petto.html
 
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -25,17 +11,17 @@ import 'constants.dart';
 class SettingsManager {
   static final SettingsManager _instance = SettingsManager._internal();
   static SettingsManager get instance => _instance;
-  
+
   SettingsManager._internal();
-  
+
   final _storage = const FlutterSecureStorage();
   Map<String, dynamic>? _cachedSettings;
-  
+
   Future<Map<String, dynamic>> readSettings() async {
     if (_cachedSettings != null) {
       return _cachedSettings!;
     }
-    
+
     final data = await _storage.read(key: Constants.settingsKey);
     if (data != null && data.isNotEmpty) {
       try {
@@ -48,12 +34,12 @@ class SettingsManager {
     }
     return {};
   }
-  
+
   Future<void> saveSettings(String settings) async {
-    _cachedSettings = null;  // Clear cache
+    _cachedSettings = null; // Clear cache
     await _storage.write(key: Constants.settingsKey, value: settings);
   }
-  
+
   Future<void> saveDefaultSettings() async {
     final data = await readSettings();
     if (data.isEmpty) {
@@ -65,7 +51,8 @@ class SettingsManager {
         'description': S.current.settingDescription,
         'model_no': '0',
         // DEPRECATED: LLM startup command is no longer supported
-        'cmd': '',  // Was: '#powershell -ExecutionPolicy Bypass -File ${await PlatformUtils.loadAsset("scripts\\startmodel.ps1")}',
+        'cmd':
+            '', // Was: '#powershell -ExecutionPolicy Bypass -File ${await PlatformUtils.loadAsset("scripts\\startmodel.ps1")}',
         'duration': '30',
         'hitokoto': 'https://v1.hitokoto.cn?encode=text&c=a&c=b&c=d&c=i&c=k',
         'user': S.current.settingUser,
@@ -73,7 +60,8 @@ class SettingsManager {
         'response': S.current.settingResponse,
         'group': 'Tap,Taphead',
         // DEPRECATED: ASR startup command is no longer supported
-        'speech': '',  // Was: '#powershell -ExecutionPolicy Bypass -File ${await PlatformUtils.loadAsset("scripts\\startserver.ps1")}',
+        'speech':
+            '', // Was: '#powershell -ExecutionPolicy Bypass -File ${await PlatformUtils.loadAsset("scripts\\startserver.ps1")}',
         'recognition_url': 'wss://api.cups.moe/api/asr/',
         'flow': false,
         'keywords': S.current.settingKeywords,
@@ -86,10 +74,10 @@ class SettingsManager {
         'tts_voice': S.current.settingTTSVoice,
         'exapi': 'ws://127.0.0.1:10086/api',
         'hide': false,
-        'enable_screenshot': false,  // New setting for screenshot
+        'enable_screenshot': false, // New setting for screenshot
         'enable_logging': false,
         'check_update': true,
-        'text_display_duration': 3000  // Default 3 seconds
+        'text_display_duration': 3000 // Default 3 seconds
       };
       await saveSettings(jsonEncode(defaultSettings));
     }

@@ -1,21 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
 // Petto: An intelligent desktop assistant.
 // Copyright (C) 2025 FunnyCups (https://github.com/funnycups)
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
-//
-// Project home: https://github.com/funnycups/petto
-// Project introduction: https://www.cups.moe/archives/petto.html
 
 import 'dart:convert';
 import 'dart:io';
@@ -38,7 +24,7 @@ class Recognizer {
     if (!await _record.isRecording()) {
       return;
     }
-    
+
     if (_flow) {
       await _record.cancel();
       await _webSocket.sink.add('end'.codeUnits);
@@ -52,7 +38,7 @@ class Recognizer {
         var settings = await SettingsManager.instance.readSettings();
         OpenAI.baseUrl = settings['whisper'] ?? 'https://api.openai.com';
         OpenAI.apiKey = settings['whisper_key'] ?? '';
-        OpenAIAudioModel transcription = 
+        OpenAIAudioModel transcription =
             await OpenAI.instance.audio.createTranscription(
           file: file,
           model: settings['whisper_model'] ?? 'whisper-1',
@@ -70,13 +56,13 @@ class Recognizer {
     if (await _record.isRecording()) {
       return;
     }
-    
+
     _flow = flow;
     if (!await _record.hasPermission()) {
       onResult('No recording permission');
       return;
     }
-    
+
     if (flow) {
       _webSocket = WebSocketChannel.connect(Uri.parse(url));
       _stream = await _record.startStream(const RecordConfig(
@@ -84,19 +70,20 @@ class Recognizer {
         sampleRate: 16000,
         numChannels: 1,
       ));
-      
+
       _stream?.listen((data) async {
         // Recording data: ${data.length} bytes
         await _webSocket.sink.add(Uint8List.fromList(data));
       }, onDone: () async {
         // Recording done
       });
-      
+
       _webSocket.stream.listen((message) async {
         var response = json.decode(message);
         // Received server response
-        await Logger.instance.writeLog('Recognition server response: $response');
-        
+        await Logger.instance
+            .writeLog('Recognition server response: $response');
+
         if (response['result'] != null) {
           // Recognition result
           onResult(response['result']);

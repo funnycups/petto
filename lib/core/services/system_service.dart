@@ -1,21 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
 // Petto: An intelligent desktop assistant.
 // Copyright (C) 2025 FunnyCups (https://github.com/funnycups)
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
-//
-// Project home: https://github.com/funnycups/petto
-// Project introduction: https://www.cups.moe/archives/petto.html
 
 import 'dart:io';
 import './process_manager_service.dart';
@@ -23,22 +9,22 @@ import './process_manager_service.dart';
 class SystemService {
   static final SystemService _instance = SystemService._internal();
   static SystemService get instance => _instance;
-  
+
   SystemService._internal();
-  
+
   // DEPRECATED: Direct PID management is no longer supported
   // Use ProcessManagerService instead
   final List<String> _pids = [];
-  
+
   @Deprecated('Use ProcessManagerService.startProcess instead')
   void addPid(String pid) {
     _pids.add(pid);
   }
-  
+
   Future<void> terminateAllProcesses() async {
     // Kill all processes managed by ProcessManagerService
     await ProcessManagerService.instance.killAllProcesses();
-    
+
     // Legacy PID cleanup - this will be removed in future versions
     // Currently kept for backward compatibility
     /*
@@ -49,7 +35,7 @@ class SystemService {
     }
     */
   }
-  
+
   Future<void> quit() async {
     await terminateAllProcesses();
     exit(0);

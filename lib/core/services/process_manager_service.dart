@@ -1,43 +1,32 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
 // Petto: An intelligent desktop assistant.
 // Copyright (C) 2025 FunnyCups (https://github.com/funnycups)
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
-//
-// Project home: https://github.com/funnycups/petto
-// Project introduction: https://www.cups.moe/archives/petto.html
 
 import 'dart:io';
 import '../utils/logger.dart';
 
 /// Service for managing background processes
 class ProcessManagerService {
-  static final ProcessManagerService _instance = ProcessManagerService._internal();
+  static final ProcessManagerService _instance =
+      ProcessManagerService._internal();
   static ProcessManagerService get instance => _instance;
-  
+
   ProcessManagerService._internal();
-  
+
   // Map to store running processes
   final Map<String, Process> _processes = {};
-  
+
   /// Start a process and track it
-  Future<void> startProcess(String key, String executable, List<String> arguments) async {
+  Future<void> startProcess(
+      String key, String executable, List<String> arguments) async {
     try {
       // Kill existing process if any
       await killProcess(key);
-      
-      await Logger.instance.writeLog('Starting process $key: $executable ${arguments.join(' ')}');
-      
+
+      await Logger.instance.writeLog(
+          'Starting process $key: $executable ${arguments.join(' ')}');
+
       // Start the process
       final process = await Process.start(
         executable,
@@ -45,25 +34,26 @@ class ProcessManagerService {
         mode: ProcessStartMode.detached,
         runInShell: Platform.isWindows,
       );
-      
+
       _processes[key] = process;
-      
+
       // Log process output
       process.stdout.listen((data) {
         Logger.instance.writeLog('[$key stdout] ${String.fromCharCodes(data)}');
       });
-      
+
       process.stderr.listen((data) {
         Logger.instance.writeLog('[$key stderr] ${String.fromCharCodes(data)}');
       });
-      
-      await Logger.instance.writeLog('Process $key started with PID: ${process.pid}');
+
+      await Logger.instance
+          .writeLog('Process $key started with PID: ${process.pid}');
     } catch (e) {
       await Logger.instance.writeLog('Failed to start process $key: $e');
       throw e;
     }
   }
-  
+
   /// Kill a tracked process
   Future<void> killProcess(String key) async {
     if (_processes.containsKey(key)) {
@@ -82,7 +72,7 @@ class ProcessManagerService {
       }
     }
   }
-  
+
   /// Kill all tracked processes
   Future<void> killAllProcesses() async {
     final keys = _processes.keys.toList();
@@ -90,7 +80,7 @@ class ProcessManagerService {
       await killProcess(key);
     }
   }
-  
+
   /// Check if a process is running
   bool isProcessRunning(String key) {
     return _processes.containsKey(key);

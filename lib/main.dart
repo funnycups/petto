@@ -1,21 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
 // Petto: An intelligent desktop assistant.
 // Copyright (C) 2025 FunnyCups (https://github.com/funnycups)
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
-//
-// Project home: https://github.com/funnycups/petto
-// Project introduction: https://www.cups.moe/archives/petto.html
 
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -59,10 +45,10 @@ Future<void> main() async {
       break;
     }
   }
-  
+
   // Launch Kage if configured
   await _launchKageIfNeeded();
-  
+
   await windowManager.ensureInitialized();
   double windowWidth = Constants.windowWidth;
   double windowHeight = Constants.windowHeight;
@@ -98,16 +84,19 @@ Future<void> _launchKageIfNeeded() async {
     final kageExecutable = settings['kage_executable'] ?? '';
     final kageModelPath = settings['kage_model_path'] ?? '';
     final kageApiUrl = settings['kage_api_url'] ?? 'ws://localhost:23333';
-    
-    if (petMode == 'kage' && kageExecutable.isNotEmpty && await File(kageExecutable).exists()) {
+
+    if (petMode == 'kage' &&
+        kageExecutable.isNotEmpty &&
+        await File(kageExecutable).exists()) {
       await Logger.instance.writeLog('Launching Kage from: $kageExecutable');
-      
+
       // Launch Kage using ProcessManagerService
-      await ProcessManagerService.instance.startProcess('kage', kageExecutable, []);
-      
+      await ProcessManagerService.instance
+          .startProcess('kage', kageExecutable, []);
+
       // Wait a bit for Kage to start
       await Future.delayed(Duration(seconds: 2));
-      
+
       // If model path is provided, set it via API
       if (kageModelPath.isNotEmpty && await File(kageModelPath).exists()) {
         try {

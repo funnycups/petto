@@ -1,21 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
 // Petto: An intelligent desktop assistant.
 // Copyright (C) 2025 FunnyCups (https://github.com/funnycups)
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
-//
-// Project home: https://github.com/funnycups/petto
-// Project introduction: https://www.cups.moe/archives/petto.html
 
 import 'dart:math';
 import 'package:http/http.dart' as http;
@@ -136,30 +122,33 @@ class GreetingService {
 
     final settings = await SettingsManager.instance.readSettings();
     _petMode = settings['pet_mode'] ?? 'kage';
-    
+
     String messageText = message.toString().trim();
-    
+
     // Get text display duration from settings, default to 3000ms (3 seconds)
     final textDisplayDuration = settings['text_display_duration'] ?? 3000;
-    
+
     // Calculate speech duration
-    final speechDuration = await SpeechService.instance.textToSpeech(messageText);
-    
+    final speechDuration =
+        await SpeechService.instance.textToSpeech(messageText);
+
     // Use speech duration if available and longer than text display duration
     // Otherwise use the configured text display duration
-    final duration = (speechDuration != null && speechDuration > textDisplayDuration) 
-        ? speechDuration 
-        : textDisplayDuration;
+    final duration =
+        (speechDuration != null && speechDuration > textDisplayDuration)
+            ? speechDuration
+            : textDisplayDuration;
 
     if (_petMode == 'kage') {
       await _ensureKageService();
       await _kageService!.showTextMessage(messageText, duration);
-      
+
       // Handle choices if needed (Kage doesn't support choices like EXAPI)
       if (choices != null) {
-        await Logger.instance.writeLog('Kage mode: choices not supported, ignoring');
+        await Logger.instance
+            .writeLog('Kage mode: choices not supported, ignoring');
       }
-      
+
       // Wait for speech duration
       await Future.delayed(Duration(milliseconds: duration));
       await _kageService!.close();
@@ -167,7 +156,7 @@ class GreetingService {
     } else {
       String modelNo = settings['model_no'] ?? '';
       await _ensureExApiService();
-      
+
       // Set up message handler for choices
       if (choices != null) {
         _exApiService!.onMessageReceived = (message) {
@@ -207,7 +196,7 @@ class GreetingService {
       await _exApiService!.connect();
     }
   }
-  
+
   /// Ensure Kage WebSocket service is created
   Future<void> _ensureKageService() async {
     if (_kageService == null) {

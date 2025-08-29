@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
+// Petto: An intelligent desktop assistant.
+// Copyright (C) 2025 FunnyCups (https://github.com/funnycups)
+
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:synchronized/synchronized.dart';

@@ -1,21 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
 // Petto: An intelligent desktop assistant.
 // Copyright (C) 2025 FunnyCups (https://github.com/funnycups)
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <https://www.gnu.org/licenses/>.
-//
-// Project home: https://github.com/funnycups/petto
-// Project introduction: https://www.cups.moe/archives/petto.html
 
 import 'package:ipapi/ipapi.dart';
 import 'package:ipapi/models/geo_data.dart';
@@ -25,27 +11,27 @@ import '../../generated/l10n.dart';
 class WeatherService {
   static final WeatherService _instance = WeatherService._internal();
   static WeatherService get instance => _instance;
-  
+
   WeatherService._internal();
-  
+
   Future<String> getWeather() async {
     const weather = WeatherApi();
     final GeoData? geoData = await IpApi.getData();
-    
+
     final response = await weather.request(
-      latitude: geoData?.lat ?? 0,
-      longitude: geoData?.lon ?? 0,
-      current: {WeatherCurrent.weather_code, WeatherCurrent.temperature_2m}
-    );
-    
-    final temperature = 
+        latitude: geoData?.lat ?? 0,
+        longitude: geoData?.lon ?? 0,
+        current: {WeatherCurrent.weather_code, WeatherCurrent.temperature_2m});
+
+    final temperature =
         response.currentData[WeatherCurrent.temperature_2m]!.value;
-    final weatherCode = response.currentData[WeatherCurrent.weather_code]!.value;
-    
+    final weatherCode =
+        response.currentData[WeatherCurrent.weather_code]!.value;
+
     String weatherStr = _getWeatherDescription(weatherCode);
     return S.current.currentWeather(weatherStr, temperature);
   }
-  
+
   String _getWeatherDescription(num weatherCode) {
     switch (weatherCode) {
       case 0:
@@ -102,7 +88,7 @@ class WeatherService {
         return S.current.unknown;
     }
   }
-  
+
   static String getSeason(DateTime date) {
     int month = date.month;
     if (month >= 4 && month <= 5) {
