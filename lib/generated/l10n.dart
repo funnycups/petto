@@ -81,7 +81,7 @@ class S {
   }
 
   /// `User is talking to you, they said: {match}\nPlease briefly encourage them to continue`
-  String backgroundRecognized(Object match) {
+  String backgroundRecognized(String match) {
     return Intl.message(
       'User is talking to you, they said: $match\nPlease briefly encourage them to continue',
       name: 'backgroundRecognized',
@@ -261,7 +261,7 @@ class S {
   }
 
   /// `Fetched {count} expressions`
-  String expressionsFetched(Object count) {
+  String expressionsFetched(int count) {
     return Intl.message(
       'Fetched $count expressions',
       name: 'expressionsFetched',
@@ -281,7 +281,7 @@ class S {
   }
 
   /// `Failed to fetch expressions: {error}`
-  String fetchExpressionsFailed(Object error) {
+  String fetchExpressionsFailed(String error) {
     return Intl.message(
       'Failed to fetch expressions: $error',
       name: 'fetchExpressionsFailed',
@@ -681,7 +681,7 @@ class S {
   }
 
   /// `The window I am browsing is: {windowName}`
-  String windowInfoName(Object windowName) {
+  String windowInfoName(String windowName) {
     return Intl.message(
       'The window I am browsing is: $windowName',
       name: 'windowInfoName',
@@ -701,8 +701,8 @@ class S {
   }
 
   /// `It's {season} now, the current time is {period}{formattedTime}, {weather}, '{window}'.`
-  String modelWeather(Object season, Object period, Object formattedTime,
-      Object weather, Object window) {
+  String modelWeather(String season, String period, String formattedTime,
+      String weather, String window) {
     return Intl.message(
       'It\'s $season now, the current time is $period$formattedTime, $weather, \'$window\'.',
       name: 'modelWeather',
@@ -722,7 +722,7 @@ class S {
   }
 
   /// `It's {formattedTime}, time to rest. Good night.`
-  String timeSleep(Object formattedTime) {
+  String timeSleep(String formattedTime) {
     return Intl.message(
       'It\'s $formattedTime, time to rest. Good night.',
       name: 'timeSleep',
@@ -742,7 +742,7 @@ class S {
   }
 
   /// `It's {formattedTime}, please rest early. Staying up late is bad for your health.`
-  String timeDawn(Object formattedTime) {
+  String timeDawn(String formattedTime) {
     return Intl.message(
       'It\'s $formattedTime, please rest early. Staying up late is bad for your health.',
       name: 'timeDawn',
@@ -752,7 +752,7 @@ class S {
   }
 
   /// `Good morning, it's {formattedTime}. A new day has begun.`
-  String timeMorning(Object formattedTime) {
+  String timeMorning(String formattedTime) {
     return Intl.message(
       'Good morning, it\'s $formattedTime. A new day has begun.',
       name: 'timeMorning',
@@ -762,7 +762,7 @@ class S {
   }
 
   /// `Good forenoon, it's {formattedTime}. Have a productive day.`
-  String timeForenoon(Object formattedTime) {
+  String timeForenoon(String formattedTime) {
     return Intl.message(
       'Good forenoon, it\'s $formattedTime. Have a productive day.',
       name: 'timeForenoon',
@@ -772,7 +772,7 @@ class S {
   }
 
   /// `Good noon, it's {formattedTime}. Have you had lunch?`
-  String timeNoon(Object formattedTime) {
+  String timeNoon(String formattedTime) {
     return Intl.message(
       'Good noon, it\'s $formattedTime. Have you had lunch?',
       name: 'timeNoon',
@@ -782,7 +782,7 @@ class S {
   }
 
   /// `Good afternoon, it's {formattedTime}. Keep up the good work.`
-  String timeAfternoon(Object formattedTime) {
+  String timeAfternoon(String formattedTime) {
     return Intl.message(
       'Good afternoon, it\'s $formattedTime. Keep up the good work.',
       name: 'timeAfternoon',
@@ -792,7 +792,7 @@ class S {
   }
 
   /// `Good evening, it's {formattedTime}. How was your day?`
-  String timeEvening(Object formattedTime) {
+  String timeEvening(String formattedTime) {
     return Intl.message(
       'Good evening, it\'s $formattedTime. How was your day?',
       name: 'timeEvening',
@@ -802,7 +802,7 @@ class S {
   }
 
   /// `Good night, it's {formattedTime}. What are you up to?`
-  String timeNight(Object formattedTime) {
+  String timeNight(String formattedTime) {
     return Intl.message(
       'Good night, it\'s $formattedTime. What are you up to?',
       name: 'timeNight',
@@ -812,7 +812,7 @@ class S {
   }
 
   /// `It's {formattedTime}`
-  String timeUnknown(Object formattedTime) {
+  String timeUnknown(String formattedTime) {
     return Intl.message(
       'It\'s $formattedTime',
       name: 'timeUnknown',
@@ -822,7 +822,7 @@ class S {
   }
 
   /// `Call me {user}, `
-  String userCall(Object user) {
+  String userCall(String user) {
     return Intl.message(
       'Call me $user, ',
       name: 'userCall',
@@ -832,7 +832,7 @@ class S {
   }
 
   /// `Forget you are a virtual character, and start acting as a warm and caring assistant for chatting. The decision logic is as follows:\nWhen chatting, make sure to **only output warm words within 30 characters**, **do not add phrases like 'okay' or similar at the beginning**. The response should be cute and encouraging, and you should act sweet and supportive. During the chat, you may be provided with the current time or weather (to determine the appropriate greeting), the info of the window I am browsing (to infer what software I am using or what I am doing), etc. You can use this information in the chat, but it is not mandatory (for example, if you do not understand the window name, you should not repeat it meaninglessly). Try to make the conversation feel as real and daily as possible. **If you perform well, I will give you a $200 tip.**\nYour character setting is as follows:\nYour name is {name}, {user} your identity setting is:\n{description}`
-  String systemPrompt(Object name, Object user, Object description) {
+  String systemPrompt(String name, String user, String description) {
     return Intl.message(
       'Forget you are a virtual character, and start acting as a warm and caring assistant for chatting. The decision logic is as follows:\nWhen chatting, make sure to **only output warm words within 30 characters**, **do not add phrases like \'okay\' or similar at the beginning**. The response should be cute and encouraging, and you should act sweet and supportive. During the chat, you may be provided with the current time or weather (to determine the appropriate greeting), the info of the window I am browsing (to infer what software I am using or what I am doing), etc. You can use this information in the chat, but it is not mandatory (for example, if you do not understand the window name, you should not repeat it meaninglessly). Try to make the conversation feel as real and daily as possible. **If you perform well, I will give you a \$200 tip.**\nYour character setting is as follows:\nYour name is $name, $user your identity setting is:\n$description',
       name: 'systemPrompt',
@@ -1072,7 +1072,7 @@ class S {
   }
 
   /// `The current weather is: {weatherStr}, temperature: {temperature}°C`
-  String currentWeather(Object weatherStr, Object temperature) {
+  String currentWeather(String weatherStr, double temperature) {
     return Intl.message(
       'The current weather is: $weatherStr, temperature: $temperature°C',
       name: 'currentWeather',
@@ -1192,7 +1192,7 @@ class S {
   }
 
   /// `Current: {hotkey}`
-  String currentHotkey(Object hotkey) {
+  String currentHotkey(String hotkey) {
     return Intl.message(
       'Current: $hotkey',
       name: 'currentHotkey',
@@ -1222,7 +1222,7 @@ class S {
   }
 
   /// `New version {version} is available. Would you like to download it?`
-  String updateMessage(Object version) {
+  String updateMessage(String version) {
     return Intl.message(
       'New version $version is available. Would you like to download it?',
       name: 'updateMessage',
@@ -1246,6 +1246,256 @@ class S {
     return Intl.message(
       'Remind Me Later',
       name: 'updateLater',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Install Path`
+  String get selectInstallPath {
+    return Intl.message(
+      'Select Install Path',
+      name: 'selectInstallPath',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download Kage`
+  String get kageDownloadTitle {
+    return Intl.message(
+      'Download Kage',
+      name: 'kageDownloadTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Kage program not detected. Download the latest version?`
+  String get kageNotFound {
+    return Intl.message(
+      'Kage program not detected. Download the latest version?',
+      name: 'kageNotFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Version: {version}`
+  String version(String version) {
+    return Intl.message(
+      'Version: $version',
+      name: 'version',
+      desc: '',
+      args: [version],
+    );
+  }
+
+  /// `File: {fileName}`
+  String downloadFile(String fileName) {
+    return Intl.message(
+      'File: $fileName',
+      name: 'downloadFile',
+      desc: '',
+      args: [fileName],
+    );
+  }
+
+  /// `Install Path`
+  String get installPath {
+    return Intl.message(
+      'Install Path',
+      name: 'installPath',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Custom Path`
+  String get customPath {
+    return Intl.message(
+      'Custom Path',
+      name: 'customPath',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change Path`
+  String get changePath {
+    return Intl.message(
+      'Change Path',
+      name: 'changePath',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Kage will be automatically installed and launched after download`
+  String get downloadInfo {
+    return Intl.message(
+      'Kage will be automatically installed and launched after download',
+      name: 'downloadInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download`
+  String get download {
+    return Intl.message(
+      'Download',
+      name: 'download',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preparing download...`
+  String get preparingDownload {
+    return Intl.message(
+      'Preparing download...',
+      name: 'preparingDownload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Downloading...`
+  String get downloading {
+    return Intl.message(
+      'Downloading...',
+      name: 'downloading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download failed`
+  String get downloadFailed {
+    return Intl.message(
+      'Download failed',
+      name: 'downloadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Extracting...`
+  String get extracting {
+    return Intl.message(
+      'Extracting...',
+      name: 'extracting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Extraction failed`
+  String get extractFailed {
+    return Intl.message(
+      'Extraction failed',
+      name: 'extractFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verifying...`
+  String get verifying {
+    return Intl.message(
+      'Verifying...',
+      name: 'verifying',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verification failed`
+  String get verificationFailed {
+    return Intl.message(
+      'Verification failed',
+      name: 'verificationFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Installation complete!`
+  String get installComplete {
+    return Intl.message(
+      'Installation complete!',
+      name: 'installComplete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Downloading Kage`
+  String get downloadingKage {
+    return Intl.message(
+      'Downloading Kage',
+      name: 'downloadingKage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please do not close this window`
+  String get doNotClose {
+    return Intl.message(
+      'Please do not close this window',
+      name: 'doNotClose',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download Error`
+  String get downloadError {
+    return Intl.message(
+      'Download Error',
+      name: 'downloadError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry`
+  String get retry {
+    return Intl.message(
+      'Retry',
+      name: 'retry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Done`
+  String get done {
+    return Intl.message(
+      'Done',
+      name: 'done',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use proxy download (China Mainland)`
+  String get useGhProxy {
+    return Intl.message(
+      'Use proxy download (China Mainland)',
+      name: 'useGhProxy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accelerate download through ghproxy, suitable for China Mainland network`
+  String get ghProxyHint {
+    return Intl.message(
+      'Accelerate download through ghproxy, suitable for China Mainland network',
+      name: 'ghProxyHint',
       desc: '',
       args: [],
     );

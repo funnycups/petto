@@ -18,6 +18,7 @@ class ProcessManagerService {
   final Map<String, Process> _processes = {};
 
   /// Start a process and track it
+  /// The process will be automatically terminated when the app exits
   Future<void> startProcess(
       String key, String executable, List<String> arguments) async {
     try {

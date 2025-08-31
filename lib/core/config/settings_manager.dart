@@ -77,7 +77,11 @@ class SettingsManager {
         'enable_screenshot': false, // New setting for screenshot
         'enable_logging': false,
         'check_update': true,
-        'text_display_duration': 3000 // Default 3 seconds
+        'text_display_duration': 3000,
+        'pet_mode': 'kage',
+        'kage_executable': '',
+        'kage_model_path': '',
+        'kage_api_url': 'ws://localhost:23333'
       };
       await saveSettings(jsonEncode(defaultSettings));
     }

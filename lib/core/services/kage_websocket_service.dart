@@ -15,6 +15,28 @@ class KageWebSocketService extends WebSocketService {
 
   KageWebSocketService(this._url);
 
+  /// Test if Kage WebSocket service is accessible
+  /// Returns true if Kage is running and accessible, false otherwise
+  static Future<bool> isKageAccessible(String kageApiUrl) async {
+    try {
+      await Logger.instance.writeLog('Testing Kage WebSocket at: $kageApiUrl');
+      final kageService = KageWebSocketService(kageApiUrl);
+      await kageService.connect();
+
+      final version = await kageService.getVersion().timeout(
+            Duration(seconds: 2),
+            onTimeout: () => throw TimeoutException('Cannot reach Kage'),
+          );
+
+      await kageService.close();
+      await Logger.instance.writeLog('Kage is running, version: $version');
+      return true;
+    } catch (e) {
+      await Logger.instance.writeLog('Kage not accessible: $e');
+      return false;
+    }
+  }
+
   @override
   String get url => _url;
 

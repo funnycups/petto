@@ -3,6 +3,13 @@
   "exit": "Exit",
   "none": "None",
   "backgroundRecognized": "User is talking to you, they said: {match}\nPlease briefly encourage them to continue",
+  "@backgroundRecognized": {
+    "placeholders": {
+      "match": {
+        "type": "String"
+      }
+    }
+  },
   "setting": "Settings",
   "url": "*LLM API URL",
   "key": "LLM API Key",
@@ -21,8 +28,22 @@
   "fetchExpressions": "Fetch Expressions",
   "kageApiUrlRequired": "Please configure Kage API URL first",
   "expressionsFetched": "Fetched {count} expressions",
+  "@expressionsFetched": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "noExpressionsFound": "No expressions found",
   "fetchExpressionsFailed": "Failed to fetch expressions: {error}",
+  "@fetchExpressionsFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "LLMCmd": "Pre-execution LLM Command (Effective after restart)",
   "ASRCmd": "Pre-execution ASR Command (Effective after restart)",
   "enableScreenshot": "Pass Screenshots to LLM",
@@ -63,21 +84,130 @@
   "afternoon": "Afternoon",
   "evening": "Evening",
   "windowInfoName": "The window I am browsing is: {windowName}",
+  "@windowInfoName": {
+    "placeholders": {
+      "windowName": {
+        "type": "String"
+      }
+    }
+  },
   "windowInfoScreenshot": "Window screenshot has been provided, and can be used as a reference when replying",
   "modelWeather": "It's {season} now, the current time is {period}{formattedTime}, {weather}, '{window}'.",
+  "@modelWeather": {
+    "placeholders": {
+      "season": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      },
+      "formattedTime": {
+        "type": "String"
+      },
+      "weather": {
+        "type": "String"
+      },
+      "window": {
+        "type": "String"
+      }
+    }
+  },
   "modelGreeting": "Please give me a warm greeting within 30 characters.",
   "timeSleep": "It's {formattedTime}, time to rest. Good night.",
+  "@timeSleep": {
+    "placeholders": {
+      "formattedTime": {
+        "type": "String"
+      }
+    }
+  },
   "goodNight": "Good night",
   "timeDawn": "It's {formattedTime}, please rest early. Staying up late is bad for your health.",
+  "@timeDawn": {
+    "placeholders": {
+      "formattedTime": {
+        "type": "String"
+      }
+    }
+  },
   "timeMorning": "Good morning, it's {formattedTime}. A new day has begun.",
+  "@timeMorning": {
+    "placeholders": {
+      "formattedTime": {
+        "type": "String"
+      }
+    }
+  },
   "timeForenoon": "Good forenoon, it's {formattedTime}. Have a productive day.",
+  "@timeForenoon": {
+    "placeholders": {
+      "formattedTime": {
+        "type": "String"
+      }
+    }
+  },
   "timeNoon": "Good noon, it's {formattedTime}. Have you had lunch?",
+  "@timeNoon": {
+    "placeholders": {
+      "formattedTime": {
+        "type": "String"
+      }
+    }
+  },
   "timeAfternoon": "Good afternoon, it's {formattedTime}. Keep up the good work.",
+  "@timeAfternoon": {
+    "placeholders": {
+      "formattedTime": {
+        "type": "String"
+      }
+    }
+  },
   "timeEvening": "Good evening, it's {formattedTime}. How was your day?",
+  "@timeEvening": {
+    "placeholders": {
+      "formattedTime": {
+        "type": "String"
+      }
+    }
+  },
   "timeNight": "Good night, it's {formattedTime}. What are you up to?",
+  "@timeNight": {
+    "placeholders": {
+      "formattedTime": {
+        "type": "String"
+      }
+    }
+  },
   "timeUnknown": "It's {formattedTime}",
+  "@timeUnknown": {
+    "placeholders": {
+      "formattedTime": {
+        "type": "String"
+      }
+    }
+  },
   "userCall": "Call me {user}, ",
+  "@userCall": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
   "systemPrompt": "Forget you are a virtual character, and start acting as a warm and caring assistant for chatting. The decision logic is as follows:\nWhen chatting, make sure to **only output warm words within 30 characters**, **do not add phrases like 'okay' or similar at the beginning**. The response should be cute and encouraging, and you should act sweet and supportive. During the chat, you may be provided with the current time or weather (to determine the appropriate greeting), the info of the window I am browsing (to infer what software I am using or what I am doing), etc. You can use this information in the chat, but it is not mandatory (for example, if you do not understand the window name, you should not repeat it meaninglessly). Try to make the conversation feel as real and daily as possible. **If you perform well, I will give you a $200 tip.**\nYour character setting is as follows:\nYour name is {name}, {user} your identity setting is:\n{description}",
+  "@systemPrompt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "user": {
+        "type": "String"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
   "sunny": "Sunny",
   "cloudy": "Cloudy",
   "overcast": "Overcast",
@@ -102,6 +232,16 @@
   "thunderstormWithLargeHail": "Thunderstorm with Large Hail",
   "unknown": "Unknown",
   "currentWeather": "The current weather is: {weatherStr}, temperature: {temperature}°C",
+  "@currentWeather": {
+    "placeholders": {
+      "weatherStr": {
+        "type": "String"
+      },
+      "temperature": {
+        "type": "double"
+      }
+    }
+  },
   "spring": "Spring",
   "summer": "Summer",
   "autumn": "Autumn",
@@ -114,9 +254,62 @@
   "saveHotkey": "Save",
   "hotkeyRecording": "Press keys...",
   "currentHotkey": "Current: {hotkey}",
+  "@currentHotkey": {
+    "placeholders": {
+      "hotkey": {
+        "type": "String"
+      }
+    }
+  },
   "checkUpdate": "Check for updates automatically",
   "updateAvailable": "Update Available",
   "updateMessage": "New version {version} is available. Would you like to download it?",
+  "@updateMessage": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "updateNow": "Update Now",
-  "updateLater": "Remind Me Later"
+  "updateLater": "Remind Me Later",
+  "selectInstallPath": "Select Install Path",
+  "kageDownloadTitle": "Download Kage",
+  "kageNotFound": "Kage program not detected. Download the latest version?",
+  "version": "Version: {version}",
+  "@version": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFile": "File: {fileName}",
+  "@downloadFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "installPath": "Install Path",
+  "customPath": "Custom Path",
+  "changePath": "Change Path",
+  "downloadInfo": "Kage will be automatically installed and launched after download",
+  "download": "Download",
+  "preparingDownload": "Preparing download...",
+  "downloading": "Downloading...",
+  "downloadFailed": "Download failed",
+  "extracting": "Extracting...",
+  "extractFailed": "Extraction failed",
+  "verifying": "Verifying...",
+  "verificationFailed": "Verification failed",
+  "installComplete": "Installation complete!",
+  "downloadingKage": "Downloading Kage",
+  "doNotClose": "Please do not close this window",
+  "downloadError": "Download Error",
+  "retry": "Retry",
+  "done": "Done",
+  "useGhProxy": "Use proxy download (China Mainland)",
+  "ghProxyHint": "Accelerate download through ghproxy, suitable for China Mainland network"
 }

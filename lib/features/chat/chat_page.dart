@@ -146,6 +146,7 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
 
   @override
   void onWindowFocus() {
+    _loadSettings();
     setState(() {});
   }
 
@@ -559,6 +560,20 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
             _enableScreenshot = values['enableScreenshot'];
             _currentHotKey = values['currentHotKey'];
             _petMode = values['pet_mode'] ?? _petMode;
+
+            if (values['kage_executable'] != null) {
+              _controllers['kageExecutable']!.text = values['kage_executable'];
+            }
+            if (values['kage_model_path'] != null) {
+              _controllers['kageModelPath']!.text = values['kage_model_path'];
+            }
+            if (values['kage_api_url'] != null) {
+              _controllers['kageApiUrl']!.text = values['kage_api_url'];
+            }
+            if (values['text_display_duration'] != null) {
+              _controllers['textDisplayDuration']!.text =
+                  values['text_display_duration'];
+            }
 
             await _saveSettings();
           },

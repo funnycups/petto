@@ -36,6 +36,8 @@ class SystemService {
     */
   }
 
+  /// Quit the application and clean up all managed processes
+  /// This ensures Kage and other processes started by the app are properly terminated
   Future<void> quit() async {
     await terminateAllProcesses();
     exit(0);
