@@ -34,8 +34,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m5(error) => "Failed to fetch expressions: ${error}";
 
-  static String m6(season, period, formattedTime, weather, window) =>
-      "It\'s ${season} now, the current time is ${period}${formattedTime}, ${weather}, \'${window}\'.";
+  static String m6(season, period, formattedTime, weather) =>
+      "It\'s ${season} now, the current time is ${period}${formattedTime}, ${weather}.";
 
   static String m7(name, user, description) =>
       "Forget you are a virtual character, and start acting as a warm and caring assistant for chatting. The decision logic is as follows:\nWhen chatting, make sure to **only output warm words within 30 characters**, **do not add phrases like \'okay\' or similar at the beginning**. The response should be cute and encouraging, and you should act sweet and supportive. During the chat, you may be provided with the current time or weather (to determine the appropriate greeting), the info of the window I am browsing (to infer what software I am using or what I am doing), etc. You can use this information in the chat, but it is not mandatory (for example, if you do not understand the window name, you should not repeat it meaninglessly). Try to make the conversation feel as real and daily as possible. **If you perform well, I will give you a \$200 tip.**\nYour character setting is as follows:\nYour name is ${name}, ${user} your identity setting is:\n${description}";
@@ -72,8 +72,6 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m18(user) => "Call me ${user}, ";
 
   static String m19(version) => "Version: ${version}";
-
-  static String m20(windowName) => "The window I am browsing is: ${windowName}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -267,7 +265,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "whisperKey": MessageLookupByLibrary.simpleMessage("Whisper Key"),
         "whisperModel":
             MessageLookupByLibrary.simpleMessage("Whisper Model Name"),
-        "windowInfoName": m20,
         "windowInfoScreenshot": MessageLookupByLibrary.simpleMessage(
             "Window screenshot has been provided, and can be used as a reference when replying"),
         "winter": MessageLookupByLibrary.simpleMessage("Winter")

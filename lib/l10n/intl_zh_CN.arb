@@ -83,16 +83,8 @@
   "noon": "中午",
   "afternoon": "下午",
   "evening": "傍晚",
-  "windowInfoName": "我正在浏览的窗口是：{windowName}",
-  "@windowInfoName": {
-    "placeholders": {
-      "windowName": {
-        "type": "String"
-      }
-    }
-  },
   "windowInfoScreenshot": "我当前的窗口截图已经提供。如果可以理解我正在做什么，请在回复时参考这个截图，以使得你的回复更加切合实际",
-  "modelWeather": "现在是{season}，现在的时间是{period}{formattedTime}，{weather}，“{window}”",
+  "modelWeather": "现在是{season}，现在的时间是{period}{formattedTime}，{weather}",
   "@modelWeather": {
     "placeholders": {
       "season": {
@@ -105,9 +97,6 @@
         "type": "String"
       },
       "weather": {
-        "type": "String"
-      },
-      "window": {
         "type": "String"
       }
     }

@@ -680,16 +680,6 @@ class S {
     );
   }
 
-  /// `The window I am browsing is: {windowName}`
-  String windowInfoName(String windowName) {
-    return Intl.message(
-      'The window I am browsing is: $windowName',
-      name: 'windowInfoName',
-      desc: '',
-      args: [windowName],
-    );
-  }
-
   /// `Window screenshot has been provided, and can be used as a reference when replying`
   String get windowInfoScreenshot {
     return Intl.message(
@@ -700,14 +690,14 @@ class S {
     );
   }
 
-  /// `It's {season} now, the current time is {period}{formattedTime}, {weather}, '{window}'.`
-  String modelWeather(String season, String period, String formattedTime,
-      String weather, String window) {
+  /// `It's {season} now, the current time is {period}{formattedTime}, {weather}.`
+  String modelWeather(
+      String season, String period, String formattedTime, String weather) {
     return Intl.message(
-      'It\'s $season now, the current time is $period$formattedTime, $weather, \'$window\'.',
+      'It\'s $season now, the current time is $period$formattedTime, $weather.',
       name: 'modelWeather',
       desc: '',
-      args: [season, period, formattedTime, weather, window],
+      args: [season, period, formattedTime, weather],
     );
   }
 

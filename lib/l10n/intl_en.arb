@@ -83,16 +83,8 @@
   "noon": "Noon",
   "afternoon": "Afternoon",
   "evening": "Evening",
-  "windowInfoName": "The window I am browsing is: {windowName}",
-  "@windowInfoName": {
-    "placeholders": {
-      "windowName": {
-        "type": "String"
-      }
-    }
-  },
   "windowInfoScreenshot": "Window screenshot has been provided, and can be used as a reference when replying",
-  "modelWeather": "It's {season} now, the current time is {period}{formattedTime}, {weather}, '{window}'.",
+  "modelWeather": "It's {season} now, the current time is {period}{formattedTime}, {weather}.",
   "@modelWeather": {
     "placeholders": {
       "season": {
@@ -105,9 +97,6 @@
         "type": "String"
       },
       "weather": {
-        "type": "String"
-      },
-      "window": {
         "type": "String"
       }
     }

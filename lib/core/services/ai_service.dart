@@ -8,7 +8,6 @@ import 'dart:math';
 import 'package:openai_dart/openai_dart.dart';
 import '../config/settings_manager.dart';
 import '../utils/logger.dart';
-import '../utils/platform_utils.dart';
 import 'screenshot_service.dart';
 import '../../generated/l10n.dart';
 import 'weather_service.dart';
@@ -97,20 +96,18 @@ class AiService {
     String period = _getTimePeriod(hour);
 
     // Add screenshot if enabled
-    String window = '';
-
     if (enableScreenshot) {
       final screenshotData = await ScreenshotService.instance.takeScreenshot();
 
       if (screenshotData != null) {
-        window = S.current.windowInfoScreenshot;
+        String screenshotInfo = S.current.windowInfoScreenshot;
         String base64Image = base64Encode(screenshotData);
 
         messages.insert(
             0,
             ChatCompletionMessage.user(
                 content: ChatCompletionMessageContentParts([
-              ChatCompletionMessageContentPart.text(text: window),
+              ChatCompletionMessageContentPart.text(text: screenshotInfo),
               ChatCompletionMessageContentPart.image(
                   imageUrl: ChatCompletionMessageImageUrl(
                       url: 'data:image/png;base64,$base64Image'))
@@ -127,8 +124,7 @@ class AiService {
                 WeatherService.getSeason(DateTime.now()),
                 period,
                 formattedTime,
-                weather,
-                window)));
+                weather)));
   }
 
   String _getTimePeriod(int hour) {
