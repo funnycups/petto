@@ -6,6 +6,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:window_manager/window_manager.dart';
+import 'core/services/system_service.dart';
 
 void startServer(int port) async {
   final server = await ServerSocket.bind('127.0.0.1', port);
@@ -20,7 +21,7 @@ void startServer(int port) async {
           break;
         case 'exit':
           socket.write('success');
-          exit(0);
+          await SystemService.instance.quit();
         case 'isrunning':
           socket.write('running');
           break;

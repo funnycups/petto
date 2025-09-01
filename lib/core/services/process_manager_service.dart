@@ -32,15 +32,14 @@ class ProcessManagerService {
       final process = await Process.start(
         executable,
         arguments,
-        mode: ProcessStartMode.detached,
-        runInShell: Platform.isWindows,
+        mode: ProcessStartMode.normal,
+        runInShell: false,
       );
 
       _processes[key] = process;
 
-      // Log process output
       process.stdout.listen((data) {
-        Logger.instance.writeLog('[$key stdout] ${String.fromCharCodes(data)}');
+        // Logger.instance.writeLog('[$key stdout] ${String.fromCharCodes(data)}');
       });
 
       process.stderr.listen((data) {
@@ -62,7 +61,8 @@ class ProcessManagerService {
       try {
         if (Platform.isWindows) {
           // Use taskkill on Windows
-          await Process.run('taskkill', ['/F', '/PID', process.pid.toString()]);
+          await Process.run(
+              'taskkill', ['/F', '/T', '/PID', process.pid.toString()]);
         } else {
           process.kill();
         }
