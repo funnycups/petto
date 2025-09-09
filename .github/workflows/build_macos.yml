@@ -12,15 +12,32 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v5
 
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/xcap_ffi/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('packages/xcap_ffi/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          channel: beta
           cache: true
+
+      - name: Enable native assets
+        run: flutter config --enable-native-assets
 
       - name: Install dependencies
         run: flutter pub get
-
+        
       - name: Create podfile
         run: flutter create --platforms=macos . && sed -i '' "s/^#* *platform :.*$/platform :osx, '10.15'/" macos/Podfile
 
