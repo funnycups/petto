@@ -20,7 +20,7 @@ import '../../core/services/recognition_service.dart';
 import '../../core/services/system_service.dart';
 import '../../core/utils/platform_utils.dart';
 import '../../core/utils/logger.dart';
-import '../../features/settings/settings_dialog.dart';
+import '../dialogs/dialogs.dart';
 import '../../features/tray/tray_service.dart';
 import '../../features/update/update_checker.dart';
 

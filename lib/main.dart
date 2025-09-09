@@ -19,8 +19,7 @@ import 'core/services/kage_websocket_service.dart';
 import 'core/services/kage_download_service.dart';
 import 'core/utils/logger.dart';
 import 'features/chat/chat_page.dart';
-import 'features/dialogs/kage_download_dialog.dart';
-import 'features/dialogs/kage_download_progress_dialog.dart';
+import 'features/dialogs/dialogs.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
