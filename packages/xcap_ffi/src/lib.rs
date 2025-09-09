@@ -13,7 +13,6 @@ pub struct CaptureResult {
     pub error_msg: *mut c_char,
 }
 
-/// 释放捕获结果的内存
 #[no_mangle]
 pub extern "C" fn xcap_free_result(result: *mut CaptureResult) {
     if result.is_null() {
@@ -34,19 +33,16 @@ pub extern "C" fn xcap_free_result(result: *mut CaptureResult) {
     }
 }
 
-/// 捕获主显示器的屏幕
 #[no_mangle]
 pub extern "C" fn xcap_capture_primary_monitor() -> *mut CaptureResult {
     capture_monitor_internal(true)
 }
 
-/// 捕获所有显示器（拼接成一张图）
 #[no_mangle]
 pub extern "C" fn xcap_capture_all_monitors() -> *mut CaptureResult {
     capture_monitor_internal(false)
 }
 
-/// 根据坐标捕获显示器
 #[no_mangle]
 pub extern "C" fn xcap_capture_monitor_at_point(x: i32, y: i32) -> *mut CaptureResult {
     let result = Box::new(match Monitor::from_point(x, y) {
@@ -76,7 +72,6 @@ pub extern "C" fn xcap_capture_monitor_at_point(x: i32, y: i32) -> *mut CaptureR
     Box::into_raw(result)
 }
 
-/// 捕获指定区域
 #[no_mangle]
 pub extern "C" fn xcap_capture_region(x: u32, y: u32, width: u32, height: u32) -> *mut CaptureResult {
     let result = Box::new(match Monitor::all() {
@@ -110,7 +105,6 @@ pub extern "C" fn xcap_capture_region(x: u32, y: u32, width: u32, height: u32) -
     Box::into_raw(result)
 }
 
-/// 获取显示器数量
 #[no_mangle]
 pub extern "C" fn xcap_get_monitor_count() -> i32 {
     match Monitor::all() {
@@ -119,19 +113,16 @@ pub extern "C" fn xcap_get_monitor_count() -> i32 {
     }
 }
 
-// 内部辅助函数
 fn capture_monitor_internal(primary_only: bool) -> *mut CaptureResult {
     let result = Box::new(match Monitor::all() {
         Ok(monitors) => {
             if primary_only {
-                // 只捕获主显示器
                 if let Some(monitor) = monitors.into_iter().find(|m| m.is_primary().unwrap_or(false)) {
                     capture_monitor(&monitor)
                 } else {
                     create_error_result("No primary monitor found")
                 }
             } else {
-                // 捕获第一个显示器（简化实现）
                 if let Some(monitor) = monitors.into_iter().next() {
                     capture_monitor(&monitor)
                 } else {

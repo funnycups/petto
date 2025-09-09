@@ -1,0 +1,11 @@
+format-version: 1.0.0
+platforms:
+  windows:
+    build:
+      script: hook/build.dart
+  macos:
+    build:
+      script: hook/build.dart
+  linux:
+    build:
+      script: hook/build.dart

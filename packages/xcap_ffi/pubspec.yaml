@@ -1,0 +1,16 @@
+name: xcap_ffi
+description: Xcap exposed via Dart FFI.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+
+dependencies:
+  ffi: any
+  path: any
+  hooks: any
+  code_assets: any
+  logging: any
+
+dev_dependencies:

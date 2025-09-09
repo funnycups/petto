@@ -8,6 +8,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:path/path.dart' as path;
+import 'package:image/image.dart' as img;
+import '../utils/logger.dart';
 
 // FFI bindings for xcap_ffi
 
@@ -60,9 +62,6 @@ class XcapFFI {
   late DynamicLibrary _xcapLib;
 
   late XcapCapturePrimaryMonitorDart _capturePrimaryMonitor;
-  late XcapCaptureAllMonitorsDart _captureAllMonitors;
-  late XcapCaptureMonitorAtPointDart _captureMonitorAtPoint;
-  late XcapCaptureRegionDart _captureRegion;
   late XcapGetMonitorCountDart _getMonitorCount;
   late XcapFreeResultDart _freeResult;
 
@@ -73,17 +72,38 @@ class XcapFFI {
 
   void _loadLibrary() {
     final libPath = _getLibraryPath();
-    _xcapLib = DynamicLibrary.open(libPath);
+    try {
+      _xcapLib = DynamicLibrary.open(libPath);
+      Logger.instance.writeLog('xcap_ffi loaded from: ' + libPath);
+    } catch (e) {
+      Logger.instance.writeLog(
+          'Failed to open xcap_ffi at ' + libPath + ': ' + e.toString());
+      rethrow;
+    }
   }
 
   String _getLibraryPath() {
     final executablePath = Platform.resolvedExecutable;
     final executableDir = path.dirname(executablePath);
 
-    // Try to find library in subdirectory first
+    // 1) Prefer Flutter Native Assets location (Flutter >=3.22)
+    // During run/build, Flutter copies native assets to build/native_assets/<platform>/
+    // and the runner install step copies them next to the executable.
+    final nativeAssetsDir =
+        path.join(path.dirname(path.dirname(executableDir)), 'native_assets');
+    final nativeAssetsWindows = path.join(nativeAssetsDir, 'windows');
+    final nativeAssetsLinux = path.join(nativeAssetsDir, 'linux');
+    final nativeAssetsMacos = path.join(nativeAssetsDir, 'macos');
+
+    // Try to find library in subdirectory first (legacy)
     final libSubdir = path.join(executableDir, 'libs');
 
     if (Platform.isWindows) {
+      // Prefer native assets
+      final naPath = path.join(nativeAssetsWindows, 'xcap_ffi.dll');
+      if (File(naPath).existsSync()) {
+        return naPath;
+      }
       // Try subdirectory first
       final subdirPath = path.join(libSubdir, 'xcap_ffi.dll');
       if (File(subdirPath).existsSync()) {
@@ -92,7 +112,12 @@ class XcapFFI {
       // Fallback to executable directory
       return path.join(executableDir, 'xcap_ffi.dll');
     } else if (Platform.isMacOS) {
-      // Check for both Intel and ARM versions
+      // Prefer native assets
+      final naPath = path.join(nativeAssetsMacos, 'libxcap_ffi.dylib');
+      if (File(naPath).existsSync()) {
+        return naPath;
+      }
+      // Check for both Intel and ARM versions (legacy)
       final armSubdirPath = path.join(libSubdir, 'libxcap_ffi_arm64.dylib');
       final intelSubdirPath = path.join(libSubdir, 'libxcap_ffi.dylib');
       final armPath = path.join(executableDir, 'libxcap_ffi_arm64.dylib');
@@ -106,7 +131,12 @@ class XcapFFI {
       if (File(intelSubdirPath).existsSync()) return intelSubdirPath;
       return intelPath;
     } else if (Platform.isLinux) {
-      // Try subdirectory first
+      // Prefer native assets
+      final naPath = path.join(nativeAssetsLinux, 'libxcap_ffi.so');
+      if (File(naPath).existsSync()) {
+        return naPath;
+      }
+      // Try subdirectory first (legacy)
       final subdirPath = path.join(libSubdir, 'libxcap_ffi.so');
       if (File(subdirPath).existsSync()) {
         return subdirPath;
@@ -122,20 +152,6 @@ class XcapFFI {
     _capturePrimaryMonitor = _xcapLib
         .lookup<NativeFunction<XcapCapturePrimaryMonitorNative>>(
             'xcap_capture_primary_monitor')
-        .asFunction();
-
-    _captureAllMonitors = _xcapLib
-        .lookup<NativeFunction<XcapCaptureAllMonitorsNative>>(
-            'xcap_capture_all_monitors')
-        .asFunction();
-
-    _captureMonitorAtPoint = _xcapLib
-        .lookup<NativeFunction<XcapCaptureMonitorAtPointNative>>(
-            'xcap_capture_monitor_at_point')
-        .asFunction();
-
-    _captureRegion = _xcapLib
-        .lookup<NativeFunction<XcapCaptureRegionNative>>('xcap_capture_region')
         .asFunction();
 
     _getMonitorCount = _xcapLib
@@ -156,7 +172,10 @@ class XcapFFI {
     try {
       final result = resultPtr.ref;
       if (!result.success) {
-        print('Screenshot failed: ${result.errorMsg.toDartString()}');
+        final msg = result.errorMsg.address != 0
+            ? result.errorMsg.toDartString()
+            : 'unknown error';
+        await Logger.instance.writeLog('Screenshot failed: ' + msg);
         return null;
       }
 
@@ -167,7 +186,10 @@ class XcapFFI {
       }
 
       // Convert RGBA to PNG
-      return _convertRgbaToPng(imageData, result.width, result.height);
+      final png =
+          await _convertRgbaToPng(imageData, result.width, result.height);
+
+      return png;
     } finally {
       _freeResult(resultPtr);
     }
@@ -181,13 +203,30 @@ class XcapFFI {
   /// Convert RGBA data to PNG format
   Future<Uint8List> _convertRgbaToPng(
       Uint8List rgbaData, int width, int height) async {
-    // Convert RGBA to PNG using image package
-    // Note: The image package dependency should be added to pubspec.yaml
-    // For now, we return the raw RGBA data
-    // To properly implement this, add: image: ^4.0.0 to dependencies
+    try {
+      final image = img.Image(width: width, height: height);
+      final bytesPerPixel = 4;
+      if (rgbaData.length != width * height * bytesPerPixel) {
+        await Logger.instance.writeLog(
+            'Unexpected RGBA length: ${rgbaData.length}, width=$width, height=$height');
+      }
 
-    // The data from xcap is in RGBA format
-    // We'll need to convert it to PNG format when image package is available
-    return rgbaData;
+      int idx = 0;
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+          final r = rgbaData[idx++];
+          final g = rgbaData[idx++];
+          final b = rgbaData[idx++];
+          final a = rgbaData[idx++];
+          image.setPixelRgba(x, y, r, g, b, a);
+        }
+      }
+
+      final pngBytes = Uint8List.fromList(img.encodePng(image));
+      return pngBytes;
+    } catch (e) {
+      await Logger.instance.writeLog('PNG encode failed: ' + e.toString());
+      return rgbaData;
+    }
   }
 }
