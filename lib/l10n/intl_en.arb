@@ -25,19 +25,19 @@
   "kageExecutable": "*Kage Executable Path",
   "kageModelPath": "*Kage Model Path (.model3.json)",
   "kageApiUrl": "*Kage API URL",
-  "fetchExpressions": "Fetch Expressions",
+  "fetchMotions": "Fetch Motions",
   "kageApiUrlRequired": "Please configure Kage API URL first",
-  "expressionsFetched": "Fetched {count} expressions",
-  "@expressionsFetched": {
+  "motionsFetched": "Fetched {count} motions",
+  "@motionsFetched": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "noExpressionsFound": "No expressions found",
-  "fetchExpressionsFailed": "Failed to fetch expressions: {error}",
-  "@fetchExpressionsFailed": {
+  "noMotionsFound": "No motions found",
+  "fetchMotionsFailed": "Failed to fetch motions: {error}",
+  "@fetchMotionsFailed": {
     "placeholders": {
       "error": {
         "type": "String"

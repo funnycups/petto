@@ -25,19 +25,19 @@
   "kageExecutable": "*Kage可执行文件路径",
   "kageModelPath": "*Kage模型路径(.model3.json)",
   "kageApiUrl": "*Kage API地址",
-  "fetchExpressions": "获取表情列表",
+  "fetchMotions": "获取动作列表",
   "kageApiUrlRequired": "请先配置Kage API地址",
-  "expressionsFetched": "获取到{count}个表情",
-  "@expressionsFetched": {
+  "motionsFetched": "获取到{count}个动作",
+  "@motionsFetched": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "noExpressionsFound": "未找到表情",
-  "fetchExpressionsFailed": "获取表情失败: {error}",
-  "@fetchExpressionsFailed": {
+  "noMotionsFound": "未找到动作",
+  "fetchMotionsFailed": "获取动作失败: {error}",
+  "@fetchMotionsFailed": {
     "placeholders": {
       "error": {
         "type": "String"

@@ -18,8 +18,10 @@ class S {
   static S? _current;
 
   static S get current {
-    assert(_current != null,
-        'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.');
+    assert(
+      _current != null,
+      'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.',
+    );
     return _current!;
   }
 
@@ -41,8 +43,10 @@ class S {
 
   static S of(BuildContext context) {
     final instance = S.maybeOf(context);
-    assert(instance != null,
-        'No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?');
+    assert(
+      instance != null,
+      'No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?',
+    );
     return instance!;
   }
 
@@ -52,32 +56,17 @@ class S {
 
   /// `Show`
   String get show {
-    return Intl.message(
-      'Show',
-      name: 'show',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Show', name: 'show', desc: '', args: []);
   }
 
   /// `Exit`
   String get exit {
-    return Intl.message(
-      'Exit',
-      name: 'exit',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Exit', name: 'exit', desc: '', args: []);
   }
 
   /// `None`
   String get none {
-    return Intl.message(
-      'None',
-      name: 'none',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('None', name: 'none', desc: '', args: []);
   }
 
   /// `User is talking to you, they said: {match}\nPlease briefly encourage them to continue`
@@ -92,52 +81,27 @@ class S {
 
   /// `Settings`
   String get setting {
-    return Intl.message(
-      'Settings',
-      name: 'setting',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Settings', name: 'setting', desc: '', args: []);
   }
 
   /// `*LLM API URL`
   String get url {
-    return Intl.message(
-      '*LLM API URL',
-      name: 'url',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('*LLM API URL', name: 'url', desc: '', args: []);
   }
 
   /// `LLM API Key`
   String get key {
-    return Intl.message(
-      'LLM API Key',
-      name: 'key',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('LLM API Key', name: 'key', desc: '', args: []);
   }
 
   /// `*LLM Model`
   String get model {
-    return Intl.message(
-      '*LLM Model',
-      name: 'model',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('*LLM Model', name: 'model', desc: '', args: []);
   }
 
   /// `Character Name`
   String get name {
-    return Intl.message(
-      'Character Name',
-      name: 'name',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Character Name', name: 'name', desc: '', args: []);
   }
 
   /// `Character Description`
@@ -152,12 +116,7 @@ class S {
 
   /// `User Name`
   String get user {
-    return Intl.message(
-      'User Name',
-      name: 'user',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('User Name', name: 'user', desc: '', args: []);
   }
 
   /// `Example User Question`
@@ -182,12 +141,7 @@ class S {
 
   /// `*ExAPI URL`
   String get exapi {
-    return Intl.message(
-      '*ExAPI URL',
-      name: 'exapi',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('*ExAPI URL', name: 'exapi', desc: '', args: []);
   }
 
   /// `*Live2d Model Number`
@@ -202,12 +156,7 @@ class S {
 
   /// `Pet Mode`
   String get petMode {
-    return Intl.message(
-      'Pet Mode',
-      name: 'petMode',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Pet Mode', name: 'petMode', desc: '', args: []);
   }
 
   /// `*Kage Executable Path`
@@ -240,11 +189,11 @@ class S {
     );
   }
 
-  /// `Fetch Expressions`
-  String get fetchExpressions {
+  /// `Fetch Motions`
+  String get fetchMotions {
     return Intl.message(
-      'Fetch Expressions',
-      name: 'fetchExpressions',
+      'Fetch Motions',
+      name: 'fetchMotions',
       desc: '',
       args: [],
     );
@@ -260,31 +209,31 @@ class S {
     );
   }
 
-  /// `Fetched {count} expressions`
-  String expressionsFetched(int count) {
+  /// `Fetched {count} motions`
+  String motionsFetched(int count) {
     return Intl.message(
-      'Fetched $count expressions',
-      name: 'expressionsFetched',
+      'Fetched $count motions',
+      name: 'motionsFetched',
       desc: '',
       args: [count],
     );
   }
 
-  /// `No expressions found`
-  String get noExpressionsFound {
+  /// `No motions found`
+  String get noMotionsFound {
     return Intl.message(
-      'No expressions found',
-      name: 'noExpressionsFound',
+      'No motions found',
+      name: 'noMotionsFound',
       desc: '',
       args: [],
     );
   }
 
-  /// `Failed to fetch expressions: {error}`
-  String fetchExpressionsFailed(String error) {
+  /// `Failed to fetch motions: {error}`
+  String fetchMotionsFailed(String error) {
     return Intl.message(
-      'Failed to fetch expressions: $error',
-      name: 'fetchExpressionsFailed',
+      'Failed to fetch motions: $error',
+      name: 'fetchMotionsFailed',
       desc: '',
       args: [error],
     );
@@ -352,22 +301,12 @@ class S {
 
   /// `Whisper URL`
   String get whisper {
-    return Intl.message(
-      'Whisper URL',
-      name: 'whisper',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Whisper URL', name: 'whisper', desc: '', args: []);
   }
 
   /// `Whisper Key`
   String get whisperKey {
-    return Intl.message(
-      'Whisper Key',
-      name: 'whisperKey',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Whisper Key', name: 'whisperKey', desc: '', args: []);
   }
 
   /// `Whisper Model Name`
@@ -382,12 +321,7 @@ class S {
 
   /// `*Chat Interval`
   String get duration {
-    return Intl.message(
-      '*Chat Interval',
-      name: 'duration',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('*Chat Interval', name: 'duration', desc: '', args: []);
   }
 
   /// `Hitokoto API URL`
@@ -412,32 +346,17 @@ class S {
 
   /// `TTS Key`
   String get TTSKey {
-    return Intl.message(
-      'TTS Key',
-      name: 'TTSKey',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('TTS Key', name: 'TTSKey', desc: '', args: []);
   }
 
   /// `TTS Model`
   String get TTSModel {
-    return Intl.message(
-      'TTS Model',
-      name: 'TTSModel',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('TTS Model', name: 'TTSModel', desc: '', args: []);
   }
 
   /// `TTS Voice`
   String get TTSVoice {
-    return Intl.message(
-      'TTS Voice',
-      name: 'TTSVoice',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('TTS Voice', name: 'TTSVoice', desc: '', args: []);
   }
 
   /// `Action Group`
@@ -472,32 +391,17 @@ class S {
 
   /// `Save`
   String get save {
-    return Intl.message(
-      'Save',
-      name: 'save',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Save', name: 'save', desc: '', args: []);
   }
 
   /// `Cancel`
   String get cancel {
-    return Intl.message(
-      'Cancel',
-      name: 'cancel',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
   }
 
   /// `Chat`
   String get chat {
-    return Intl.message(
-      'Chat',
-      name: 'chat',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Chat', name: 'chat', desc: '', args: []);
   }
 
   /// `What would you like to talk about?`
@@ -512,12 +416,7 @@ class S {
 
   /// `Confirm`
   String get confirm {
-    return Intl.message(
-      'Confirm',
-      name: 'confirm',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Confirm', name: 'confirm', desc: '', args: []);
   }
 
   /// `Stop Recording`
@@ -542,12 +441,7 @@ class S {
 
   /// `Senko`
   String get settingName {
-    return Intl.message(
-      'Senko',
-      name: 'settingName',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Senko', name: 'settingName', desc: '', args: []);
   }
 
   /// `Real name 'Sen'.\nWears a shrine maiden outfit with a red bow-tied apron over it.\nLooks like a young girl but is actually an 800-year-old divine fox.\nSpeaks in an old-fashioned manner. Skilled in household chores but not good with machines.\nLikes: Taking care of others, fried tofu, cooking (Japanese cuisine)`
@@ -562,12 +456,7 @@ class S {
 
   /// `Master`
   String get settingUser {
-    return Intl.message(
-      'Master',
-      name: 'settingUser',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Master', name: 'settingUser', desc: '', args: []);
   }
 
   /// `It's winter now, the time is 21:17, and the weather is cloudy with a temperature of 28°C. Please give me a warm greeting within 30 characters.`
@@ -612,72 +501,37 @@ class S {
 
   /// `Night`
   String get night {
-    return Intl.message(
-      'Night',
-      name: 'night',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Night', name: 'night', desc: '', args: []);
   }
 
   /// `Dawn`
   String get dawn {
-    return Intl.message(
-      'Dawn',
-      name: 'dawn',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Dawn', name: 'dawn', desc: '', args: []);
   }
 
   /// `Morning`
   String get morning {
-    return Intl.message(
-      'Morning',
-      name: 'morning',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Morning', name: 'morning', desc: '', args: []);
   }
 
   /// `Forenoon`
   String get forenoon {
-    return Intl.message(
-      'Forenoon',
-      name: 'forenoon',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Forenoon', name: 'forenoon', desc: '', args: []);
   }
 
   /// `Noon`
   String get noon {
-    return Intl.message(
-      'Noon',
-      name: 'noon',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Noon', name: 'noon', desc: '', args: []);
   }
 
   /// `Afternoon`
   String get afternoon {
-    return Intl.message(
-      'Afternoon',
-      name: 'afternoon',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Afternoon', name: 'afternoon', desc: '', args: []);
   }
 
   /// `Evening`
   String get evening {
-    return Intl.message(
-      'Evening',
-      name: 'evening',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Evening', name: 'evening', desc: '', args: []);
   }
 
   /// `Window screenshot has been provided, and can be used as a reference when replying`
@@ -692,7 +546,11 @@ class S {
 
   /// `It's {season} now, the current time is {period}{formattedTime}, {weather}.`
   String modelWeather(
-      String season, String period, String formattedTime, String weather) {
+    String season,
+    String period,
+    String formattedTime,
+    String weather,
+  ) {
     return Intl.message(
       'It\'s $season now, the current time is $period$formattedTime, $weather.',
       name: 'modelWeather',
@@ -723,12 +581,7 @@ class S {
 
   /// `Good night`
   String get goodNight {
-    return Intl.message(
-      'Good night',
-      name: 'goodNight',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Good night', name: 'goodNight', desc: '', args: []);
   }
 
   /// `It's {formattedTime}, please rest early. Staying up late is bad for your health.`
@@ -833,52 +686,27 @@ class S {
 
   /// `Sunny`
   String get sunny {
-    return Intl.message(
-      'Sunny',
-      name: 'sunny',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Sunny', name: 'sunny', desc: '', args: []);
   }
 
   /// `Cloudy`
   String get cloudy {
-    return Intl.message(
-      'Cloudy',
-      name: 'cloudy',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Cloudy', name: 'cloudy', desc: '', args: []);
   }
 
   /// `Overcast`
   String get overcast {
-    return Intl.message(
-      'Overcast',
-      name: 'overcast',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Overcast', name: 'overcast', desc: '', args: []);
   }
 
   /// `Fog`
   String get fog {
-    return Intl.message(
-      'Fog',
-      name: 'fog',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Fog', name: 'fog', desc: '', args: []);
   }
 
   /// `Drizzle`
   String get drizzle {
-    return Intl.message(
-      'Drizzle',
-      name: 'drizzle',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Drizzle', name: 'drizzle', desc: '', args: []);
   }
 
   /// `Freezing Drizzle`
@@ -893,12 +721,7 @@ class S {
 
   /// `Light Rain`
   String get lightRain {
-    return Intl.message(
-      'Light Rain',
-      name: 'lightRain',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Light Rain', name: 'lightRain', desc: '', args: []);
   }
 
   /// `Moderate Rain`
@@ -913,12 +736,7 @@ class S {
 
   /// `Heavy Rain`
   String get heavyRain {
-    return Intl.message(
-      'Heavy Rain',
-      name: 'heavyRain',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Heavy Rain', name: 'heavyRain', desc: '', args: []);
   }
 
   /// `Freezing Rain`
@@ -933,12 +751,7 @@ class S {
 
   /// `Light Snow`
   String get lightSnow {
-    return Intl.message(
-      'Light Snow',
-      name: 'lightSnow',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Light Snow', name: 'lightSnow', desc: '', args: []);
   }
 
   /// `Moderate Snow`
@@ -953,22 +766,12 @@ class S {
 
   /// `Heavy Snow`
   String get heavySnow {
-    return Intl.message(
-      'Heavy Snow',
-      name: 'heavySnow',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Heavy Snow', name: 'heavySnow', desc: '', args: []);
   }
 
   /// `Sleet`
   String get sleet {
-    return Intl.message(
-      'Sleet',
-      name: 'sleet',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Sleet', name: 'sleet', desc: '', args: []);
   }
 
   /// `Light Shower`
@@ -1053,12 +856,7 @@ class S {
 
   /// `Unknown`
   String get unknown {
-    return Intl.message(
-      'Unknown',
-      name: 'unknown',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Unknown', name: 'unknown', desc: '', args: []);
   }
 
   /// `The current weather is: {weatherStr}, temperature: {temperature}°C`
@@ -1073,42 +871,22 @@ class S {
 
   /// `Spring`
   String get spring {
-    return Intl.message(
-      'Spring',
-      name: 'spring',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Spring', name: 'spring', desc: '', args: []);
   }
 
   /// `Summer`
   String get summer {
-    return Intl.message(
-      'Summer',
-      name: 'summer',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Summer', name: 'summer', desc: '', args: []);
   }
 
   /// `Autumn`
   String get autumn {
-    return Intl.message(
-      'Autumn',
-      name: 'autumn',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Autumn', name: 'autumn', desc: '', args: []);
   }
 
   /// `Winter`
   String get winter {
-    return Intl.message(
-      'Winter',
-      name: 'winter',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Winter', name: 'winter', desc: '', args: []);
   }
 
   /// `Enable Logging`
@@ -1133,12 +911,7 @@ class S {
 
   /// `Wake Hotkey`
   String get wakeHotkey {
-    return Intl.message(
-      'Wake Hotkey',
-      name: 'wakeHotkey',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Wake Hotkey', name: 'wakeHotkey', desc: '', args: []);
   }
 
   /// `Record Hotkey`
@@ -1153,22 +926,12 @@ class S {
 
   /// `Clear`
   String get clearHotkey {
-    return Intl.message(
-      'Clear',
-      name: 'clearHotkey',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Clear', name: 'clearHotkey', desc: '', args: []);
   }
 
   /// `Save`
   String get saveHotkey {
-    return Intl.message(
-      'Save',
-      name: 'saveHotkey',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Save', name: 'saveHotkey', desc: '', args: []);
   }
 
   /// `Press keys...`
@@ -1223,12 +986,7 @@ class S {
 
   /// `Update Now`
   String get updateNow {
-    return Intl.message(
-      'Update Now',
-      name: 'updateNow',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Update Now', name: 'updateNow', desc: '', args: []);
   }
 
   /// `Remind Me Later`
@@ -1303,22 +1061,12 @@ class S {
 
   /// `Custom Path`
   String get customPath {
-    return Intl.message(
-      'Custom Path',
-      name: 'customPath',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Custom Path', name: 'customPath', desc: '', args: []);
   }
 
   /// `Change Path`
   String get changePath {
-    return Intl.message(
-      'Change Path',
-      name: 'changePath',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Change Path', name: 'changePath', desc: '', args: []);
   }
 
   /// `Kage will be automatically installed and launched after download`
@@ -1333,12 +1081,7 @@ class S {
 
   /// `Download`
   String get download {
-    return Intl.message(
-      'Download',
-      name: 'download',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Download', name: 'download', desc: '', args: []);
   }
 
   /// `Preparing download...`
@@ -1393,12 +1136,7 @@ class S {
 
   /// `Verifying...`
   String get verifying {
-    return Intl.message(
-      'Verifying...',
-      name: 'verifying',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Verifying...', name: 'verifying', desc: '', args: []);
   }
 
   /// `Verification failed`
@@ -1453,22 +1191,12 @@ class S {
 
   /// `Retry`
   String get retry {
-    return Intl.message(
-      'Retry',
-      name: 'retry',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Retry', name: 'retry', desc: '', args: []);
   }
 
   /// `Done`
   String get done {
-    return Intl.message(
-      'Done',
-      name: 'done',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Done', name: 'done', desc: '', args: []);
   }
 
   /// `Use proxy download (China Mainland)`

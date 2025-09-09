@@ -107,7 +107,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
     return parts.join(' + ');
   }
 
-  Future<void> _fetchKageExpressions() async {
+  Future<void> _fetchKageMotions() async {
     if (_kageApiUrlController.text.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -118,24 +118,23 @@ class _SettingsDialogState extends State<SettingsDialog> {
     try {
       final kageService = KageWebSocketService(_kageApiUrlController.text);
       await kageService.connect();
-      final expressions = await kageService.getExpressions();
+      final motions = await kageService.getMotions();
       await kageService.close();
       if (!mounted) return;
-      if (expressions.isNotEmpty) {
-        widget.controllers['actionGroup']!.text = expressions.join(',');
+      if (motions.isNotEmpty) {
+        widget.controllers['actionGroup']!.text = motions.join(',');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(S.current.expressionsFetched(expressions.length))),
+          SnackBar(content: Text(S.current.motionsFetched(motions.length))),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(S.current.noExpressionsFound)),
+          SnackBar(content: Text(S.current.noMotionsFound)),
         );
       }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(S.current.fetchExpressionsFailed(e.toString()))),
+        SnackBar(content: Text(S.current.fetchMotionsFailed(e.toString()))),
       );
     }
   }
@@ -287,8 +286,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 suffixIcon: _petMode == 'kage'
                     ? IconButton(
                         icon: const Icon(Icons.refresh),
-                        onPressed: _fetchKageExpressions,
-                        tooltip: S.current.fetchExpressions,
+                        onPressed: _fetchKageMotions,
+                        tooltip: S.current.fetchMotions,
                       )
                     : null,
               ),
