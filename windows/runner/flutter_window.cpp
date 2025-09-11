@@ -28,7 +28,9 @@ bool FlutterWindow::OnCreate() {
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
-    this->Show();
+  // Visibility is controlled from Dart via window_manager.
+  // Avoid auto-showing here to support scenarios like "start hidden".
+  // this->Show();
   });
 
   // Flutter can complete the first frame before the "show window" callback is

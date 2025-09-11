@@ -199,12 +199,6 @@ class _ChatPageState extends State<ChatPage> with WindowListener {
         return;
       }
 
-      if (data['hide'] ?? false) {
-        windowManager.waitUntilReadyToShow(null, () async {
-          await windowManager.hide();
-        });
-      }
-
       setState(() {
         _isClosedChecked = data['hide'] ?? false;
         _isFlowChecked = data['flow'] ?? false;

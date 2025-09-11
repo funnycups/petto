@@ -54,9 +54,23 @@ Future<void> main() async {
   await windowManager.ensureInitialized();
   double windowWidth = Constants.windowWidth;
   double windowHeight = Constants.windowHeight;
-  await WindowManager.instance.setSize(Size(windowWidth, windowHeight));
-  await WindowManager.instance.center();
-  await WindowManager.instance.setAlwaysOnTop(true);
+  // Apply initial window options and control initial visibility before runApp
+  final settings = await SettingsManager.instance.readSettings();
+  final bool hideOnStartup = settings['hide'] ?? false;
+
+  final windowOptions = WindowOptions(
+    size: Size(windowWidth, windowHeight),
+    center: true,
+    alwaysOnTop: true,
+  );
+  await windowManager.waitUntilReadyToShow(windowOptions, () async {
+    if (hideOnStartup) {
+      await windowManager.hide();
+    } else {
+      await windowManager.show();
+      await windowManager.focus();
+    }
+  });
   runApp(const PettoApp());
 }
 
