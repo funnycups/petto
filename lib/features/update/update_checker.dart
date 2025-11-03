@@ -11,7 +11,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 import '../../core/config/settings_manager.dart';
 import '../../core/utils/logger.dart';
-import '../../generated/l10n.dart';
 import '../dialogs/dialogs.dart';
 
 class UpdateChecker {
