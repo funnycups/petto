@@ -91,10 +91,23 @@ jobs:
         run: flutter pub get
 
       - name: Create podfile
-        run: flutter create --platforms=macos . && sed -i '' "s/^#* *platform :.*$/platform :osx, '10.15'/" macos/Podfile
+        run: |
+          flutter create --platforms=macos .
+          sed -i '' "s/^#* *platform :.*$/platform :osx, '10.15'/" macos/Podfile
+          # Add post_install hook to exclude x86_64 architecture
+          cat >> macos/Podfile << 'EOF'
+
+          post_install do |installer|
+            installer.pods_project.targets.each do |target|
+              target.build_configurations.each do |config|
+                config.build_settings["EXCLUDED_ARCHS[sdk=macos*]"] = "x86_64"
+              end
+            end
+          end
+          EOF
 
       - name: Build macOS
-        run: flutter build macos --release --target-platform darwin-arm64
+        run: flutter build macos --release
 
       - name: Create macOS DMG
         run: |
