@@ -42,7 +42,9 @@ jobs:
         run: flutter create --platforms=macos . && sed -i '' "s/^#* *platform :.*$/platform :osx, '10.15'/" macos/Podfile
 
       - name: Build macOS
-        run: flutter build macos --release
+        run: |
+          export FLUTTER_XCODE_ARCHS=arm64
+          flutter build macos --release
 
       - name: Archive macOS build
         uses: actions/upload-artifact@v4
