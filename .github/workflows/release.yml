@@ -259,7 +259,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.get_version.outputs.version }}
-          name: Petto ${{ steps.get_version.outputs.version }}
+          name: ${{ steps.get_version.outputs.version }}
           generate_release_notes: true
           draft: false
           prerelease: ${{ contains(steps.get_version.outputs.version, '-beta') || contains(steps.get_version.outputs.version, '-alpha') }}
