@@ -1,134 +1,119 @@
 # Petto
 
-**Read this in other languages: [English](README.md), [简体中文](README_zh.md)**
+An intelligent Live2D desktop assistant.
 
-Petto is an intelligent desktop assistant based on Live2DViewerEX. It supports streaming speech recognition, natural language, and voice conversations.
-
-Use it to decorate your desktop pet!
-
-## Features
-
-At regular intervals, the desktop pet will:
-* Output famous quotes
-* Output greetings based on current weather, season, and the window you are visiting using a large language model
-* Output simple greetings based on the current time
-
-Additionally, Petto supports streaming speech recognition, TTS speech-to-text, background wake-up, and more, allowing you to interact with your desktop pet via voice!
+[English](README.md) · [简体中文](README_zh.md)
 
 ![Chat Feature](chat.png)
 
-## Supported Languages
 
-* English
-* Simplified Chinese
+## 1. Overview
+Petto periodically outputs quotes/contextual greetings/time greetings, supports streaming/Whisper voice recognition, TTS voice synthesis, motion triggering, expression management, etc. Since v3.0.0, it uses the new Kage mode by default; the original Live2DViewerEX ExAPI workflow is retained as "compatibility mode".
 
-## Getting Started
+## 2. v3.0.0 Update
+v3.0.0 is a major update featuring code refactoring, new Kage default mode, cross-platform improvements, and more.
 
-* Download the Petto release package
-* Extract it to any location on your computer
-* Ensure your Live2DViewerEX is running, then open the extracted `petto.exe`
-* Done! Try talking to your desktop pet!
+**View complete changelog**: [CHANGELOG_v3.0.0.md](CHANGELOG_v3.0.0.md)
 
-## Advanced Usage
+## 3. Mode Selection
+| Mode | Status | Documentation |
+| ---- | ------ | ------------- |
+| Kage | Recommended | [docs/MODE_KAGE.md](docs/MODE_KAGE.md) |
+| Live2DViewerEX Compatibility | Supported | [docs/MODE_LIVE2DVIEWEREX.md](docs/MODE_LIVE2DVIEWEREX.md) |
 
-### Settings
+## 4. Quick Start
+1. Download the latest Release and extract
+2. Run `petto` directly
+3. If Kage is not found on first launch, it will detect and prompt for download
+4. Confirm WebSocket address in settings (default `ws://localhost:23333`), optionally select model JSON
+5. Click the refresh button next to action groups to auto-fetch motions
+6. Start chatting or enable streaming recognition
 
-You can configure Petto's features in detail in the settings in the top right corner of the main interface.
+### Using Live2DViewerEX Compatibility Mode
+Settings → Switch to compatibility mode → Fill in ExAPI address and model number. See [MODE_LIVE2DVIEWEREX.md](docs/MODE_LIVE2DVIEWEREX.md) for details.
 
-Below are explanations for some settings:
+## 5. Main Features
+* Contextual greetings (based on weather/time/current window screenshot)
+* Voice interaction:
+  * Streaming MASR-compatible recognition
+  * Whisper recognition (OpenAI compatible)
+* Background keyword wake-up
+* TTS voice playback (OpenAI compatible, demo endpoint provided)
+* Wake-up via hotkey
+* Auto-fetch motion list in Kage mode
+* Optional window screenshots
+* Update check and logging toggle
 
-#### Language Model (LLM) Settings
+## 6. Detailed Settings
 
-> Petto supports language model APIs compatible with OpenAI usage.
+You can configure Petto features in detail from the settings in the top right corner of the main interface.
 
-Petto is pre-configured with a public language model: [https://api.cups.moe/api/chat/v1](https://api.cups.moe/api/chat/v1), which is deployed based on the [Duck2api](https://github.com/aurora-develop/Duck2api) project.
+### Desktop Pet Mode
+- **Kage (Default)**: Modern WebSocket interface with auto-download support, supports motion/expression/text management
+  - See [MODE_KAGE.md](docs/MODE_KAGE.md) for detailed configuration
+- **Live2DViewerEX Compatibility**: Maintains support for legacy versions, requires manual configuration
+  - See [MODE_LIVE2DVIEWEREX.md](docs/MODE_LIVE2DVIEWEREX.md) for detailed configuration
 
-However, due to restrictions from Duckduckgo, the model may temporarily be unresponsive if there are too many requests in a short period. Consider using your own API or deploying the language model locally.
+### Language Model (LLM) Settings
 
-#### Character Settings
+> Petto supports OpenAI-compatible language model APIs.
 
-> You can set the character's name, background, calling, and other information.
+Petto is pre-configured with a public language model: [https://free-llm.cupsfunny.com/v1](https://free-llm.cupsfunny.com/v1), which includes some directly usable models.
 
-Write character settings that match your expectations based on the desktop pet character you are using!
+Key: sk-ObgTAfL0qYK6OmoYpQx2qra3EyIxdtP2DPAzz8D5wwe3Eb9l
 
-#### Example Messages
+Note: This public service may periodically change keys or shut down. Please do not abuse.
 
-> The LLM responses will be influenced by the example messages.
+### Character Settings
 
-This setting is used to provide references to the model. If you find the LLM responses do not meet your expectations, you can try writing a simple example message and pass it to the LLM.
+> You can customize the character's name, profile, alias, and other information.
 
-#### ExAPI Address
+Write character settings that match your expectations based on the desktop pet character you're using!
 
-> Keep the default value unless there are special circumstances.
+### Message Examples
 
-Required field, used for communication with Live2DViewerEX.
+> LLM responses will be influenced by message examples.
 
-#### Live2D Model Number
+This setting provides reference examples to the model. If the LLM's responses don't meet your expectations, try writing example messages for the model to learn from.
 
-Required field, used to specify the Live2D model number Petto uses. The value is (the model number displayed in Live2DViewerEX - 1). For example, in the case shown below, the selected model's number is 0.
+### Streaming Voice Recognition
 
-![Live2D Model Number](modelNoExample.png)
+> If the recognition address is left blank, Whisper recognition mode will be used.
 
-#### Pre-executed Command
-
-These commands can be used to start the language model and speech recognition model locally.
-
-Petto provides reference scripts `startmodel.ps1` and `startserver.ps1` to start the RWKV model and MASR-based speech recognition model locally. More detailed information will be provided later.
-
-Petto allows these two scripts to output a PID for managing process. When Petto exits, it will automatically kill the process to avoid resource occupation.
-
-#### Window Information Retrieval
-
-> This command is used to specify the method for retrieving window information. Please be aware of potential privacy and security issues.
->
-> By default, it retrieves the window name, and Petto will pass the current window title as information to the language model.
->
-> Note that if you set the "Window Information Retrieval Command" to empty, Petto will not retrieve any window information regardless of the mode selected.
-
-Petto provides two default scripts: `getwindowname.ps1` and `getscreenshot.ps1`. The former retrieves the window name, while the latter captures a screenshot of the window.
-
-For Windows users, if you change the option to screenshot retrieval, you need to modify the "Window Information Retrieval Command" from `getwindowname.ps1` to `getscreenshot.ps1`.
-
-The default scripts only support Windows. If you are using macOS, you need to write your own script to retrieve window information and modify the value of the "Window Information Retrieval Command".
-
-#### Streaming Speech Recognition
-
-> If the recognition address is left blank, the Whisper recognition mode will be used.
-
-> The background recognition service will always keep recording and send the speech content back to the set recognition address. Please be aware of potential privacy and security issues.
+> The background recognition service keeps recording continuously and sends voice content to the configured recognition address. Be aware of potential privacy and security issues.
 
 Currently, streaming recognition must use an interface compatible with the [MASR](https://github.com/yeyupiaoling/MASR) server-side recognition project.
 
-The project is pre-configured with a public streaming recognition: `wss://api.cups.moe/api/asr/`
+The project is pre-configured with a public streaming recognition service: wss://api.cups.moe/api/asr/
 
-The server performance is average, so please use it gently :) If used too heavily, my server might crash.
+Server performance is poor, use with care :) Heavy usage might crash my server.
 
-It is better to refer to the tutorial later in the document to deploy the MASR service yourself or use the Whisper mode.
+It's recommended to deploy MASR service yourself following the tutorial below, or use Whisper mode.
 
-After enabling background streaming recognition, Petto will always run the streaming recognition function in the background. When any speech containing the background wake-up keyword is detected, the desktop pet will send you a message and prompt you to talk to it:
+After enabling background streaming recognition, Petto will continuously run in the background. When any speech containing the background wake-up keyword is detected, the desktop pet will send you a message and prompt you to talk to it:
 > User: Help me
 >
 > Desktop Pet: Master, what do you need help with? Please tell me~
 
-Then, Petto will automatically start a ten-second recording recognition, allowing you to interact with the desktop pet. After the recording recognition ends, the desktop pet will respond.
+Then, Petto will automatically start a ten-second recording recognition session. You can interact with the desktop pet, and after the recording ends, it will respond.
 
 ![Streaming Recognition](backgroundRecognition.png)
 
-#### Whisper Recognition Mode
+### Whisper Recognition Mode
 
-> Unlike streaming recognition, Whisper recognition mode must complete the recording before obtaining the final text, which mainly affects the speed of background recognition.
+> Unlike streaming recognition, Whisper recognition mode must complete recording before obtaining the final text, which mainly affects background recognition speed.
 >
-> Petto supports Whisper APIs compatible with OpenAI usage.
+> Petto supports OpenAI-compatible Whisper APIs.
 
-#### Hitokoto API Address
+### Hitokoto API Address
 
-> Keep the default value unless there are special circumstances.
+> If there are no special circumstances, keep the default value.
 
-Fill in the API address for requesting Hitokoto.
+Fill in the API address for requesting Hitokoto quotes.
 
-#### TTS
+### TTS
 
-> Petto supports TTS APIs compatible with OpenAI usage.
+> Petto supports OpenAI-compatible TTS APIs.
 
 Although TTS information is not filled in by default, we actually provide a ready-to-use TTS service:
 
@@ -138,53 +123,77 @@ TTS Key: ecWdn$TJ&ktP#89
 
 This service is deployed based on [openai-edge-tts](https://github.com/travisvn/openai-edge-tts)
 
-#### Action Groups
+### Hotkey
 
-Set character action groups. The character will automatically trigger actions each time a task is triggered.
+Set the hotkey to wake up Petto. Record and save to take effect.
 
-In Live2DViewerEX, select the model you are using, click the custom button at the top right, and you will see a series of action groups.
+### Window Screenshot
 
-### Startup
+> This feature captures screenshots of the current active window as context information. Disabled by default.
 
-* (Optional) In the settings, check "Hide window on startup"
-* Press Win+R, type `shell:startup`. Create a shortcut for `petto.exe` and place it in this folder
+If screenshot mode is enabled in settings as context:
+* Petto will pass the current active window screenshot to the language model to generate more contextual greetings
+* Be aware of potential privacy and security issues
 
-### Deploying Models Locally
+**Cross-platform Support:**
 
-Please check the following two files:
+v3.0.0 uses [xcap](https://github.com/nashaofu/xcap) for cross-platform screenshots, supporting Windows, macOS, and Linux.
 
-* `data\flutter_assets\scripts\startmodel.ps1`
-* `data\flutter_assets\scripts\startserver.ps1`
+**Note:** v3.0.0 has removed the legacy "window title" feature, now unified to use window screenshots.
 
-They correspond to the scripts for starting the RWKV model and the local streaming speech recognition service, respectively.
+### Text Display Duration
 
-#### Starting the RWKV Model
+Set the display time for desktop pet text bubbles, in milliseconds.
 
-> You can also modify the contents of `startmodel.ps1` to start your own model.
+Default: `3000` (3 seconds)
 
-To start the RWKV model, you need to:
+* Applies to both Kage mode and Live2DViewerEX compatibility mode
+* Controls display duration for greetings, reply messages, and other text
 
-* Download [RWKV Runner](https://github.com/josStorer/RWKV-Runner) and configure the environment as instructed.
-* Then, [download the RWKV model](https://huggingface.co/BlinkDL/rwkv-7-world) and place it in the `models/` directory under the RWKV Runner directory.
-* Adjust the contents of `startmodel.ps1`: follow the `cd` command with the path to the RWKV Runner directory, and change `RWKV-x060-World-3B-v2.1-20240417-ctx4096.pth` to the actual downloaded model name.
-* In Petto settings, remove the `#` at the beginning of the "Pre-execution LLM Command" and then restart Petto.
+## 7. Auto-start on Boot
 
-#### Starting the MASR Speech Recognition Service
-> The model provided below is trained only on Chinese corpus. You can manually train models that support more languages and have higher accuracy, or use pre-trained models or Whisper interfaces for speech recognition.
+* (Optional) In settings, check "Hide window on startup"
+* Press Win+R, type shell:startup. Create a shortcut for petto.exe and place it in this folder
 
-To start the local streaming speech recognition service, go to the `data\flutter_assets\speech\models` directory and:
+## 8. Local MASR Voice Recognition Deployment
 
-* Create a directory named `conformer_streaming_fbank` and download [inference.pt](https://www.cups.moe/static/asr/inference.pt) into it.
-* Go to the `pun_models` directory and download [model.pdiparams](https://www.cups.moe/static/asr/model.pdiparams) into it.
-* In Petto settings, remove the `#` at the beginning of the "Pre-execution ASR Command" and then restart Petto.
+> The models provided below are trained only on Chinese corpus. You can manually train models that support more languages and have higher accuracy, or use pre-trained models or Whisper API for voice recognition.
 
-## TODO
+* Download [inference.pt](https://www.cups.moe/static/asr/inference.pt) for local deployment.
+* Download [model.pdiparams](https://www.cups.moe/static/asr/model.pdiparams) to punctuate speech recognition results.
 
+## 9. Voice Mode Description
+**Streaming:** Real-time transmission, fast response.
+**Whisper:** Record first then recognize. Leave the streaming address blank to enable Whisper mode.
+**Privacy:** Be aware of privacy risks when using voice recognition.
+
+## 10. Roadmap / TODO
 - [ ] Support more languages
+- [ ] Voice authentication
+- [ ] UI optimization
 - [x] macOS support
-- [ ] Add voice authentication
-- [ ] Optimize UI
+- [x] Linux support
+- [x] Kage integration
 
-## Sponsor
+## 11. Common Issues
+| Issue | Troubleshooting |
+| ----- | --------------- |
+| Cannot connect to Kage | Check ws address/firewall/port occupation |
+| Motion list is empty | Is model JSON correct; refresh; check logs |
+| Text not displaying | Text display duration>0; is version latest |
+| Streaming lag | Self-host MASR or switch to Whisper |
+| No motions in compatibility mode | Is action group filled correctly |
+| Kage not auto-detected | Manually select executable and restart |
 
-Sponsored by [NETJETT](https://netjett.com/aff.php?aff=45).
+## 12. Contributing
+Contributions and bug reports are welcome.
+
+## 13. License
+GPL-3.0-or-later, see LICENSE for details.
+
+## 14. Sponsor
+Sponsored by NETJETT: https://netjett.com/aff.php?aff=45
+
+---
+
+Need more detailed mode instructions? Read: [docs/MODE_KAGE.md](docs/MODE_KAGE.md) and [docs/MODE_LIVE2DVIEWEREX.md](docs/MODE_LIVE2DVIEWEREX.md).

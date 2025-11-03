@@ -1,5 +1,5 @@
 name: petto
-description: "An AIPet made for Live2DViewerEX"
+description: "An intelligent desktop assistant."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 2.1.0+1
+version: 3.0.0+1
 
 environment:
   sdk: ^3.5.0
@@ -55,6 +55,9 @@ dependencies:
   file_picker: any
   ffi: any
   archive: ^3.4.0
+  image: ^4.2.0
+  xcap_ffi:
+    path: packages/xcap_ffi
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
