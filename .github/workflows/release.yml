@@ -81,8 +81,11 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          channel: beta
           cache: true
+
+      - name: Enable native assets
+        run: flutter config --enable-native-assets
 
       - name: Install dependencies
         run: flutter pub get
@@ -145,8 +148,11 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          channel: beta
           cache: true
+
+      - name: Enable native assets
+        run: flutter config --enable-native-assets
 
       - name: Install dependencies
         run: flutter pub get
@@ -187,9 +193,8 @@ jobs:
           EOF
           chmod +x AppDir/AppRun
           
-          # Copy icon (you may need to adjust this path based on your icon location)
-          # For now, create a placeholder icon
-          echo "Icon placeholder" > AppDir/usr/share/icons/hicolor/256x256/apps/petto.png
+          # Copy icon from macOS assets
+          cp macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png AppDir/usr/share/icons/hicolor/256x256/apps/petto.png
           
           # Create AppImage
           ./appimagetool-x86_64.AppImage AppDir petto-linux-x86_64.AppImage
