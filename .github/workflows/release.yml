@@ -190,7 +190,7 @@ jobs:
           cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
           
           # Create desktop file
-          cat > AppDir/usr/share/applications/petto.desktop <<EOF
+          cat > AppDir/petto.desktop <<EOF
           [Desktop Entry]
           Type=Application
           Name=Petto
@@ -198,6 +198,9 @@ jobs:
           Icon=petto
           Categories=Utility;
           EOF
+          
+          # Copy desktop file to usr/share/applications as well
+          cp AppDir/petto.desktop AppDir/usr/share/applications/
           
           # Create AppRun script
           cat > AppDir/AppRun <<EOF
@@ -207,7 +210,8 @@ jobs:
           EOF
           chmod +x AppDir/AppRun
           
-          # Copy icon from macOS assets
+          # Copy icon from macOS assets to both locations
+          cp macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png AppDir/petto.png
           cp macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png AppDir/usr/share/icons/hicolor/256x256/apps/petto.png
           
           # Create AppImage
