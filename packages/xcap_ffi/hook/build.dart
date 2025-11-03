@@ -48,7 +48,14 @@ Future<void> main(List<String> args) async {
     if (release) cargoArgs.add('--release');
 
     final logger = Logger('xcap_ffi_build')
-      ..onRecord.listen((r) => stderr.writeln(r.message));
+      ..onRecord.listen((record) {
+        final message = '[${record.level.name}] ${record.message}';
+        if (record.level >= Level.SEVERE) {
+          stderr.writeln(message);
+        } else {
+          stdout.writeln(message);
+        }
+      });
     logger.info('[hooks] Mode=$modeEnv => release=$release');
     logger.info('[hooks] Running: $cargo ${cargoArgs.join(' ')}');
 
