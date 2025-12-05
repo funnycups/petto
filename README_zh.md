@@ -58,7 +58,7 @@ v3.0.0是一个重大更新版本，包含代码重构、新增Kage默认模式�
 
 > Petto支持符合OpenAI格式的语言模型API。
 
-Petto默认配置了一个公用的语言模型：[https://free-llm.cupsfunny.com/v1](https://free-llm.cupsfunny.com/v1)，里面包含了一些可以直接使用的模型。
+Petto默认配置了一个公用的语言模型：[https://free-llm.cups.moe/v1](https://free-llm.cups.moe/v1)，里面包含了一些可以直接使用的模型。
 
 Key为sk-ObgTAfL0qYK6OmoYpQx2qra3EyIxdtP2DPAzz8D5wwe3Eb9l。
 

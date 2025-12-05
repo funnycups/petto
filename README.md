@@ -58,7 +58,7 @@ You can configure Petto features in detail from the settings in the top right co
 
 > Petto supports OpenAI-compatible language model APIs.
 
-Petto is pre-configured with a public language model: [https://free-llm.cupsfunny.com/v1](https://free-llm.cupsfunny.com/v1), which includes some directly usable models.
+Petto is pre-configured with a public language model: [https://free-llm.cups.moe/v1](https://free-llm.cups.moe/v1), which includes some directly usable models.
 
 Key: sk-ObgTAfL0qYK6OmoYpQx2qra3EyIxdtP2DPAzz8D5wwe3Eb9l
 
